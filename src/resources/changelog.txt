@@ -7,8 +7,9 @@ Basic Concept:
         - PLAY_TIME     : Uses the Statistic "PLAY_ONE_MINUTE"
 
 Ideas:
-    - Custom Advancements softdepending on "CrazyAdvancementsAPI":
-         https://www.spigotmc.org/resources/crazy-advancements-api.51741/
+    - Custom Advancements:
+        Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
+        or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/
     - PlayerData File Storage, add a last saved timestamp to each File
         - Run an async, scheduled routine to clean up older PlayerData to free up diskspace & preventing folder cluttering
         - Is this useful?

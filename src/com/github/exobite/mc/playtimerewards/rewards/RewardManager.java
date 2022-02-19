@@ -1,7 +1,6 @@
 package com.github.exobite.mc.playtimerewards.rewards;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class RewardManager {
