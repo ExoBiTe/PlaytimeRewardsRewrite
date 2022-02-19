@@ -1,0 +1,12 @@
+name: PlaytimeRewards
+main: com.github.exobite.mc.playtimerewards.main.PluginMaster
+version: 0.1a
+author: ExoBiTe
+description: Default Description
+api-version: 1.16
+
+commands:
+  Playtime:
+    description: Display the players Playtime
+    usage: /Playtime
+    aliases: pt

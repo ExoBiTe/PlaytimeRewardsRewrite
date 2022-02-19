@@ -1,0 +1,17 @@
+#Command Messages
+CMD_FAIL_NO_UUID: 'The specified Parameter "VAR[0]" is not an UUID'
+CMD_FAIL_UNKNOWN_ID: 'There is no known UUID "VAR[0]"'
+CMD_FAIL_UNKNOWN_PLAYER: 'Couldnt find a Player "VAR[0]"'
+
+#Playtime Messages
+PTR_SUC_PLAYTIMECOMMAND: 'Your Playtime is %d %h %m %s'
+
+#Player Notifications
+MSG_NO_PERMISSION: '&4No Permission.'
+
+#Error Messages (Recommend to not change them, as no Player sees them.)
+ERR_GUI_WRONG_ARGS: 'Wrong Args given for GUI-Function call VAR[0]!'
+ERR_NO_GUIHOLD_INSTANCE: 'No GuiHolder Instance found for Object VAR[0]!'
+ERR_GUI_NOT_FOUND: 'No GUI VAR[0].VAR[1] found!'
+ERR_GUI_MOD_NOT_FOUND: 'No GUI-Mod VAR[0] found!'
+ERR_NO_CONSOLE_CMD: 'Sorry, this Command is only available to Players, not for the Console.'
