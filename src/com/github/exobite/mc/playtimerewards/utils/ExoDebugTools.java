@@ -1,6 +1,5 @@
 package com.github.exobite.mc.playtimerewards.utils;
 
-import com.github.exobite.mc.playtimerewards.gui.GUIManagerOLD;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -237,45 +236,7 @@ public class ExoDebugTools implements Listener {
     }
 
     private void guimanagerCommand(Player p, String[] args) {
-        if(args.length>2){
-            StringBuilder sb = new StringBuilder(ChatColor.GOLD.toString()).append("Listing all registered (");
-            String insert;
-            List<String> content;
-            switch (args[2].toLowerCase()) {
-                case "opengui" -> {
-                    if (args.length >= 5) {
-                        GUIManagerOLD.openInventory(args[3], args[4], p);
-                    } else {
-                        sendSyncMessage(p, usageGm);
-                    }
-                    return;
-                }
-                case "listmods" -> {
-                    content = GUIManagerOLD.getModifiers();
-                    insert = "MODs";
-                }
-                case "listguis" -> {
-                    content = GUIManagerOLD.getGuis();
-                    insert = "GUIs";
-                }
-                case "listfunctions" -> {
-                    content = GUIManagerOLD.getFunctions();
-                    insert = "GUIFunctions";
-                }
-                default -> {
-                    sendSyncMessage(p, usageGm);
-                    return;
-                }
-            }
-
-            sb.append(content.size()).append(") GUIManagerOLD ").append(insert).append(":");
-            for(String s:content) {
-                sb.append("\n").append(s);
-            }
-            sendSyncMessage(p, sb.toString());
-        }else {
-            sendSyncMessage(p, usageGm);
-        }
+        sendSyncMessage(p, "GUIManager doesnt support this right now.");
     }
 
     private void reflectionCmd(Player p, String[] args) {

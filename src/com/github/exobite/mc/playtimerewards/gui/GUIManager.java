@@ -1,5 +1,7 @@
 package com.github.exobite.mc.playtimerewards.gui;
 
+import com.github.exobite.mc.playtimerewards.main.PlayerData;
+import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -8,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -56,7 +59,14 @@ public class GUIManager implements Listener {
 
     @EventHandler
     private void onInventoryClick(InventoryClickEvent e){
-
+        Inventory i = e.getClickedInventory();
+        if(!guis.containsKey(i)) return;
+        GUI g = guis.get(i);
+        int slot = e.getSlot();
+        GUISlot gs = g.getSlotData(slot, false);
+        if(gs==null) return;
+        gs.action.click(e, g);
+        if(gs.cancelClick) e.setCancelled(true);
     }
 
     @EventHandler
@@ -64,7 +74,8 @@ public class GUIManager implements Listener {
         if(guis.containsKey(e.getInventory())) {
             final GUI g = guis.get(e.getInventory());
             final HumanEntity p = e.getPlayer();
-            if(!g.canClose) {
+            final PlayerData pDat = PlayerManager.getInstance().getPlayerData(p.getUniqueId());
+            if(!g.canClose && !pDat.isAllowedToCloseNExtGUI()) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -72,6 +83,7 @@ public class GUIManager implements Listener {
                     }
                 }.runTaskLater(main, 1L);
             }
+            pDat.allowNextGUIClose(false);
         }
     }
 
@@ -115,6 +127,45 @@ public class GUIManager implements Listener {
             return this;
         }
 
+        public GUI setItemstack(ItemStack is, int slot) {
+            if(slot > inv.getSize() || slot < 0) return this;
+            GUISlot gs = getSlotData(slot, true);
+            gs.setItemStack(is);
+            return this;
+        }
+
+        public GUI setSlotAction(int slot, GUIClickAction action) {
+            if(slot > inv.getSize() || slot < 0) return this;
+            GUISlot gs = getSlotData(slot, true);
+            gs.setAction(action);
+            return this;
+        }
+
+        public void closeInventory(Player p) {
+            if(p==null || canClose) return;
+            Inventory i = p.getOpenInventory().getTopInventory();
+            if(i!=inv) return;
+        }
+
+        /**
+         * Searches for an existing GUISlot and creates a new Instance if none is found.
+         * @param slot  The Target Slot
+         * @param createIfNeeded    Specifies if the method create an empty guiSlot or not
+         * @return  A new or existing GUISlot Instance
+         */
+        private GUISlot getSlotData(int slot, boolean createIfNeeded) {
+            GUISlot gs;
+            if(slotData.containsKey(slot)) {
+                gs = slotData.get(slot);
+            }else if(createIfNeeded) {
+                gs = new GUISlot(this, slot);
+                slotData.put(slot, gs);
+            }else{
+                gs = null;
+            }
+            return gs;
+        }
+
         /**
          * Copies the data from the "from" slot to the "to" slot
          * @param from  Which Slot should be copied
@@ -126,20 +177,6 @@ public class GUIManager implements Listener {
             if(src==null) return;
             GUISlot tar = src.copySlotTo(to);
             slotData.put(to, tar);
-        }
-
-        /**
-         * Searches for an existing GUISlot and creates a new Instance if none is found.
-         * @param slot  The Target Slot
-         * @return  A new or existing GUISlot Instance
-         */
-        private GUISlot getGUISlot(int slot) {
-            if(slotData.containsKey(slot)) {
-                return slotData.get(slot);
-            }
-            GUISlot gs = new GUISlot(this, slot);
-            slotData.put(slot, gs);
-            return gs;
         }
 
     }
@@ -174,15 +211,14 @@ public class GUIManager implements Listener {
             return tSlot;
         }
 
-
     }
 
-    private abstract class GUIClickAction {
+    public abstract static class GUIClickAction {
         /**
          *
          * @param e The corresponding ClickEvent
          */
-        abstract void click(InventoryClickEvent e);
+        protected abstract void click(InventoryClickEvent e, GUI gui);
     }
 
     public abstract class GUIHolder {

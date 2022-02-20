@@ -22,14 +22,6 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
 
-                <configuration>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.bstats</pattern>
-                            <shadedPattern>com.github.exobite.mc.playtimerewards.utils</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
 
                 <executions>
                     <execution>

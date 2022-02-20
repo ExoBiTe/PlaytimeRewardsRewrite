@@ -3,7 +3,7 @@ main: com.github.exobite.mc.playtimerewards.main.PluginMaster
 version: 0.1a
 author: ExoBiTe
 description: Default Description
-api-version: 1.16
+api-version: 1.17
 
 commands:
   Playtime:

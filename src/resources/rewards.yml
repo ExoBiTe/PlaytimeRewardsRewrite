@@ -1,0 +1,25 @@
+#PlaytimeRewards by ExoBiTe
+#
+#List of all Sounds can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+#List of all SoundCategories can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
+#List of all Particles can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+#
+#Available CountTypes are PLAYTIME, SESSION_TIME and GLOBAL_TIME
+
+Reward_1: #No Duplicates allowed
+  DisplayName: '&3I´m a cool &4Reward&3!'
+  CountType: 'PLAYTIME'
+  Time: '1m30s'
+  Repeating: true
+  ConsoleCommands:
+    - 'spawn'
+  Display:
+    PlayerMessages:
+      - 'Congrats <PLAYER> upon Earning <REWARD>'
+    GlobalMessages:
+      - '<PLAYER> earned the Achievement <REWARD>'
+    Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed
+      - 'DRIP_LAVA, 10, 0.2, 0.2, 0.2, 0'
+    Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH'
+      - 'BLOCK_BELL_USE, PLAYERS, 1.0, 1.0'
+

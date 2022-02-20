@@ -13,11 +13,31 @@ Ideas:
     - PlayerData File Storage, add a last saved timestamp to each File
         - Run an async, scheduled routine to clean up older PlayerData to free up diskspace & preventing folder cluttering
         - Is this useful?
-    - Easy Input Format for time - Example (Simatic):
+    - Easy Input Format for time (Example from Siemens Simatic):
         - T#5d20h23m56s -> calculates to the corresponding amount of ms
-        - Available Time keys (Case-sensitive!):
+        - Available Time keys (not Case-sensitive):
             - #D -> Days
             - #h -> Hours
             - #m -> Minutes
             - #s -> Seconds
     - GUI to create/modify & manage Rewards
+    - Create a Playtime Top Command:
+        - Displays the TOP Playtime from the Server
+        - Maybe with args to also display the biggest SessionTime?
+    - Allow Players to Opt-In for more data collection:
+        - Collect Data how many Rewards are registered, and which functions of the Rewards get used.
+
+Notes:
+    - removed bStats relocation from the pom, as there occurs an error for now
+    - copy/pasted from pom: (paste under version of shade-plugin)
+
+                    <configuration>
+                        <relocations>
+                            <relocation>
+                                <pattern>org.bstats</pattern>
+                                <shadedPattern>com.github.exobite.mc.playtimerewards.utils</shadedPattern>
+                            </relocation>
+                        </relocations>
+                    </configuration>
+
+    - disabled bstats while developing pre-release

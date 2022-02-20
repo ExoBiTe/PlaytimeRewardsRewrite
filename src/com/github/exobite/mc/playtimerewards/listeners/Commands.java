@@ -31,11 +31,4 @@ public class Commands implements CommandExecutor {
         return true;
     }
 
-    private String getDateFromMs(long timeMs) {
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss dd.MM.yyyy");
-        Date result = new Date(timeMs);
-        return sdf.format(result);
-    }
-
-
 }

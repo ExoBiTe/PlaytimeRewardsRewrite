@@ -1,0 +1,6 @@
+#Configuration File for PlaytimeRewards by ExoBite
+Config_Version: '0.77a'
+ColorChar: '&'
+DataSaveInterval: '1h30m'
+UpdateNotification: true
+ReceiveMotd: true

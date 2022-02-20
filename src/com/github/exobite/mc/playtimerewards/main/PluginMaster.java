@@ -1,26 +1,25 @@
 package com.github.exobite.mc.playtimerewards.main;
 
-import com.github.exobite.mc.playtimerewards.gui.CodeExec;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
-import com.github.exobite.mc.playtimerewards.gui.GUIManagerOLD;
-import com.github.exobite.mc.playtimerewards.gui.guiHolder;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.Commands;
+import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.ExoDebugTools;
 import com.github.exobite.mc.playtimerewards.utils.Message;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class PluginMaster extends JavaPlugin implements guiHolder {
+public class PluginMaster extends JavaPlugin {
 
     private static PluginMaster instance;
 
@@ -75,20 +74,26 @@ public class PluginMaster extends JavaPlugin implements guiHolder {
         getServer().getPluginManager().registerEvents(new Listeners(), this);
         Utils.registerUtils(this);
         Message.registerMessages(this);
+
+        RewardManager.setupRewardManager(this);
+
         setupMetrics();
 
         sendConsoleMessage(Level.INFO, "Plugin is running (took " + (System.currentTimeMillis() - t1) +"ms)!");
 
-        // /reload support, check for online Players in onEnable & create playerData for them.
+        //reload support, check for online Players in onEnable & create playerData for them.
         if(Bukkit.getOnlinePlayers().size() > 0){
             for(Player p:Bukkit.getOnlinePlayers()){
                 PlayerManager.getInstance().createPlayerData(p);
             }
         }
+
+        startAsyncChecker();
     }
 
     public void onDisable() {
-
+        Bukkit.getScheduler().cancelTasks(this);
+        PlayerManager.getInstance().cleanAllPlayerData();
     }
 
     private boolean setPlaytimeStatisticName(){
@@ -102,6 +107,10 @@ public class PluginMaster extends JavaPlugin implements guiHolder {
         return s != null;
     }
 
+    public static PluginMaster getInstance() {
+        return instance;
+    }
+
     public static void sendConsoleMessage(Level level, String msg){
         String prefix = "[" + instance.getDescription().getName() + "] ";
         //Split by \newLine, send all in a seperate message
@@ -111,47 +120,43 @@ public class PluginMaster extends JavaPlugin implements guiHolder {
         }
     }
 
-    private void registerGuiManager() {
-        final PluginMaster main = this;
-        //Utils.fillDefaultFile("guis"+File.separator+"g_warplist.egf");
-        GUIManagerOLD.registerGUIManager(this, new CodeExec() {
-
-            @Override
-            public Object execCode() {
-                GUIManagerOLD inst = (GUIManagerOLD) this.getParam();
-
-                inst.new HolderInstanceInfo("GLOBAL"){
-
-                    @Override
-                    protected guiHolder getInstance(Object source) {
-                        return main;
-                    }
-                };
-
-                return null;
-            }
-
-        });
-    }
-
     private void setupMetrics() {
-        Metrics m = new Metrics(this, bstatsID);
+        //Metrics for now disabled
+        //Metrics m = new Metrics(this, bstatsID);
         //No Custom Charts for now.
     }
 
+    private void startAsyncChecker() {
+        BukkitRunnable br = new BukkitRunnable() {
 
-    @Override
-    public Map<String, GUIManagerOLD.GUI> getGuis() {
-        return null;
+            private final int playersPerCycle = 100;
+            private Queue<Player> playerQueue;
+            private boolean createNewQueue = true;
+
+
+            @Override
+            public void run() {
+                long ms1 = System.currentTimeMillis();
+                if(createNewQueue) {
+                    playerQueue = new ArrayDeque<>(Bukkit.getOnlinePlayers());
+                    createNewQueue = false;
+                }
+                for(int i=0;i<playersPerCycle;i++){
+                    Player p = playerQueue.poll();
+                    if(p==null){
+                        createNewQueue = true;
+                        break;
+                    }
+                    PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
+                    if(pDat!=null) {
+                        RewardManager.getInstance().checkAndGrantRewards(pDat);
+                    }
+                }
+                //sendConsoleMessage(Level.INFO, "One Reward Checking loop took "+(System.currentTimeMillis() - ms1));
+            }
+        };
+        //Run the Task every 20Ticks -> 1 Second
+        br.runTaskTimerAsynchronously(this, 20L, 20L).getTaskId();
     }
 
-    @Override
-    public Map<String, String> getPlaceholders() {
-        return null;
-    }
-
-    @Override
-    public void addGui(String internalName, GUIManagerOLD.GUI Gui) {
-
-    }
 }
