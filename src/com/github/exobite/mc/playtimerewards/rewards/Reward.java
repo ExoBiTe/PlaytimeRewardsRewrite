@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.lang.module.Configuration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class Reward {
@@ -15,7 +17,6 @@ public class Reward {
     protected static Reward getRewardFromYaml(ConfigurationSection cs){
         if(cs==null) return null;
         String name = cs.getName();
-        //System.out.println(cs.getConfigurationSection());
         String rwTypeStr = cs.getString("CountType", "");
         RewardType rwType;
         try {
@@ -38,7 +39,46 @@ public class Reward {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown Time-Value '"+timeStr+"' in Reward '"+name+"'");
             return null;
         }
-        return new Reward(name, rwType, timeMs, repeat);
+        Reward rw = new Reward(name, rwType, timeMs, repeat);
+        //Optionals
+        String[] consoleCommands = cs.getStringList("ConsoleCommands").toArray(new String[0]);
+        rw.setConsoleCommands(consoleCommands);
+        String[] playerMessages = cs.getStringList("Display.PlayerMessages").toArray(new String[0]);
+        rw.setPlayerMessages(playerMessages);
+        String[] globalMessages = cs.getStringList("Display.GlobalMessages").toArray(new String[0]);
+        rw.setPlayerMessages(globalMessages);
+        String displayName = cs.getString("DisplayName");
+        if(displayName!=null) rw.setDisplayName(displayName);
+
+        List<RewardParticle> particles = new ArrayList<>();
+        for(String str:cs.getStringList("Display.Particles")) {
+            RewardParticle rp = createParticleFromString(str, name);
+            if(rp!=null) particles.add(rp);
+        }
+
+        List<RewardSound> sounds = new ArrayList<>();
+        for(String str:cs.getStringList("Display.Sounds")) {
+            RewardSound rs = createSoundFromString(str, name);
+            if(rs!=null) sounds.add(rs);
+        }
+
+        return rw;
+    }
+
+    private static RewardParticle createParticleFromString(String str, String rewardName) {
+        //TODO: String parsing to RewardParticle
+        String[] splits = str.split(",");
+        if(splits.length<6) {
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Missing Parameter ('"+str+"') on a Particle for Reward '"+rewardName+"'");
+            return null;
+        }
+
+        return null;
+    }
+
+    private static RewardSound createSoundFromString(String str, String rewardName) {
+        //TODO: String parsing to RewardSound
+        return null;
     }
 
     private String name;
@@ -83,12 +123,12 @@ public class Reward {
         return this;
     }
 
-    private Reward setGlobalMessages(RewardParticle[] particles){
+    private Reward setParticles(RewardParticle[] particles){
         this.particles = particles;
         return this;
     }
 
-    private Reward setGlobalMessages(RewardSound[] sounds){
+    private Reward setSounds(RewardSound[] sounds){
         this.sounds = sounds;
         return this;
     }
