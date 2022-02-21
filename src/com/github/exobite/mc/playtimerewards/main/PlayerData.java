@@ -95,7 +95,6 @@ public class PlayerData {
                 String px = id.toString() + ".";
                 receivedTimestamps.keySet().forEach(str -> {
                     long val = receivedTimestamps.get(str);
-                    System.out.println("Value for" + str + " is " + val);
                     if(val!=0){
                         conf.set(px + str, val);
                     }

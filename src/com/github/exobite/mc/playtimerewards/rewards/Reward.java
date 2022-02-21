@@ -2,14 +2,15 @@ package com.github.exobite.mc.playtimerewards.rewards;
 
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 
 public class Reward {
@@ -33,20 +34,28 @@ public class Reward {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown Repeat-Value '"+repeatStr+"' in Reward '"+name+"'");
             return null;
         }
+        String grantStr = cs.getString("GrantFirst", "false");
+        boolean grantFirst;
+        try {
+            grantFirst = Boolean.parseBoolean(grantStr);
+        }catch(IllegalArgumentException e) {
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown GrantFirst-Value '"+grantStr+"' in Reward '"+name+"'");
+            return null;
+        }
         String timeStr = cs.getString("Time", "0s");
         long timeMs = Utils.convertTimeStringToMS(timeStr);
         if(timeMs<=0) {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown Time-Value '"+timeStr+"' in Reward '"+name+"'");
             return null;
         }
-        Reward rw = new Reward(name, rwType, timeMs, repeat);
+        Reward rw = new Reward(name, rwType, timeMs, repeat, grantFirst);
         //Optionals
         String[] consoleCommands = cs.getStringList("ConsoleCommands").toArray(new String[0]);
         rw.setConsoleCommands(consoleCommands);
         String[] playerMessages = cs.getStringList("Display.PlayerMessages").toArray(new String[0]);
         rw.setPlayerMessages(playerMessages);
         String[] globalMessages = cs.getStringList("Display.GlobalMessages").toArray(new String[0]);
-        rw.setPlayerMessages(globalMessages);
+        rw.setGlobalMessages(globalMessages);
         String displayName = cs.getString("DisplayName");
         if(displayName!=null) rw.setDisplayName(displayName);
 
@@ -55,35 +64,81 @@ public class Reward {
             RewardParticle rp = createParticleFromString(str, name);
             if(rp!=null) particles.add(rp);
         }
+        rw.setParticles(particles.toArray(new RewardParticle[0]));
 
         List<RewardSound> sounds = new ArrayList<>();
         for(String str:cs.getStringList("Display.Sounds")) {
             RewardSound rs = createSoundFromString(str, name);
             if(rs!=null) sounds.add(rs);
         }
+        rw.setSounds(sounds.toArray(new RewardSound[0]));
 
         return rw;
     }
 
     private static RewardParticle createParticleFromString(String str, String rewardName) {
-        //TODO: String parsing to RewardParticle
-        String[] splits = str.split(",");
+        String[] splits = str.replace(" ", "").split(",");
         if(splits.length<6) {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Missing Parameter ('"+str+"') on a Particle for Reward '"+rewardName+"'");
             return null;
         }
-
-        return null;
+        Particle part;
+        try {
+            part = Particle.valueOf(splits[0]);
+        }catch(IllegalArgumentException e){
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown Particle ('"+splits[0]+"') on a Particle for Reward '"+rewardName+"'");
+            return null;
+        }
+        int amount;
+        float offsetX, offsetY, offsetZ, extra;
+        try {
+            amount = Integer.parseInt(splits[1]);
+            offsetX = Float.parseFloat(splits[2]);
+            offsetY = Float.parseFloat(splits[3]);
+            offsetZ = Float.parseFloat(splits[4]);
+            extra = Float.parseFloat(splits[5]);
+        }catch(IllegalArgumentException e) {
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Couldn't parse all Numbers on a Particle for Reward '"+rewardName+"'");
+            return null;
+        }
+        return new RewardParticle(part, amount, offsetX, offsetY, offsetZ, extra);
     }
 
     private static RewardSound createSoundFromString(String str, String rewardName) {
-        //TODO: String parsing to RewardSound
-        return null;
+        String[] splits = str.replace(" ", "").split(",");
+        if(splits.length<4) {
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Missing Parameter ('"+str+"') on a Particle for Reward '"+rewardName+"'");
+            return null;
+        }
+        Sound sound;
+        try {
+            sound = Sound.valueOf(splits[0]);
+        }catch(IllegalArgumentException e){
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown Sound ('"+splits[0]+"') on a Sound for Reward '"+rewardName+"'");
+            return null;
+        }
+        SoundCategory sc;
+        try {
+            sc = SoundCategory.valueOf(splits[1]);
+        }catch(IllegalArgumentException e){
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown SoundCategory ('"+splits[1]+"') on a Sound for Reward '"+rewardName+"'");
+            return null;
+        }
+
+        float volume, pitch;
+        try {
+            volume = Float.parseFloat(splits[2]);
+            pitch = Float.parseFloat(splits[3]);
+        }catch(IllegalArgumentException e) {
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Couldn't parse all Numbers on a Sound for Reward '"+rewardName+"'");
+            return null;
+        }
+        return new RewardSound(sound, sc, volume, pitch);
     }
 
-    private String name;
+    private final String name;
     private String displayName;
-    private boolean isRepeating;
+    private boolean isRepeating, grantFirst;
     private long timeMs;
     private RewardType type;
 
@@ -93,14 +148,15 @@ public class Reward {
     private RewardParticle[] particles;
     private RewardSound[] sounds;
 
-    private Reward(String name, RewardType type, long timeMs, boolean isRepeating) {
+    private Reward(String name, RewardType type, long timeMs, boolean isRepeating, boolean grantFirst) {
         this.name = name;
         this.type = type;
         this.timeMs = timeMs;
         this.isRepeating = isRepeating;
+        this.grantFirst = grantFirst;
 
-        //Dummy
-        playerMessages = new String[]{"Hello!!!"};
+        //Debug
+        playerMessages = new String[]{name+"earned! (Debug Message, no custom Messages set.)"};
     }
 
     private Reward setDisplayName(String displayName) {
@@ -146,28 +202,45 @@ public class Reward {
     }
 
     public void grantRewardToPlayer(Player p) {
-        Location loc = p.getLocation();
-        if(particles!=null) {
-            for(RewardParticle part:particles) {
-                part.spawnAtLocation(loc);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location loc = p.getLocation();
+                if(particles!=null) {
+                    for(RewardParticle part:particles) {
+                        part.spawnAtLocation(loc);
+                    }
+                }
+                if(sounds!=null) {
+                    for(RewardSound rs:sounds) {
+                        rs.playSound(p);
+                    }
+                }
+                if(consoleCommands!=null){
+                    for(String c:consoleCommands) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), fillInPlaceholders(c, p));
+                    }
+                }
+                if(playerMessages!=null){
+                    for(String s:playerMessages) {
+                        p.sendMessage(fillInPlaceholders(s, p));
+                    }
+                }
+                if(globalMessages!=null){
+                    for(String s:globalMessages) {
+                        Bukkit.broadcastMessage(fillInPlaceholders(s, p));
+                    }
+                }
             }
-        }
-        if(sounds!=null) {
-            for(RewardSound rs:sounds) {
-                rs.playSound(p);
-            }
-        }
-        if(playerMessages!=null){
-            for(String s:playerMessages) {
-                p.sendMessage(s);
-            }
-        }
-
+        }.runTask(PluginMaster.getInstance());
     }
 
-
-    public void dummy() {
-
+    private String fillInPlaceholders(String in, Player p) {
+        String rVal = in;
+        rVal = rVal.replace("<PLAYER>", p.getDisplayName());
+        rVal = rVal.replace("<REWARD>", displayName);
+        rVal = ChatColor.translateAlternateColorCodes(PluginMaster.getColorCode(), rVal);
+        return rVal;
     }
 
 }

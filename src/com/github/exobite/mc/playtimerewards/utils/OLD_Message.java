@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-public enum Message {
+public enum OLD_Message {
 
     CMD_FAIL_NO_UUID, CMD_FAIL_UNKNOWN_ID, CMD_FAIL_UNKNOWN_PLAYER,
 
@@ -25,11 +25,11 @@ public enum Message {
     private static final String varValue1 = "VAR[", varValue2 = "]";
 
     public static void registerMessages(JavaPlugin main) {
-        if(Message.main!=null){
+        if(OLD_Message.main!=null){
             //Already registered
             return;
         }
-        Message.main = main;
+        OLD_Message.main = main;
         Utils.fillDefaultFile("lang.yml");
         readMessagesFromFile("lang.yml");
 
@@ -38,7 +38,7 @@ public enum Message {
     static void readMessagesFromFile(String filePath) {
         File f = new File(main.getDataFolder()+File.separator+filePath);
         FileConfiguration fc = YamlConfiguration.loadConfiguration(f);
-        for(Message m:Message.values()) {
+        for(OLD_Message m: OLD_Message.values()) {
             if(!fc.contains(m.toString())) continue;
             String msg = fc.getString(m.toString());
             for(int i=0;i<10;i++) {
@@ -52,7 +52,7 @@ public enum Message {
         }
     }
 
-    private static String getMessageWithArgs(Message m, String[] args) {
+    private static String getMessageWithArgs(OLD_Message m, String[] args) {
         String msg = "";
         //Construct raw String
         if(msg.toString().startsWith("SYS_")) {

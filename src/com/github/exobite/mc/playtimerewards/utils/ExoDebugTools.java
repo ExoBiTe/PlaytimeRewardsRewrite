@@ -17,10 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -158,18 +155,17 @@ public class ExoDebugTools implements Listener {
         if(args.length>2){
             switch (args[2].toLowerCase()) {
                 case "listvalues" -> { //msg values
-                    StringBuilder sb = new StringBuilder(ChatColor.GOLD.toString()).append("Listing all registered(").append(Message.values().length).append(") msg values:");
-                    for (Message m : Message.values()) {
-                        sb.append("\n").append(ChatColor.GOLD).append(m.toString()).append(": ").append(ChatColor.AQUA).append(m.getRawMessage());
+                    Set<String> msgs = Lang.getInstance().getRegisteredMessages();
+                    StringBuilder sb = new StringBuilder(ChatColor.GOLD.toString()).append("Listing all registered(").append(msgs.size()).append(") msg values:");
+                    for (String m: msgs) {
+                        sb.append("\n").append(ChatColor.GOLD).append(m.toString()).append(": ").append(ChatColor.AQUA).append(Lang.getInstance().getRawMessage(m))
+                                .append(ChatColor.AQUA).append(" Args: ").append(Lang.getInstance().getParamAmount(m));
                     }
                     sendSyncMessage(p, sb.toString());
                 }
                 case "getmsg" -> { //msg get
                     if (args.length > 3) {
-                        Message m;
-                        try {
-                            m = Message.valueOf(args[3]);
-                        }catch(IllegalArgumentException e){
+                        if(!Lang.getInstance().exists(args[3])) {
                             sendSyncMessage(p, "Found no Message " + args[3]);
                             return;
                         }
@@ -177,21 +173,14 @@ public class ExoDebugTools implements Listener {
                         if (args.length > 4) {
                             System.arraycopy(args, 4, argsToSend, 0, args.length - 4);
                         }
-                        sendSyncMessage(p, m.getMessage(argsToSend));
+                        sendSyncMessage(p, Lang.getInstance().getMessageWithArgs(args[3], argsToSend));
                     } else {
                         sendSyncMessage(p, usageMsg);
                     }
                 }
                 case "reload" -> {
-                    new BukkitRunnable() {
-
-                        @Override
-                        public void run() {
-                            Message.readMessagesFromFile("lang.yml");
-                            p.sendMessage("Messages reloaded.");
-                        }
-                    }.runTaskAsynchronously(main);
-                    sendSyncMessage(p, "Scheduled a reload on the Async Thread");
+                    Lang.getInstance().reloadAsync();
+                    sendSyncMessage(p, "Scheduled a reload on an Async Thread");
                 }
                 default -> sendSyncMessage(p, usageMsg);
             }

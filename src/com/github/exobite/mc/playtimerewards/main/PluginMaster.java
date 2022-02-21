@@ -5,14 +5,13 @@ import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.Commands;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.ExoDebugTools;
-import com.github.exobite.mc.playtimerewards.utils.Message;
+import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -25,6 +24,8 @@ public class PluginMaster extends JavaPlugin {
 
     private VER_RESULT result;
     private Logger log;
+
+    private final char COLOR_CODE = '§';
 
     private final int bstatsID = 14369;
 
@@ -73,7 +74,7 @@ public class PluginMaster extends JavaPlugin {
         getCommand("Playtime").setExecutor(new Commands());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
         Utils.registerUtils(this);
-        Message.registerMessages(this);
+        Lang.registerLangManager(this);
 
         RewardManager.setupRewardManager(this);
 
@@ -109,6 +110,11 @@ public class PluginMaster extends JavaPlugin {
 
     public static PluginMaster getInstance() {
         return instance;
+    }
+
+    public static char getColorCode(){
+        if(instance==null) return '§';  //Default char
+        return instance.COLOR_CODE;
     }
 
     public static void sendConsoleMessage(Level level, String msg){

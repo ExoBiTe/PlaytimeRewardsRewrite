@@ -178,6 +178,18 @@ public class Utils {
         return "Days: "+Days+"\nHours: "+Hours+"\nMinutes: "+Minutes+"\nSeconds: "+Seconds+"\nMillis: "+Ms;
     }
 
+    public static long[] convertTimeMsToLongs(long ms){
+        long Days = 0, Hours = 0, Minutes = 0, Seconds = 0;
+        Days = ms / 86400000;
+        long calcStep = ms % 86400000;
+        Hours = calcStep / 3600000;
+        calcStep = calcStep % 3600000;
+        Minutes = calcStep / 60000;
+        calcStep = calcStep % 60000;
+        Seconds = calcStep / 1000;
+        return new long[]{Days, Hours, Minutes, Seconds};
+    }
+
     public static String formatTimeMsToString(long ms, String format){
         /*
         caseIgnored "%ms" -> Milliseconds

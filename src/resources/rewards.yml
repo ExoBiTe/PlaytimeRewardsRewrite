@@ -7,12 +7,12 @@
 #Available CountTypes are PLAYTIME, SESSION_TIME and GLOBAL_TIME
 
 Reward_1: #No Duplicates allowed
-  DisplayName: '&3I´m a cool &4Reward&3!'
+  DisplayName: '§3I´m a cool §4Reward§3!'
   CountType: 'PLAYTIME'
   Time: '1m30s'
   Repeating: true
+  GrantFirst: false
   ConsoleCommands:
-    - 'spawn'
   Display:
     PlayerMessages:
       - 'Congrats <PLAYER> upon Earning <REWARD>'
