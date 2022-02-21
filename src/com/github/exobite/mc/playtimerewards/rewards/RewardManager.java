@@ -69,9 +69,17 @@ public class RewardManager {
         return Reward.getRewardFromYaml(conf);
     }
 
-    public List<String> getRegisteredRewardNames(){
-        List<String> names = registeredRewards.stream().map(rw -> rw.getName()).collect(Collectors.toList());
-        return names;
+    public Reward getRewardFromName(String name){
+        for(Reward rw:registeredRewards){
+            if(rw.getName().equals(name)) return rw;
+        }
+        return null;
+    }
+
+    public List<RewardData> getRegisteredRewardData(){
+        List<RewardData> data = registeredRewards.stream().map(
+                rw -> new RewardData(rw.getName(), rw.getType(), rw.isRepeating(), rw.grantFirst())).collect(Collectors.toList());
+        return data;
     }
 
     public void checkAndGrantRewards(PlayerData pDat){

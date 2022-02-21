@@ -2,6 +2,7 @@ package com.github.exobite.mc.playtimerewards.main;
 
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.rewards.Reward;
+import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.rewards.RewardType;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
@@ -30,7 +31,7 @@ public class PlayerData {
     private boolean hasData;
 
     private Map<String, GUIManager.GUI> Guis = new HashMap<>();
-    private Map<String, Long> receivedTimestamps = new HashMap<>();
+    private Map<RewardData, Long> receivedTimestamps = new HashMap<>();
 
     public GUIManager.GUI GUI;
     private boolean allowNextGUIClose = false;
@@ -64,20 +65,38 @@ public class PlayerData {
             @Override
             public void run() {
                 //Fill rewardsList with all registered Rewards
-                RewardManager.getInstance().getRegisteredRewardNames().forEach(str -> {
-                    receivedTimestamps.put(str, 0L);
+                RewardManager.getInstance().getRegisteredRewardData().forEach(rwd -> {
+                    receivedTimestamps.put(rwd, 0L);
                 });
                 File f = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "playerData.yml");
                 if(f.exists()) {
                     YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
-                    if(!conf.getKeys(false).contains(id)) {
+                    if(!conf.getKeys(false).contains(id.toString())) {
                         ConfigurationSection playerSection = conf.getConfigurationSection(id.toString());
                         if(playerSection!=null) {
                             for(String key:playerSection.getKeys(false)){
                                 //Check if key is a registered reward
-                                if(receivedTimestamps.containsKey(key)) receivedTimestamps.put(key, playerSection.getLong(key, 0L));
+                                for(RewardData rwd: receivedTimestamps.keySet()){
+                                    if(rwd.rewardName().equals(key)) {
+                                        receivedTimestamps.put(rwd, playerSection.getLong(key, 0L));
+                                        break;
+                                    }
+                                }
                             }
                         }
+                    }
+                }
+                //Set Default Values for "new" Rewards
+                for(RewardData rwd:receivedTimestamps.keySet()) {
+                    long val = receivedTimestamps.get(rwd);
+                    if(val==0 && rwd.type()==RewardType.PLAYTIME && !rwd.grantFirst()) {
+                        receivedTimestamps.put(rwd, Utils.getPlaytimeInMS(p()));
+                    }else if(val==0 && rwd.type()==RewardType.GLOBAL_TIME && !rwd.grantFirst()) {
+                        receivedTimestamps.put(rwd, loginTimestamp);
+                    }else if(val==0 && rwd.type()==RewardType.SESSION_TIME && rwd.grantFirst()) {
+                        //Should start SessionRewards with a negative Value, granting it the Player instantly once upon login
+                        long timeVal = RewardManager.getInstance().getRewardFromName(rwd.rewardName()).getTimeMs();
+                        receivedTimestamps.put(rwd, -1*timeVal);
                     }
                 }
                 hasData = true;
@@ -92,12 +111,13 @@ public class PlayerData {
             public void run() {
                 File f = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "playerData.yml");
                 YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+                //Remove SessionData before Saving, not needed
+                resetSessionRewardsBeforeSave();
                 String px = id.toString() + ".";
-                receivedTimestamps.keySet().forEach(str -> {
-                    long val = receivedTimestamps.get(str);
-                    if(val!=0){
-                        conf.set(px + str, val);
-                    }
+                receivedTimestamps.keySet().forEach(rwd -> {
+                    //TODO: Throws NPE when Savin null-Values, but removing Keys (saving null values) is crucial!
+                    long val = receivedTimestamps.get(rwd);
+                    conf.set(px + rwd.rewardName(), val);
                 });
                 try {
                     conf.save(f);
@@ -114,16 +134,34 @@ public class PlayerData {
     }
 
     protected void massSaveData(YamlConfiguration conf){
+        //Remove SessionData before Saving, not needed
+        resetSessionRewardsBeforeSave();
         String px = id.toString() + ".";
-        receivedTimestamps.keySet().forEach(str -> {
-            long val = receivedTimestamps.get(str);
-            if(val!=0) conf.set(px + str, val);
+        receivedTimestamps.keySet().forEach(rwd -> {
+            //TODO: Throws NPE when Savin null-Values, but removing Keys (saving null values) is crucial!
+            long val = receivedTimestamps.get(rwd);
+            conf.set(px + rwd.rewardName(), val);
         });
     }
 
+    private RewardData getRewardDataFromName(String rewardName) {
+        for(RewardData rwd:receivedTimestamps.keySet()) {
+            if(rwd.rewardName().equals(rewardName)) return rwd;
+        }
+        return null;
+    }
+
+    private void resetSessionRewardsBeforeSave() {
+        for(RewardData rwd:receivedTimestamps.keySet()){
+            if(rwd.isRepeating() && rwd.type()==RewardType.SESSION_TIME) receivedTimestamps.put(rwd, null);
+        }
+    }
+
     public boolean checkReward(Reward rw){
-        if(!receivedTimestamps.containsKey(rw.getName())) return false;
-        long oldTimestamp = receivedTimestamps.get(rw.getName());
+        RewardData rwd = getRewardDataFromName(rw.getName());
+        if(rwd==null) return false;
+        long oldTimestamp = receivedTimestamps.get(rwd);
+        if(oldTimestamp==-1 && !rw.isRepeating()) return false; //Value = -1L means Reward already claimed for non Repeating Rewards
         long nowTimestamp = 0;
         RewardType type = rw.getType();
         boolean grant = false;
@@ -134,7 +172,13 @@ public class PlayerData {
         }
         grant = nowTimestamp >= oldTimestamp + rw.getTimeMs();
         if(grant) {
-            receivedTimestamps.put(rw.getName(), nowTimestamp);
+            //Save Repeating Rewards with their Timestamp,
+            //Save non Repeating Rewards with -1L
+            if(rw.isRepeating()){
+                receivedTimestamps.put(rwd, nowTimestamp);
+            }else{
+                receivedTimestamps.put(rwd, -1L);
+            }
         }
         return grant;
     }

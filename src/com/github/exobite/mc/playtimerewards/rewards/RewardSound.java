@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.rewards;
 
+import com.github.exobite.mc.playtimerewards.utils.ReflectionHelper;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -18,7 +19,24 @@ public class RewardSound {
     }
 
     public void playSound(Player p) {
-        p.playSound(p, s, sc, vol, pitch);
+        //p.playSound(p, s, sc, vol, pitch);
+        ReflectionHelper.getInstance().callPlaySound(this, p);
+    }
+
+    public Sound getSound() {
+        return s;
+    }
+
+    public SoundCategory getSoundCategory() {
+        return sc;
+    }
+
+    public float getVolume(){
+        return vol;
+    }
+
+    public float getPitch(){
+        return pitch;
     }
 
 }

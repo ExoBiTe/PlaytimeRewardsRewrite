@@ -201,6 +201,14 @@ public class Reward {
         return timeMs;
     }
 
+    public boolean isRepeating(){
+        return isRepeating;
+    }
+
+    public boolean grantFirst(){
+        return grantFirst;
+    }
+
     public void grantRewardToPlayer(Player p) {
         new BukkitRunnable() {
             @Override

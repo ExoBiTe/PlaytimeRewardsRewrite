@@ -4,9 +4,7 @@ import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.Commands;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
-import com.github.exobite.mc.playtimerewards.utils.ExoDebugTools;
-import com.github.exobite.mc.playtimerewards.utils.Lang;
-import com.github.exobite.mc.playtimerewards.utils.Utils;
+import com.github.exobite.mc.playtimerewards.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -75,6 +73,11 @@ public class PluginMaster extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Listeners(), this);
         Utils.registerUtils(this);
         Lang.registerLangManager(this);
+
+        //Call both getInstance to create the singleton instance
+        //Call VersionHelper first, as ReflectionHelper uses it
+        VersionIdentifier.getInstance();
+        ReflectionHelper.getInstance();
 
         RewardManager.setupRewardManager(this);
 
