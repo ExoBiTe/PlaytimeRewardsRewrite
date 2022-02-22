@@ -1,8 +1,8 @@
 name: PlaytimeRewards
 main: com.github.exobite.mc.playtimerewards.main.PluginMaster
-version: 0.1a
+version: 0.1.2
 author: ExoBiTe
-description: Default Description
+description: This Plugin rewards players for their Playtime
 api-version: 1.17
 
 commands:

@@ -6,7 +6,6 @@ import com.github.exobite.mc.playtimerewards.listeners.Commands;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +19,7 @@ public class PluginMaster extends JavaPlugin {
 
     private static PluginMaster instance;
 
-    private VER_RESULT result;
+    private OLD_VerResult result;
     private Logger log;
 
     private final char COLOR_CODE = '§';
@@ -42,50 +41,26 @@ public class PluginMaster extends JavaPlugin {
         //Register Logger
         log = Logger.getLogger(getDescription().getName());
 
-        //Check for Server Version, Deactivate Plugin upon Errors
-        result = VersionCheck.canRun(this);
-        if(result == VER_RESULT.UNKNOWN_VERSION) {
-            //Unknown Version, stop Plugin
-            sendConsoleMessage(Level.SEVERE, "This Plugin couldnt detect your Server Version.\n" +
-                    "Are you using a custom Server jar?\n" +
-                    "Please send this ErrorLog to the Developer\n" +
-                    "Bukkit Version: " + getServer().getBukkitVersion());
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }else if(result == VER_RESULT.OUTDATED) {
-            //Version not supported, stop Plugin
+        //Call both getInstance to create the singleton instance
+        //Call VersionHelper first, as ReflectionHelper uses it
+        VersionIdentifier.getInstance();
+
+        if(VersionIdentifier.getInstance().isSmaller(1, 17, 0)) {
+            //Server too old, stop Plugin.
             sendConsoleMessage(Level.SEVERE, "This Plugin doesnt support your Server Version.");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
-        }else if(result == VER_RESULT.NO_PARTICLES_SOUND) {
-            //Plugin runs, but cant use some of its Features
-            sendConsoleMessage(Level.INFO, "The Plugin runs, but doesnt support all of its Features.\n" +
-                    "To make sure Everything works, upgrade your Server to Version "+VER_RESULT.UP_TO_DATE);
         }
-        if(!setPlaytimeStatisticName()) {
-            //No Errors in the Version, but can´t parse the Statistic Name
-            sendConsoleMessage(Level.SEVERE,
-                    "The Plugin couldnt detect the Statistic Name for the Players Playtime.\n" +
-                    "Do you use a custom Server Jar?" +
-                    "Please send this Errorlog to the Developer\n" +
-                    "Bukkit Version" + getServer().getBukkitVersion() +", "+result.toString());
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+
+        ReflectionHelper.getInstance();
 
         //ExoDebugTools.registerDebugTools(this); DebugTools turned off in Release Versions
         GUIManager.registerGUIManager(this);
-
 
         getCommand("Playtime").setExecutor(new Commands());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
         Utils.registerUtils(this);
         Lang.registerLangManager(this);
-
-        //Call both getInstance to create the singleton instance
-        //Call VersionHelper first, as ReflectionHelper uses it
-        VersionIdentifier.getInstance();
-        ReflectionHelper.getInstance();
 
         RewardManager.setupRewardManager(this);
 
@@ -106,17 +81,6 @@ public class PluginMaster extends JavaPlugin {
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
         PlayerManager.getInstance().cleanAllPlayerData();
-    }
-
-    private boolean setPlaytimeStatisticName(){
-        String playtimeStatisticName = result == VER_RESULT.UP_TO_DATE ? "PLAY_ONE_MINUTE" : "PLAY_ONE_TICK";
-        Statistic s = null;
-        try {
-            s = Statistic.valueOf(playtimeStatisticName);
-        }catch(IllegalArgumentException e){
-            //Do nothing.
-        }
-        return s != null;
     }
 
     public static PluginMaster getInstance() {

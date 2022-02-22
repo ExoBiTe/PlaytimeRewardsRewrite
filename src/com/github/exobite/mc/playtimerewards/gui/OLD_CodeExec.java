@@ -1,18 +1,18 @@
 package com.github.exobite.mc.playtimerewards.gui;
 
-public abstract class CodeExec {
+public abstract class OLD_CodeExec {
 
     private Object param;
 
-    public CodeExec() {};
+    public OLD_CodeExec() {};
 
-    public CodeExec(Object param) {
+    public OLD_CodeExec(Object param) {
         this.param = param;
     }
 
     public abstract Object execCode();
 
-    public CodeExec setParam(Object param) {
+    public OLD_CodeExec setParam(Object param) {
         this.param = param;
         return this;
     }

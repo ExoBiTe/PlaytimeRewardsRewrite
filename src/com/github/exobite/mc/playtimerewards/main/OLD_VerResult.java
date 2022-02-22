@@ -1,6 +1,6 @@
 package com.github.exobite.mc.playtimerewards.main;
 
-public enum VER_RESULT {
+public enum OLD_VerResult {
 
     UP_TO_DATE(1, 13, 0),
     NO_PARTICLES_SOUND(1, 9, 0),
@@ -11,7 +11,7 @@ public enum VER_RESULT {
     private int minMinor = 0;
     private int minPatch = 0;
 
-    private VER_RESULT(int minMajor, int minMinor, int minPatch){
+    private OLD_VerResult(int minMajor, int minMinor, int minPatch){
         this.minMajor = minMajor;
         this.minMinor = minMinor;
         this.minPatch = minPatch;

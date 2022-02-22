@@ -2,27 +2,27 @@ package com.github.exobite.mc.playtimerewards.main;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class VersionCheck {
+public class OLD_VersionCheck {
 
     private static int major = 0;
     private static int minor = 0;
     private static int patch = 0;
 
-    public static VER_RESULT canRun(JavaPlugin main){
+    public static OLD_VerResult canRun(JavaPlugin main){
         if(major == 0) {
             parseVersion(main);
         }
 
-        for (VER_RESULT vr : VER_RESULT.values()) {
+        for (OLD_VerResult vr : OLD_VerResult.values()) {
             if(meetsRequirements(vr)){
                 return vr;
             }
         }
-        return VER_RESULT.UNKNOWN_VERSION;
+        return OLD_VerResult.UNKNOWN_VERSION;
 
     }
 
-    private static boolean meetsRequirements(VER_RESULT vr) {
+    private static boolean meetsRequirements(OLD_VerResult vr) {
         return vr.getMinMajor() >= major && vr.getMinMinor() >= minor && vr.getMinPatch() >= patch;
     }
 

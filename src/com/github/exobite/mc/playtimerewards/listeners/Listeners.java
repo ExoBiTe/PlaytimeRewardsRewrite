@@ -23,7 +23,8 @@ public class Listeners implements Listener {
         lastJoined = PlayerManager.getInstance().createPlayerData(e.getPlayer());
     }
 
-    @EventHandler
+    //Removed for Release Version!
+    /*@EventHandler
     public void onInteract(PlayerInteractEvent e){
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
         if(is==null) return;
@@ -31,7 +32,7 @@ public class Listeners implements Listener {
             e.setCancelled(true);
             PlayerManager.getInstance().getPlayerData(e.getPlayer()).GUI.openInventory(e.getPlayer());
         }
-    }
+    }*/
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {

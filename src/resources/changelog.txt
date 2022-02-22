@@ -57,4 +57,11 @@ Notes:
             <scope>compile</scope>
         </dependency>
 
-    - disabled bstats while developing pre-release
+    - also removed gson:
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.9.0</version>
+                <scope>compile</scope>
+            </dependency>

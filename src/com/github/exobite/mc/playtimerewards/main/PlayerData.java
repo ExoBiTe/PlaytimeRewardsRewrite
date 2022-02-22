@@ -21,7 +21,6 @@ import java.util.*;
 
 public class PlayerData {
 
-    //Object
     private final long loginTimestamp;
     private final UUID id;
     private boolean hasData;
@@ -37,8 +36,8 @@ public class PlayerData {
         loginTimestamp = Utils.getPlaytimeInMS(p);
         loadPlayerData();
 
-
-        GUI = GUIManager.createGUI("I´m a cool GUI", 18);
+        //Removed for Release Version
+        /*GUI = GUIManager.createGUI("I´m a cool GUI", 18);
         GUI.canClose(false);
         GUI.setItemstack(new ItemStack(Material.OAK_LOG), 1);
         GUI.setSlotAction(1, new GUIManager.GUIClickAction() {
@@ -49,7 +48,7 @@ public class PlayerData {
                 allowNextGUIClose = true;
                 p.closeInventory();
             }
-        });
+        });*/
 
     }
 
