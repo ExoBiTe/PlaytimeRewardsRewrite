@@ -19,7 +19,8 @@ public class Commands implements CommandExecutor {
             sender.sendMessage(ERRNOCONSOLECMD);
             return true;
         }
-        if(!p.hasPermission("timerewards.cmd.playtime.own")) {
+        //TODO: Add the Option (with Permission) to see others Playtime!
+        if(!p.hasPermission("playtimerewards.cmd.playtime.own")) {
             sender.sendMessage(Lang.getInstance().getMessageWithArgs("MD_ERR_NO_PERMISSION"));
             return true;
         }

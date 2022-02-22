@@ -21,6 +21,7 @@ public class Listeners implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         lastJoined = PlayerManager.getInstance().createPlayerData(e.getPlayer());
+        //TODO: Notify Players with the correct Permission that a new Update is available (Also create Message in Lang)
     }
 
     //Removed for Release Version!

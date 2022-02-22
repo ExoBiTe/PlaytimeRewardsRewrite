@@ -1,67 +1,23 @@
-Basic Concept:
-    - Track Players Playtime using the Statistic "PLAY_ONE_MINUTE"
-    - Compare the Statistic Value to different Values of Different Rewards
-    - Types of Rewards:
-        - REAL_TIME     : Uses the Real World Clock, is always incrementing even if the Server is offline
-        - SESSION_TIME  : Calculate a Session Time using the Total Playertime and a Cached Playertime from Login
-        - PLAY_TIME     : Uses the Statistic "PLAY_ONE_MINUTE"
-    - Saving the following:
-        - All Rewards that got earnt and aren't repeating, get saved with a value of -1L
-        - Repeating Session Rewards don´t get saved at all (as they anyways reset with each login)
-        - Repating Playtime Rewards get saved with their last-earned timestamp (Playtime in ms)
-            -> If this Reward wasn´t earned at least once, upon a Players Login their current Playtime will get stored
-            -> If a new Player logs in, his playtime is effectively 0ms. This would cause errors later, so new Players
-                get offset with 100ms for their first Rewards.
-        - Repeating Global Rewards get saved with the last earned ms timestamp (Using System#currentTimeMillis())
+Changelog Version 0.1.2:
+    - Added a Config.yml
+        - Value "EnableUpdateCheck" (boolean) controls whether the Plugin Notifies the Admins about a new Plugin Version
+        - Value "DataSaveInterval" (timeString) controls the Automatic Save Interval (-1 Disables the Autosave)
+        - Hidden Value "debug_allowDebugTools" (boolean) allows the access to the DebugTools
+        - Hidden Value "ColorCode" (char) sets the color code for the whole Plugin
 
-Ideas:
-    - Permissions needed for Rewards -> Donator/rank friendly
-    - Custom Advancements:
-        Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
-        or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/
-    - PlayerData File Storage, add a last saved timestamp to each File
-        - Run an async, scheduled routine to clean up older PlayerData to free up diskspace & preventing folder cluttering
-        - Is this useful?
-    - Easy Input Format for time (Example from Siemens Simatic):
-        - T#5d20h23m56s -> calculates to the corresponding amount of ms
-        - Available Time keys (not Case-sensitive):
-            - #D -> Days
-            - #h -> Hours
-            - #m -> Minutes
-            - #s -> Seconds
-    - GUI to create/modify & manage Rewards
-    - Create a Playtime Top Command:
-        - Displays the TOP Playtime from the Server
-        - Maybe with args to also display the biggest SessionTime?
-    - Allow Players to Opt-In for more data collection:
-        - Collect Data how many Rewards are registered, and which functions of the Rewards get used.
+    - Added a bunch of new Permissions
+        - Changed the Permission "timerewards.cmd.playtime.own" to "playtimerewards.cmd.playtime.own"
+        - Added the following Permissions:
+            - playtimerewards.*
+            - playtimerewards.notifyOnUpdate
+            - playtimerewards.cmd.playtime.other
 
-Notes:
-    - removed bStats relocation from the pom, as there occurs an error for now
-    - copy/pasted from pom: (paste under version of shade-plugin)
+    - Added an Auto Updater using the Spiget-API
+        - For now it only checks for new Updates, it doesn't download them automatically.
+        - Maybe i'll add this in the Future-
+        - Players with the new Permission "playtimerewards.notifyOnUpdate" get a Notification upon login
 
-                    <configuration>
-                        <relocations>
-                            <relocation>
-                                <pattern>org.bstats</pattern>
-                                <shadedPattern>com.github.exobite.mc.playtimerewards.utils</shadedPattern>
-                            </relocation>
-                        </relocations>
-                    </configuration>
-    - also removed the file from the POM for now (and added it manually), will get back later to this.
+    - Added in the MOTD-System from the earlier PlaytimeRewards Plugin(s)
+        - Allows me (the Developer) to send MOTD's to ServerOwners, Notifying them about Hotfixes or similar stuff.
 
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-    - also removed gson:
-
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.9.0</version>
-                <scope>compile</scope>
-            </dependency>
+    - Added a link to the Plugin resource page on spigot to all default *.yml files

@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.rewards;
 
+import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.*;
@@ -245,7 +246,7 @@ public class Reward {
         String rVal = in;
         rVal = rVal.replace("<PLAYER>", p.getDisplayName());
         rVal = rVal.replace("<REWARD>", displayName);
-        rVal = ChatColor.translateAlternateColorCodes(PluginMaster.getColorCode(), rVal);
+        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
         return rVal;
     }
 

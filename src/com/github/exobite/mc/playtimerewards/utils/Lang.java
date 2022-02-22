@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.utils;
 
+import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -118,7 +119,7 @@ public class Lang {
         for(int i=0;i<md.varAmount;i++) {
             rVal = rVal.replace("%["+i+"]", args[i]);
         }
-        rVal = ChatColor.translateAlternateColorCodes(PluginMaster.getColorCode(), rVal);
+        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
         return rVal;
     }
 

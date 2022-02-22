@@ -1,5 +1,3 @@
-#Configuration File for PlaytimeRewards by ExoBite
-Config_Version: '0.77a'
-DataSaveInterval: '1h30m'
-UpdateNotification: true
-ReceiveMotd: true
+#Configuration File for PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBite
+EnableUpdateCheck: true #This Option only Notifies you when a New Version is online, it doesn't download anything.
+DataSaveInterval: '1h30m' #Set to '-1' to Disable the Automatic Save Interval

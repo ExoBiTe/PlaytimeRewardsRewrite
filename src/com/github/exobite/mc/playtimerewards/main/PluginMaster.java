@@ -5,6 +5,8 @@ import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.Commands;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
+import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
+import com.github.exobite.mc.playtimerewards.web.MotdReader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,23 +21,20 @@ public class PluginMaster extends JavaPlugin {
 
     private static PluginMaster instance;
 
-    private OLD_VerResult result;
     private Logger log;
 
-    private final char COLOR_CODE = '§';
-
-    private final int bstatsID = 14369;
+    //Constants
+    private final int BSTATS_ID = 14369;
 
     /*
     =======BETA RELEASE VERSION=======
-    - Removing the DebugTools from the Release Version, too unsafe to put something like that out
     - The Config.yml is unused and not even generated right now
     - bStats Metrics is included as a class file (copied from its github), will get later moved to shade it into the jar using maven
-    -
 
      */
 
     public void onEnable(){
+        //Start Time measuring & Setup singleton instance
         long t1 = System.currentTimeMillis();
         instance = this;
         //Register Logger
@@ -51,22 +50,18 @@ public class PluginMaster extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
+        Utils.registerUtils(this);
+        Config.registerConfig(this, false);
         ReflectionHelper.getInstance();
-
-        //ExoDebugTools.registerDebugTools(this); DebugTools turned off in Release Versions
+        if(Config.getInstance().allowDebugTools()) ExoDebugTools.registerDebugTools(this);
         GUIManager.registerGUIManager(this);
-
+        Lang.registerLangManager(this);
+        RewardManager.setupRewardManager(this);
+        //Load Metrics
+        setupMetrics();
+        //Load Game-Interaction Stuff
         getCommand("Playtime").setExecutor(new Commands());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        Utils.registerUtils(this);
-        Lang.registerLangManager(this);
-
-        RewardManager.setupRewardManager(this);
-
-        setupMetrics();
-
-        sendConsoleMessage(Level.INFO, "Plugin is running (took " + (System.currentTimeMillis() - t1) +"ms)!");
 
         //reload support, check for online Players in onEnable & create playerData for them.
         if(Bukkit.getOnlinePlayers().size() > 0){
@@ -75,7 +70,12 @@ public class PluginMaster extends JavaPlugin {
             }
         }
 
+        //Start Optional, Async stuff
+        MotdReader.createMotdReader(this, false);
+        if(Config.getInstance().checkForUpdate()) AutoUpdater.createAutoUpdater(this, false);
         startAsyncChecker();
+
+        sendConsoleMessage(Level.INFO, "Plugin is running (took " + (System.currentTimeMillis() - t1) +"ms)!");
     }
 
     public void onDisable() {
@@ -85,11 +85,6 @@ public class PluginMaster extends JavaPlugin {
 
     public static PluginMaster getInstance() {
         return instance;
-    }
-
-    public static char getColorCode(){
-        if(instance==null) return '§';  //Default char
-        return instance.COLOR_CODE;
     }
 
     public static void sendConsoleMessage(Level level, String msg){
@@ -102,27 +97,25 @@ public class PluginMaster extends JavaPlugin {
     }
 
     private void setupMetrics() {
-        //Metrics for now disabled
-        Metrics m = new Metrics(this, bstatsID);
+        new Metrics(this, BSTATS_ID);
         //No Custom Charts for now.
     }
 
     private void startAsyncChecker() {
         BukkitRunnable br = new BukkitRunnable() {
 
-            private final int playersPerCycle = 100;
+            private final int PLAYERS_PER_CYCLE = 100;
             private Queue<Player> playerQueue;
             private boolean createNewQueue = true;
 
 
             @Override
             public void run() {
-                long ms1 = System.currentTimeMillis();
                 if(createNewQueue) {
                     playerQueue = new ArrayDeque<>(Bukkit.getOnlinePlayers());
                     createNewQueue = false;
                 }
-                for(int i=0;i<playersPerCycle;i++){
+                for(int i = 0; i< PLAYERS_PER_CYCLE; i++){
                     Player p = playerQueue.poll();
                     if(p==null){
                         createNewQueue = true;
@@ -133,7 +126,6 @@ public class PluginMaster extends JavaPlugin {
                         RewardManager.getInstance().checkAndGrantRewards(pDat);
                     }
                 }
-                //sendConsoleMessage(Level.INFO, "One Reward Checking loop took "+(System.currentTimeMillis() - ms1));
             }
         };
         //Run the Task every 20Ticks -> 1 Second
