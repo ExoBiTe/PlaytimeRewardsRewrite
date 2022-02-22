@@ -29,7 +29,6 @@ public class VersionIdentifier {
         major = Integer.parseInt(versionNumbers[0]);
         minor = Integer.parseInt(versionNumbers[1]);
         if(versionNumbers.length>=3) patch = Integer.parseInt(versionNumbers[2]);
-        PluginMaster.sendConsoleMessage(Level.INFO, "Detected Version "+major+"."+minor+"."+patch);
     }
 
     public int getMajor() {

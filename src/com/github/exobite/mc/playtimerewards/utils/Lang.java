@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.ChannelNameTooLongException;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;

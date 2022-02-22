@@ -5,21 +5,24 @@
 #List of all Particles can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
 #
 #Available CountTypes are PLAYTIME, SESSION_TIME and GLOBAL_TIME
+#Time accepts Days(d), Hours(h), Minutes(m) and Seconds(s) and can be combined in any Variation, examples: '3d15m' or '1d25h35m12s'
+#Pay Attention that the RewardName doesn't allow Duplicates!
 
-Reward_1: #No Duplicates allowed
-  DisplayName: '§3I´m a cool §4Reward§3!'
-  CountType: 'PLAYTIME'
-  Time: '1m30s'
-  Repeating: true
-  GrantFirst: false
-  ConsoleCommands:
+SampleReward1: #No Duplicates allowed
+  DisplayName: '§3I´m a cool §4Reward§3!' #The Visible Name Ingame
+  CountType: 'PLAYTIME' #Specifies which type the Plugin counts
+  Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
+  Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
+  GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
+  ConsoleCommands: #Executes the specified Commands from the Console. Is Optional.
+    - 'say <PLAYER> is a cool Person!'
   Display:
-    PlayerMessages:
+    PlayerMessages: #Sends the specified Messages to the Player which gets the Reward. Is Optional.
       - 'Congrats <PLAYER> upon Earning <REWARD>'
-    GlobalMessages:
+    GlobalMessages: #Sends the specified Messages to all Players. is Optional.
       - '<PLAYER> earned the Achievement <REWARD>'
-    Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed
-      - 'DRIP_LAVA, 10, 0.2, 0.2, 0.2, 0'
-    Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH'
+    Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
+      - 'FLAME, 10, 0.2, 0.2, 0.2, 1'
+    Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH' Is Optional.
       - 'BLOCK_BELL_USE, PLAYERS, 1.0, 1.0'
 

@@ -119,7 +119,7 @@ public class Utils {
     }
 
     public  static long getPlaytimeInMS(Player p){
-        return p.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 * 1000;
+        return p.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 * 1000L;
     }
 
     public static String testRegex(String regex, String msg){
@@ -129,7 +129,7 @@ public class Utils {
     }
 
     public static long convertTimeStringToMS(String s) {
-        int Days = 0, Hours = 0, Minutes = 0, Seconds = 0;
+        long Days = 0, Hours = 0, Minutes = 0, Seconds = 0;
 
         Pattern p = Pattern.compile("[0-9]+D");
         Matcher m = p.matcher(s);
@@ -160,8 +160,7 @@ public class Utils {
         }
 
         //String rVal = "Months: "+Months+"\nDays"+Days+"\n"+"Hours:"+Hours+"\n"+"Minutes:"+Minutes+"\nSeconds:"+
-        long rVal = Days * 86400000 + Hours * 3600000 + Minutes * 60000 + Seconds * 1000;
-        return rVal;
+        return Days * 86400000 + Hours * 3600000 + Minutes * 60000 + Seconds * 1000;
     }
 
     public static String convertTimeMsToString(long ms){

@@ -1,18 +1,13 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
-import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Commands implements CommandExecutor {
 
@@ -22,6 +17,10 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
         if(!(sender instanceof Player p)) {
             sender.sendMessage(ERRNOCONSOLECMD);
+            return true;
+        }
+        if(!p.hasPermission("timerewards.cmd.playtime.own")) {
+            sender.sendMessage(Lang.getInstance().getMessageWithArgs("MD_ERR_NO_PERMISSION"));
             return true;
         }
         //Not really nice written tbh

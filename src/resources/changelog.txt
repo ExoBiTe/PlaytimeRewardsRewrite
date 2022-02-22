@@ -5,8 +5,17 @@ Basic Concept:
         - REAL_TIME     : Uses the Real World Clock, is always incrementing even if the Server is offline
         - SESSION_TIME  : Calculate a Session Time using the Total Playertime and a Cached Playertime from Login
         - PLAY_TIME     : Uses the Statistic "PLAY_ONE_MINUTE"
+    - Saving the following:
+        - All Rewards that got earnt and aren't repeating, get saved with a value of -1L
+        - Repeating Session Rewards don´t get saved at all (as they anyways reset with each login)
+        - Repating Playtime Rewards get saved with their last-earned timestamp (Playtime in ms)
+            -> If this Reward wasn´t earned at least once, upon a Players Login their current Playtime will get stored
+            -> If a new Player logs in, his playtime is effectively 0ms. This would cause errors later, so new Players
+                get offset with 100ms for their first Rewards.
+        - Repeating Global Rewards get saved with the last earned ms timestamp (Using System#currentTimeMillis())
 
 Ideas:
+    - Permissions needed for Rewards -> Donator/rank friendly
     - Custom Advancements:
         Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
         or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/
@@ -39,5 +48,13 @@ Notes:
                             </relocation>
                         </relocations>
                     </configuration>
+    - also removed the file from the POM for now (and added it manually), will get back later to this.
+
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.0</version>
+            <scope>compile</scope>
+        </dependency>
 
     - disabled bstats while developing pre-release

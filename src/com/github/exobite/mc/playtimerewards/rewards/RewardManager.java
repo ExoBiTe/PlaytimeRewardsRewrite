@@ -3,10 +3,8 @@ package com.github.exobite.mc.playtimerewards.rewards;
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -30,7 +28,7 @@ public class RewardManager {
     }
 
     private final PluginMaster main;
-    private List<Reward> registeredRewards = new ArrayList<>();
+    private final List<Reward> registeredRewards = new ArrayList<>();
 
     private RewardManager(PluginMaster main){
         this.main = main;
@@ -48,11 +46,18 @@ public class RewardManager {
                 int counter = 0;
                 YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
                 //All root Keys should be a reward
+                List<String> alreadyLoadedRewards = new ArrayList<>();
+                //System.out.println(alreadyLoadedRewards.toString() + " contains "+key+"?");
                 for(String key:conf.getKeys(false)) {
-                    Reward rw = createRewardFromYaml(conf.getConfigurationSection(key));
-                    if(rw!=null){
-                        counter++;
-                        registeredRewards.add(rw);
+                    if(!alreadyLoadedRewards.contains(key)) {
+                        alreadyLoadedRewards.add(key);
+                        Reward rw = createRewardFromYaml(conf.getConfigurationSection(key));
+                        if(rw!=null){
+                            counter++;
+                            registeredRewards.add(rw);
+                        }
+                    }else{
+                        PluginMaster.sendConsoleMessage(Level.SEVERE, "Duplicate Reward '"+key+"'!");
                     }
                 }
                 PluginMaster.sendConsoleMessage(Level.INFO, "Loaded "+counter+" rewards!");
@@ -77,9 +82,8 @@ public class RewardManager {
     }
 
     public List<RewardData> getRegisteredRewardData(){
-        List<RewardData> data = registeredRewards.stream().map(
+        return registeredRewards.stream().map(
                 rw -> new RewardData(rw.getName(), rw.getType(), rw.isRepeating(), rw.grantFirst())).collect(Collectors.toList());
-        return data;
     }
 
     public void checkAndGrantRewards(PlayerData pDat){

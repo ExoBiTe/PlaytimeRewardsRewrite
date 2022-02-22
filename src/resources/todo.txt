@@ -1,0 +1,69 @@
+BBCode Spigot presentation:
+
+Title & tag:
+[1.17.1+] PlaytimeRewards [BETA]
+Reward your Players for their Playtime!
+
+
+Main:
+
+[IMG]http://i.epvpimg.com/cmtmf.png[/IMG]
+Hello there... again. Welcome (back ... again) to [I]PlaytimeRewards[/I]!
+This Plugin is a re-write of my "older" [URL='https://www.spigotmc.org/resources/32900/']PlaytimeRewards[/URL].
+
+I coded this Plugin completely new from scratch, removing unnessecary Features from the old Plugin and made it overall easier to read & maintain (at least in my opinion).
+
+What does this Plugin?
+- This Plugin counts the Playtime for every of your Players and Rewards them when and how you configure it.
+
+How does it Rewards the Players?
+- You can choose! You can customize the Rewards as you want, from just rewarding a Player at fixed times, you may also reward them once every 24 Hours or
+
+What can the Players obtain?
+- Again, you can choose it. For now it supports Console Commands upon receiving the Reward. It also supporst some comsetic stuff like Particles and Sounds.
+Later - out of the Beta it´ll also support Items and maybe other stuff you guys suggest me (altough nothing you couldn´t do with Console Commands).
+
+Documentation:
+
+[IMG]http://i.epvpimg.com/y84Bf.png[/IMG]
+
+[I]/pt[/I] or [I]/playtime[/I]
+Permission: [I]timerewards.cmd.playtime.own[/I]
+Allows you to see your own Playtime
+
+[IMG]http://i.epvpimg.com/oHwJc.png[/IMG]
+
+Welcome to the Configuration area. For now there are two Configurable Files, the rewards.yml and the lang.yml.
+
+The rewards.yml File contains all reward data, let's dive into it:
+[SPOILER="rewards.yml"]
+[code=YAML]#PlaytimeRewards by ExoBiTe
+           #
+           #List of all Sounds can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+           #List of all SoundCategories can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
+           #List of all Particles can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+           #
+           #Available CountTypes are PLAYTIME, SESSION_TIME and GLOBAL_TIME
+           #Time accepts Days(d), Hours(h), Minutes(m) and Seconds(s) and can be combined in any Variation, examples: '3d15m' or '1d25h35m12s'
+           #Pay Attention that the RewardName doesn't allow Duplicates!
+
+           SampleReward1: #No Duplicates allowed
+             DisplayName: '§3I´m a cool §4Reward§3!' #The Visible Name Ingame
+             CountType: 'PLAYTIME' #Specifies which type the Plugin counts
+             Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
+             Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
+             GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
+             ConsoleCommands: #Executes the specified Commands from the Console. Is Optional.
+               - 'say <PLAYER> is a cool Person!'
+             Display:
+               PlayerMessages: #Sends the specified Messages to the Player which gets the Reward. Is Optional.
+                 - 'Congrats <PLAYER> upon Earning <REWARD>'
+               GlobalMessages: #Sends the specified Messages to all Players. is Optional.
+                 - '<PLAYER> earned the Achievement <REWARD>'
+               Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
+                 - 'FLAME, 10, 0.2, 0.2, 0.2, 1'
+               Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH' Is Optional.
+                 - 'BLOCK_BELL_USE, PLAYERS, 1.0, 1.0'
+
+[/code]
+[/SPOILER]

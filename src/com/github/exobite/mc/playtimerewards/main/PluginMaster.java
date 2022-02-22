@@ -27,6 +27,15 @@ public class PluginMaster extends JavaPlugin {
 
     private final int bstatsID = 14369;
 
+    /*
+    =======BETA RELEASE VERSION=======
+    - Removing the DebugTools from the Release Version, too unsafe to put something like that out
+    - The Config.yml is unused and not even generated right now
+    - bStats Metrics is included as a class file (copied from its github), will get later moved to shade it into the jar using maven
+    -
+
+     */
+
     public void onEnable(){
         long t1 = System.currentTimeMillis();
         instance = this;
@@ -64,8 +73,7 @@ public class PluginMaster extends JavaPlugin {
             return;
         }
 
-        ExoDebugTools.registerDebugTools(this);
-        //registerGuiManager();
+        //ExoDebugTools.registerDebugTools(this); DebugTools turned off in Release Versions
         GUIManager.registerGUIManager(this);
 
 
@@ -131,7 +139,7 @@ public class PluginMaster extends JavaPlugin {
 
     private void setupMetrics() {
         //Metrics for now disabled
-        //Metrics m = new Metrics(this, bstatsID);
+        Metrics m = new Metrics(this, bstatsID);
         //No Custom Charts for now.
     }
 
