@@ -5,12 +5,28 @@ Changelog Version 0.1.2:
         - Hidden Value "debug_allowDebugTools" (boolean) allows the access to the DebugTools
         - Hidden Value "ColorCode" (char) sets the color code for the whole Plugin
 
-    - Added a bunch of new Permissions
+    - Added a bunch of new Permissions:
         - Changed the Permission "timerewards.cmd.playtime.own" to "playtimerewards.cmd.playtime.own"
         - Added the following Permissions:
             - playtimerewards.*
             - playtimerewards.notifyOnUpdate
             - playtimerewards.cmd.playtime.other
+
+    - Changes to Messages:
+        - New Messages:
+            - NOTIF_UPDATE_AVAILABLE -> Notifies Users with "playtimerewards.notifyOnUpdate"-Permission about a new Update
+            - CMD_SUC_PT_OTHER -> The Message Players receive when looking at other Players Playtime
+            - CMD_ERR_PLAYER_NOT_FOUND -> The Error that gets shown when the specified Player is not found
+        - Changed Messages:
+            - Renamed PTR_SUC_PLAYTIMECOMMAND to CMD_SUC_PT_OWN
+        - The Lang class now recognizes Missing Messages. It Updates the lang.yml File and notifies the user.
+
+    - Changed Commands:
+        - /Playtime:
+            - Added the Parameter no. 1 "[Player]" (optional)
+                - Allows to check other Players Playtime
+                - Needs Permission "playtimerewards.cmd.playtime.other" to execute
+                - Sends Message "CMD_SUC_PT_OTHER"
 
     - Added an Auto Updater using the Spiget-API
         - For now it only checks for new Updates, it doesn't download them automatically.
@@ -19,5 +35,9 @@ Changelog Version 0.1.2:
 
     - Added in the MOTD-System from the earlier PlaytimeRewards Plugin(s)
         - Allows me (the Developer) to send MOTD's to ServerOwners, Notifying them about Hotfixes or similar stuff.
+
+    - Added the Reward Option 'PermissionNeeded'
+        - The Player needs the specified Permission in order to be able to earn the Reward
+        - This is an optional Field
 
     - Added a link to the Plugin resource page on spigot to all default *.yml files

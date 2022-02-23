@@ -51,7 +51,7 @@ public class PluginMaster extends JavaPlugin {
             return;
         }
         Utils.registerUtils(this);
-        Config.registerConfig(this, false);
+        Config.registerConfig(this, true);
         ReflectionHelper.getInstance();
         if(Config.getInstance().allowDebugTools()) ExoDebugTools.registerDebugTools(this);
         GUIManager.registerGUIManager(this);

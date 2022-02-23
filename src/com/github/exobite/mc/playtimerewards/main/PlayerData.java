@@ -172,7 +172,8 @@ public class PlayerData {
             case SESSION_TIME -> nowTimestamp = getSessionTime();
             case GLOBAL_TIME -> nowTimestamp = System.currentTimeMillis();
         }
-        grant = nowTimestamp >= oldTimestamp + rw.getTimeMs();
+        boolean permissionIsOK = !rw.needsPermission() || (rw.needsPermission() && p().hasPermission(rw.getPermissionNeeded()));
+        grant = nowTimestamp >= oldTimestamp + rw.getTimeMs() && permissionIsOK;
         if(grant) {
             //Save Repeating Rewards with their Timestamp,
             //Save non Repeating Rewards with -1L

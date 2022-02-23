@@ -34,28 +34,28 @@ public class Lang {
                                int varAmount) {
     }
 
-    private final Map<String, MessageData> Messages = new HashMap<>();
+    private Map<String, MessageData> Messages = new HashMap<>();
     private final JavaPlugin main;
+    private final File langFile;
 
     private Lang(JavaPlugin main){
         this.main = main;
-        File f = new File(main.getDataFolder()+File.separator+"lang.yml");
-        if(!f.exists()) {
-            createLangFile(f);
+        langFile = new File(main.getDataFolder()+File.separator+"lang.yml");
+        if(!langFile.exists()) {
+            Messages = getDefaultMap();
+            createLangFile(langFile);
         }else{
             //Only read File if it already exists
-            YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+            YamlConfiguration conf = YamlConfiguration.loadConfiguration(langFile);
             for(String key:conf.getKeys(false)){
                 Messages.put(key, createMessageData(conf.getString(key, "ERR_NO_MESSAGE_FOUND__"+key)));
             }
-            //TODO: Compare if Messages read from File are containing all needed Messages, add missing Messages to the File.
+            //Compare loaded Messages to needed Messages
+            compareAndFillMessageMap();
         }
     }
 
     private void createLangFile(File f){
-        Messages.put("PTR_SUC_PLAYTIMECOMMAND", createMessageData("§aYour Playtime is %[0]d %[1]h %[2]m %[3]s\nYour Sessiontime is %[4]d %[5]h %[6]m %[7]s"));
-        Messages.put("CMD_ERR_NO_PERMISSION", createMessageData("§4You don't have the Permission to do this."));
-
         //Write data to File
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
         for(String key:Messages.keySet()) {
@@ -68,9 +68,43 @@ public class Lang {
         }
     }
 
+    private void compareAndFillMessageMap(){
+        Map<String, MessageData> defaults = getDefaultMap();
+        boolean changed = false;
+        for(String s:defaults.keySet()) {
+            boolean contains = false;
+            for(String m:Messages.keySet()) {
+                if(s.equals(m)) {
+                    contains = true;
+                    changed = true;
+                    break;
+                }
+            }
+            if(!contains) {
+                Messages.put(s, defaults.get(s));
+            }
+        }
+        if(changed) {
+            createLangFile(langFile);
+            PluginMaster.sendConsoleMessage(Level.INFO, "Your lang.yml File has been updated!");
+        }
+    }
+
+    private Map<String, MessageData> getDefaultMap() {
+        Map<String, MessageData> data = new HashMap<>();
+        data.put("CMD_SUC_PT_OWN", createMessageData("§aYour Playtime is %[0]d %[1]h %[2]m %[3]s\nYour Sessiontime is %[4]d %[5]h %[6]m %[7]s"));
+        data.put("CMD_SUC_PT_OTHER", createMessageData("§6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s\n§6%[5]§a's Sessiontime is %[6]d %[7]h %[8]m %[9]s"));
+
+        data.put("CMD_ERR_NO_PERMISSION", createMessageData("§4You don't have the Permission to do this."));
+        data.put("CMD_ERR_PLAYER_NOT_FOUND", createMessageData("§4Can't find the Player §6'%[0]'§4!"));
+
+        data.put("NOTIF_UPDATE_AVAILABLE", createMessageData("§6Version %[0] of PlaytimeRewards is available (Running v%[1])!"));
+        return data;
+    }
+
     private MessageData createMessageData(String msg) {
         if(msg==null) return new MessageData("ERR_NO_MESSAGE_FOUND_", 0);
-        String replaced = msg.replaceAll("%\\[[0-9]\\]", "%[#]");
+        String replaced = msg.replaceAll("%\\[[0-9]]", "%[#]");
         int amount = StringUtils.countMatches(replaced, "%[#]");
         return new MessageData(msg, amount);
     }
@@ -117,6 +151,10 @@ public class Lang {
         }
         String rVal = md.message;
         for(int i=0;i<md.varAmount;i++) {
+            if(args[i]==null) {
+                PluginMaster.sendConsoleMessage(Level.SEVERE, "Message was given null as Parameter for Message '"+msg+"' as param no. "+i);
+                return "ERR_NULL_PASSED__"+msg;
+            }
             rVal = rVal.replace("%["+i+"]", args[i]);
         }
         rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);

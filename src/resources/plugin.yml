@@ -9,7 +9,7 @@ api-version: 1.17
 commands:
   Playtime:
     description: Display the players Playtime
-    usage: /Playtime
+    usage: /Playtime [Player]
     aliases: pt
 
 permissions:

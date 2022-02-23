@@ -130,5 +130,9 @@ public class AutoUpdater {
         return updateAvailable;
     }
 
+    public String getLatestVersion(){
+        return latestVersion;
+    }
+
 
 }

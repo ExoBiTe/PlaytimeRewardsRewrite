@@ -72,6 +72,8 @@ public class Reward {
         }
         rw.setSounds(sounds.toArray(new RewardSound[0]));
 
+        rw.setNeededPermission(cs.getString("PermissionNeeded", ""));
+
         return rw;
     }
 
@@ -146,6 +148,7 @@ public class Reward {
     private String[] globalMessages;
     private RewardParticle[] particles;
     private RewardSound[] sounds;
+    private String permissionNeeded;
 
     private Reward(String name, RewardType type, long timeMs, boolean isRepeating, boolean grantFirst) {
         this.name = name;
@@ -188,6 +191,11 @@ public class Reward {
         return this;
     }
 
+    private Reward setNeededPermission(String permissionNeeded) {
+        this.permissionNeeded = permissionNeeded;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -206,6 +214,14 @@ public class Reward {
 
     public boolean grantFirst(){
         return grantFirst;
+    }
+
+    public String getPermissionNeeded() {
+        return permissionNeeded;
+    }
+
+    public boolean needsPermission() {
+        return !permissionNeeded.equals("");
     }
 
     public void grantRewardToPlayer(Player p) {
