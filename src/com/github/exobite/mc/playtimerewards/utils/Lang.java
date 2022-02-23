@@ -76,12 +76,12 @@ public class Lang {
             for(String m:Messages.keySet()) {
                 if(s.equals(m)) {
                     contains = true;
-                    changed = true;
                     break;
                 }
             }
             if(!contains) {
                 Messages.put(s, defaults.get(s));
+                changed = true;
             }
         }
         if(changed) {

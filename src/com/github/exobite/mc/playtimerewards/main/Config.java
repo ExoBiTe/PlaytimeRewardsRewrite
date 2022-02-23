@@ -41,16 +41,15 @@ public class Config {
     }
 
     private void start(boolean sync) {
-        BukkitRunnable br = new BukkitRunnable() {
-            @Override
-            public void run() {
-                loadConfig();
-            }
-        };
-        if(sync){
-            br.runTask(main);
-        }else {
-            br.runTaskAsynchronously(main);
+        if(sync) {
+            loadConfig();
+        }else{
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    loadConfig();
+                }
+            }.runTask(main);
         }
     }
 
@@ -80,7 +79,7 @@ public class Config {
                     autoSaveTimerMS = 30 * 60000;   //30 Minutes
                 }else{
                     //It's okay, but let's inform the Console...
-                    PluginMaster.sendConsoleMessage(Level.WARNING, "The Auto Save Interval is less than a Minute. Is that correct?");
+                    PluginMaster.sendConsoleMessage(Level.WARNING, "The Auto Save Interval is less than a Minute("+saveTimerIntervalStr+"). Is that correct?");
                 }
             }
         }

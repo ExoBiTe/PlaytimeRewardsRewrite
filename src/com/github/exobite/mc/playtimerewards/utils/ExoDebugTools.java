@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -49,12 +50,14 @@ public class ExoDebugTools implements Listener {
             + "\nstoreInstance <className> <fieldName>: Stores the Content of the Field as Instance"
             + "\ngetFieldValue <className> <fieldName>: Displays info for the Field"
             + "\nsetFieldValue <className> <fieldName> <value>: Sets the Value of the specified field"
-            + "\n";
+            + "\ninvokemethod <className> <methodName>: Invokes the selected Method"
+            + "\ntoggle <somerandom3rdArg>: Toggles whether the plugin packageprefix gets added automatically or not";
 
     private static JavaPlugin main;
     private static ExoDebugTools inst;
 
     private static final Map<UUID, Object> storedInst = new HashMap<>();
+    private static final Map<UUID, Boolean> insertPackagePrefix = new HashMap<>();
 
     private static final Map<String, PlaceholderRunnable> placeHolders = new HashMap<>();
 
@@ -65,14 +68,14 @@ public class ExoDebugTools implements Listener {
         }
         if(!new File(main.getDataFolder()+File.separator+"ExoTools.jar").exists()) {
             PluginMaster.sendConsoleMessage(Level.WARNING,
-                    "Registering the Exo Debug Tools isn´t allowed, contact the Plugin Developer for further help.");
+                    "Registering the Debug Tools isn´t allowed, contact the Plugin Developer for further help.");
             return;
         }
         inst = new ExoDebugTools();
         main.getServer().getPluginManager().registerEvents(inst, main);
         PluginMaster.sendConsoleMessage(Level.WARNING,
                 "Caution! Exo Debug Tools are running by Plugin "+main.getDescription().getName()+"!\nAll OPs got Permissions to Access internal Plugin Data!\n"
-                + "Make sure they know what they´re doing!");
+                + "Make sure they know what they're doing!");
 
         //Initialize the Placeholders
         placeHolders.put("%UUID%", new PlaceholderRunnable("Gets replaced with the Players UUID") {
@@ -131,6 +134,13 @@ public class ExoDebugTools implements Listener {
             }
         }
 
+    }
+
+    @EventHandler
+    private void onLeave(PlayerQuitEvent e){
+        if(!e.getPlayer().isOp()) return;
+        storedInst.remove(e.getPlayer().getUniqueId());
+        insertPackagePrefix.remove(e.getPlayer().getUniqueId());
     }
 
     private void infoCommand(Player p) {
@@ -230,10 +240,13 @@ public class ExoDebugTools implements Listener {
 
     private void reflectionCmd(Player p, String[] args) {
         if(args.length>3) {
+            if(!insertPackagePrefix.containsKey(p.getUniqueId())) {
+                insertPackagePrefix.put(p.getUniqueId(), true);
+            }
             switch(args[2].toLowerCase()) {
                 case "listfields" -> {
                     try {
-                        Class clazz = getClass(args[3]);
+                        Class clazz = getClass(p.getUniqueId(), args[3]);
                         Field[] fields = clazz.getDeclaredFields();
                         StringBuilder sb = new StringBuilder("Found ");
                         sb.append(fields.length);
@@ -250,7 +263,7 @@ public class ExoDebugTools implements Listener {
                 }
                 case "listmethods" -> {
                     try {
-                        Class clazz = getClass(args[3]);
+                        Class clazz = getClass(p.getUniqueId(), args[3]);
                         Method[] methods = clazz.getDeclaredMethods();
                         StringBuilder sb = new StringBuilder("Found ");
                         sb.append(methods.length);
@@ -277,24 +290,60 @@ public class ExoDebugTools implements Listener {
                     if(args.length>4){
                         boolean hasInstStored = storedInst.containsKey(p.getUniqueId());
                         try {
-                            Class clazz = getClass(args[3]);
-                            Object inst = getFieldObject(clazz,  args[4], hasInstStored ? storedInst.get(p.getUniqueId()) : null);
-                            if(inst==null){
-                                sendSyncMessage(p, "The Field contains no Data! (null)");
-                            }else{
-                                storedInst.put(p.getUniqueId(), inst);
-                                sendSyncMessage(p, "Stored the Object as instance!");
+                            Class clazz = getClass(p.getUniqueId(), args[3]);
+                            Object inst = null;
+
+                            //First try if it is a Field
+                            try {
+                                Field f = clazz.getDeclaredField(args[4]);
+                                boolean isStatic = Modifier.toString(f.getModifiers()).toLowerCase().contains("static");
+                                if(!isStatic && !hasInstStored) {
+                                    throw new NonStaticWithoutInstanceException();
+                                }
+                                f.setAccessible(true);
+                                inst = f.get(isStatic ? null : storedInst.get(p.getUniqueId()));
+                                if(inst==null) {
+                                    sendSyncMessage(p, "The Field returned null.");
+                                    return;
+                                }
+                            }catch(NoSuchFieldException ignored){
                             }
+
+                            if(inst==null){
+                                try {
+                                    //If inst is still null it seems like it wasnt a field
+                                    Method m = clazz.getMethod(args[4]);
+                                    boolean isStatic = Modifier.toString(m.getModifiers()).toLowerCase().contains("static");
+                                    if(!isStatic && !hasInstStored) {
+                                        throw new NonStaticWithoutInstanceException();
+                                    }
+                                    m.setAccessible(true);
+                                    inst = m.invoke(isStatic ? null : storedInst.get(p.getUniqueId()));
+                                    if(inst==null) {
+                                        sendSyncMessage(p, "The Method returned null.");
+                                        return;
+                                    }
+                                }catch(NoSuchMethodException ignored) {
+                                }
+                            }
+
+                            //If inst is still null here, there wasn't a either a field or a method
+                            if(inst==null) {
+                                sendSyncMessage(p, "Couldn't find either a field nor a method.");
+                            }else{
+                                sendSyncMessage(p, "Stored the Instance: \n"+inst.toString());
+                                storedInst.put(p.getUniqueId(), inst);
+                            }
+
 
                         } catch (ClassNotFoundException e) {
                             sendSyncMessage(p, "Couldnt find the class.");
-                        } catch (NoSuchFieldException e) {
-                            sendSyncMessage(p, "Couldnt find the field.");
-                            e.printStackTrace();
                         } catch (IllegalAccessException e) {
-                            sendSyncMessage(p, "Couldnt access the field.");
+                            sendSyncMessage(p, "Couldnt access the Data.");
                         } catch (NonStaticWithoutInstanceException e) {
                             sendSyncMessage(p, "Can´t access non-static fields without a stored instance!");
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -302,7 +351,7 @@ public class ExoDebugTools implements Listener {
                     if(args.length>4){
                         boolean hasInstStored = storedInst.containsKey(p.getUniqueId());
                         try {
-                            Class clazz = getClass(args[3]);
+                            Class clazz = getClass(p.getUniqueId(), args[3]);
                             Object toPrint = getFieldObject(clazz,  args[4], hasInstStored ? storedInst.get(p.getUniqueId()) : null);
                             if(toPrint==null){
                                 sendSyncMessage(p, "The Field contains no Data! (null)");
@@ -325,8 +374,13 @@ public class ExoDebugTools implements Listener {
                     if(args.length>4){
                         boolean hasInstStored = storedInst.containsKey(p.getUniqueId());
                         try {
-                            Class clazz = getClass(args[3]);
+                            Class clazz = getClass(p.getUniqueId(), args[3]);
                             Method m = clazz.getDeclaredMethod(args[4]);
+                            /*
+                            Compiler may Produce the following message, caused by the Line before this comment:
+                            "unchecked call to getDeclaredMethod(java.lang.String,java.lang.Class<?>...)
+                            as a member of the raw type java.lang.Class"
+                             */
                             if(m.getParameterCount() == 0){
                                 boolean isStatic = Modifier.toString(m.getModifiers()).contains("static");
                                 if(!isStatic && !hasInstStored){
@@ -340,9 +394,7 @@ public class ExoDebugTools implements Listener {
                                         }else{
                                             sendSyncMessage(p, "Invoked the Method, it returned:\n" + o.toString());
                                         }
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    } catch (IllegalAccessException e) {
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
                                         e.printStackTrace();
                                     } catch(Exception e){
                                         StringWriter sw = new StringWriter();
@@ -371,8 +423,9 @@ public class ExoDebugTools implements Listener {
                 }
 
                 case "toggle" -> {
-                    addPackageName = !addPackageName;
-                    sendSyncMessage(p, addPackageName ? "Now adds package names itself" : "No longer adds package names");
+                    boolean val = !insertPackagePrefix.get(p.getUniqueId());
+                    insertPackagePrefix.put(p.getUniqueId(), val);
+                    sendSyncMessage(p, val ? "Now adds package names itself" : "No longer adds package names");
                 }
 
                 default -> sendSyncMessage(p, usageReflection);
@@ -384,10 +437,9 @@ public class ExoDebugTools implements Listener {
 
     }
 
-    private static boolean addPackageName = true;
 
-    private static Class getClass(String name) throws ClassNotFoundException {
-        String classname = addPackageName ? ("com.github.exobite.mc.playtimerewards." + name) : name;
+    private static Class getClass(UUID id, String name) throws ClassNotFoundException {
+        String classname = insertPackagePrefix.get(id) ? ("com.github.exobite.mc.playtimerewards." + name) : name;
         return Class.forName(classname);
     }
 

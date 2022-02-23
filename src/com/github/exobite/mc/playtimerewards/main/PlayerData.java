@@ -1,18 +1,14 @@
 package com.github.exobite.mc.playtimerewards.main;
 
-import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.rewards.Reward;
 import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.rewards.RewardType;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -25,10 +21,8 @@ public class PlayerData {
     private final UUID id;
     private boolean hasData;
 
-    private final Map<String, GUIManager.GUI> Guis = new HashMap<>();
     private final Map<RewardData, Long> receivedTimestamps = new HashMap<>();
 
-    public GUIManager.GUI GUI;
     private boolean allowNextGUIClose = false;
 
     PlayerData(Player p) {
@@ -160,6 +154,7 @@ public class PlayerData {
     }
 
     public boolean checkReward(Reward rw){
+        if(!hasData()) return false;
         RewardData rwd = getRewardDataFromName(rw.getName());
         if(rwd==null) return false;
         long oldTimestamp = receivedTimestamps.get(rwd);

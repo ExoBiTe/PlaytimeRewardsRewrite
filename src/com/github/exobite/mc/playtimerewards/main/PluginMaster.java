@@ -56,6 +56,7 @@ public class PluginMaster extends JavaPlugin {
         if(Config.getInstance().allowDebugTools()) ExoDebugTools.registerDebugTools(this);
         GUIManager.registerGUIManager(this);
         Lang.registerLangManager(this);
+        PlayerManager.registerPlayerManager(this);
         RewardManager.setupRewardManager(this);
         //Load Metrics
         setupMetrics();
@@ -104,7 +105,7 @@ public class PluginMaster extends JavaPlugin {
     private void startAsyncChecker() {
         BukkitRunnable br = new BukkitRunnable() {
 
-            private final int PLAYERS_PER_CYCLE = 100;
+            private final int PLAYERS_PER_CYCLE = 50;
             private Queue<Player> playerQueue;
             private boolean createNewQueue = true;
 
