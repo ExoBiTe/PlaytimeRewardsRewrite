@@ -36,10 +36,7 @@ Q: Does this Plugin work with /reload?
 A: [I]This is a.. topic... Theoretically it was designed with the ability to support server reloads, but i didn´t test it that much during development as it later wasn't that big of a priority anymore.[/I]
 
 Future Plans:
-[code]- Auto-Save all PlayerData each x Timeintervals
-- Ability to see other Players Playtime as well
-- Assign needed permissions to Rewards
-- Create a /playtimetop command, showing the top 10 Playtimes from the Server
+[code]- Create a /playtimetop command, showing the top 10 Playtimes from the Server
 - Support Custom Advancements
 - An ingame Reward-Editor using Inventory GUIs[/code]
 If you´ve got any ideas feel free to suggest them in the Discussions or via pn!

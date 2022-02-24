@@ -35,39 +35,42 @@ public class RewardManager {
     }
 
     private void setup(boolean sync) {
-        BukkitRunnable rb = new BukkitRunnable() {
-            @Override
-            public void run() {
-                File f = new File(main.getDataFolder() + File.separator + "rewards.yml");
-                if(!f.exists()) {
-                    //Only create File if it doesn't exist
-                    Utils.fillDefaultFile("rewards.yml");
-                }
-                int counter = 0;
-                YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
-                //All root Keys should be a reward
-                List<String> alreadyLoadedRewards = new ArrayList<>();
-                //System.out.println(alreadyLoadedRewards.toString() + " contains "+key+"?");
-                for(String key:conf.getKeys(false)) {
-                    if(!alreadyLoadedRewards.contains(key)) {
-                        alreadyLoadedRewards.add(key);
-                        Reward rw = createRewardFromYaml(conf.getConfigurationSection(key));
-                        if(rw!=null){
-                            counter++;
-                            registeredRewards.add(rw);
-                        }
-                    }else{
-                        PluginMaster.sendConsoleMessage(Level.SEVERE, "Duplicate Reward '"+key+"'!");
-                    }
-                }
-                PluginMaster.sendConsoleMessage(Level.INFO, "Loaded "+counter+" rewards!");
-            }
-        };
         if(sync){
-            rb.runTask(main);
+            loadData();
         }else{
-            rb.runTaskAsynchronously(main);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    loadData();
+                }
+            }.runTaskAsynchronously(main);
         }
+    }
+
+    private void loadData() {
+        File f = new File(main.getDataFolder() + File.separator + "rewards.yml");
+        if(!f.exists()) {
+            //Only create File if it doesn't exist
+            Utils.fillDefaultFile("rewards.yml");
+        }
+        int counter = 0;
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+        //All root Keys should be a reward
+        List<String> alreadyLoadedRewards = new ArrayList<>();
+        //System.out.println(alreadyLoadedRewards.toString() + " contains "+key+"?");
+        for(String key:conf.getKeys(false)) {
+            if(!alreadyLoadedRewards.contains(key)) {
+                alreadyLoadedRewards.add(key);
+                Reward rw = createRewardFromYaml(conf.getConfigurationSection(key));
+                if(rw!=null){
+                    counter++;
+                    registeredRewards.add(rw);
+                }
+            }else{
+                PluginMaster.sendConsoleMessage(Level.SEVERE, "Duplicate Reward '"+key+"'!");
+            }
+        }
+        PluginMaster.sendConsoleMessage(Level.INFO, "Loaded "+counter+" rewards!");
     }
 
     public Reward createRewardFromYaml(ConfigurationSection conf) {

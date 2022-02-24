@@ -1,3 +1,19 @@
+Changelog Version 0.1.3:
+    - Reduced the Final jar size:
+        - Removed internal, unneeded resources from being packed into the final Jar
+        - Removed older classes, that weren't used anymore from the project
+
+
+
+
+
+
+
+
+
+
+
+
 Changelog Version 0.1.2:
     - Added a Config.yml
         - Value "EnableUpdateCheck" (boolean) controls whether the Plugin Notifies the Admins about a new Plugin Version

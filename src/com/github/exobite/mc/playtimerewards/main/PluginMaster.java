@@ -21,18 +21,24 @@ public class PluginMaster extends JavaPlugin {
 
     private static PluginMaster instance;
 
+    public static PluginMaster getInstance() {
+        return instance;
+    }
+
+    public static void sendConsoleMessage(Level level, String msg){
+        String prefix = "[" + instance.getDescription().getName() + "] ";
+        //Split by \newLine, send all in a seperate message
+        String[] parts = msg.split("\n");
+        for (String part : parts) {
+            instance.log.log(level, prefix + part);
+        }
+    }
+
     private Logger log;
     private Version bukkitVersion;
 
     //Constants
     private final int BSTATS_ID = 14369;
-
-    /*
-    =======BETA RELEASE VERSION=======
-    - The Config.yml is unused and not even generated right now
-    - bStats Metrics is included as a class file (copied from its github), will get later moved to shade it into the jar using maven
-
-     */
 
     public void onEnable(){
         //Start Time measuring & Setup singleton instance
@@ -41,8 +47,6 @@ public class PluginMaster extends JavaPlugin {
         //Register Logger
         log = Logger.getLogger(getDescription().getName());
 
-        //Call both getInstance to create the singleton instance
-        //Call OLDVersionIdentifier first, as ReflectionHelper uses it
         bukkitVersion = VersionHelper.getBukkitVersion();
 
         if(VersionHelper.isSmaller(bukkitVersion, new Version(1, 17, 0))) {
@@ -83,19 +87,7 @@ public class PluginMaster extends JavaPlugin {
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
         PlayerManager.getInstance().cleanAllPlayerData();
-    }
-
-    public static PluginMaster getInstance() {
-        return instance;
-    }
-
-    public static void sendConsoleMessage(Level level, String msg){
-        String prefix = "[" + instance.getDescription().getName() + "] ";
-        //Split by \newLine, send all in a seperate message
-        String[] parts = msg.split("\n");
-        for (String part : parts) {
-            instance.log.log(level, prefix + part);
-        }
+        if(Config.getInstance().checkForUpdate()) AutoUpdater.getInstance().moveUpdate();
     }
 
     public Version getBukkitVersion(){

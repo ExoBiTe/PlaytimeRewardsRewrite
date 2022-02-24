@@ -24,7 +24,6 @@ Basic Concept:
                 - #s -> Seconds
 
 Ideas:
-    - Permissions needed for Rewards -> Donator/rank friendly
     - Custom Advancements:
         Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
         or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/

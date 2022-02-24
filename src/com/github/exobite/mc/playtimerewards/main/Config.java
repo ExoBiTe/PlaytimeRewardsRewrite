@@ -30,6 +30,7 @@ public class Config {
 
     //Config values
     private boolean checkForUpdate = true,
+            allowAutoDownload = false,
             allowDebugTools = false;
     private long autoSaveTimerMS = 30 * 60000;   //30 Minutes
     private char colorCode = '§';
@@ -67,6 +68,7 @@ public class Config {
         }
         //Read Data from File
         checkForUpdate = conf.getBoolean("EnableUpdateCheck", true);
+        allowAutoDownload = conf.getBoolean("AllowAutoUpdate", true);
         String saveTimerIntervalStr = conf.getString("DataSaveInterval", "30m");
         if(saveTimerIntervalStr.equals("-1")) {
             PluginMaster.sendConsoleMessage(Level.INFO, "Auto Saving the PlayerData is disabled from the Config.");
@@ -83,6 +85,8 @@ public class Config {
                 }
             }
         }
+
+        //Hidden values
         allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);  //Hidden in default config
         String colorStr = conf.getString("ColorCode", "§");
         colorCode = colorStr.charAt(0);
@@ -94,6 +98,10 @@ public class Config {
 
     public boolean allowDebugTools() {
         return allowDebugTools;
+    }
+
+    public boolean allowAutoDownload(){
+        return allowAutoDownload;
     }
 
     public char getColorCode(){
