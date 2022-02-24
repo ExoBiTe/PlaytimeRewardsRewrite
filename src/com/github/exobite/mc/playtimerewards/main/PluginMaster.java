@@ -22,6 +22,7 @@ public class PluginMaster extends JavaPlugin {
     private static PluginMaster instance;
 
     private Logger log;
+    private Version bukkitVersion;
 
     //Constants
     private final int BSTATS_ID = 14369;
@@ -41,10 +42,10 @@ public class PluginMaster extends JavaPlugin {
         log = Logger.getLogger(getDescription().getName());
 
         //Call both getInstance to create the singleton instance
-        //Call VersionHelper first, as ReflectionHelper uses it
-        VersionIdentifier.getInstance();
+        //Call OLDVersionIdentifier first, as ReflectionHelper uses it
+        bukkitVersion = VersionHelper.getBukkitVersion();
 
-        if(VersionIdentifier.getInstance().isSmaller(1, 17, 0)) {
+        if(VersionHelper.isSmaller(bukkitVersion, new Version(1, 17, 0))) {
             //Server too old, stop Plugin.
             sendConsoleMessage(Level.SEVERE, "This Plugin doesnt support your Server Version.");
             this.getServer().getPluginManager().disablePlugin(this);
@@ -95,6 +96,10 @@ public class PluginMaster extends JavaPlugin {
         for (String part : parts) {
             instance.log.log(level, prefix + part);
         }
+    }
+
+    public Version getBukkitVersion(){
+        return bukkitVersion;
     }
 
     private void setupMetrics() {

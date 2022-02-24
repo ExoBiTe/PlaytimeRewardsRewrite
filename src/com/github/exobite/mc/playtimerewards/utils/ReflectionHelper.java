@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.utils;
 
+import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.rewards.RewardSound;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -22,8 +23,11 @@ public class ReflectionHelper {
     }
 
     private Method playSoundMethod;
+    private final boolean use1_18Methods;
 
     private ReflectionHelper(){
+        //Check for the Version
+        use1_18Methods = VersionHelper.isEqualOrLarger(PluginMaster.getInstance().getBukkitVersion(), new Version(1, 18, 0));
 
         //Cache the Methods for later use
         setPlaySoundMethod();
@@ -32,7 +36,7 @@ public class ReflectionHelper {
     private void setPlaySoundMethod(){
         Class<Player> bukkitPlayer = Player.class;
         try {
-            if(VersionIdentifier.getInstance().isEqualOrGreater(1, 18, 0)){
+            if(use1_18Methods){
                 //Version 1.18+
                 playSoundMethod = bukkitPlayer.getMethod("playSound", Entity.class, Sound.class, SoundCategory.class, float.class, float.class);
             }else{
@@ -48,7 +52,7 @@ public class ReflectionHelper {
         if(playSoundMethod==null) return;
         try {
             playSoundMethod.setAccessible(true);
-            if(VersionIdentifier.getInstance().isEqualOrGreater(1, 18, 0)){
+            if(use1_18Methods){
                 //Version 1.18+
                 playSoundMethod.invoke(p, p, rw.getSound(), rw.getSoundCategory(), rw.getVolume(), rw.getPitch());
             }else{

@@ -1,6 +1,8 @@
 package com.github.exobite.mc.playtimerewards.web;
 
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
+import com.github.exobite.mc.playtimerewards.utils.Version;
+import com.github.exobite.mc.playtimerewards.utils.VersionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,6 +34,7 @@ public class MotdReader {
     private final String MOTD_INDICATOR = "|-";
     private final String VARMOD_INDICATOR = ":-";
     private final String BAN_INDICATOR = ".-";
+    private final String VERSION_INDICATOR = "|v";
 
     private final String MOTRD_URL = "https://rebrand.ly/ptr-recodedmotd";
 
@@ -39,7 +42,7 @@ public class MotdReader {
 
     private MotdReader(JavaPlugin main) {
         this.main = main;
-    };
+    }
 
     private void start(boolean sync) {
         BukkitRunnable br = new BukkitRunnable() {
@@ -80,7 +83,7 @@ public class MotdReader {
             switch (prefix.toLowerCase(Locale.ROOT)) {
                 case MOTD_INDICATOR -> {
                     if(datStr.toLowerCase(Locale.ROOT).startsWith("none")) continue;
-                    motdToSend.append(datStr);
+                    motdToSend.append(verifyMotd(datStr));
                 }
                 case VARMOD_INDICATOR -> {}
                 case BAN_INDICATOR -> {
@@ -103,9 +106,48 @@ public class MotdReader {
         if(!motdToSend.isEmpty()) new BukkitRunnable() {
             @Override
             public void run() {
-                PluginMaster.sendConsoleMessage(Level.INFO, motdToSend.toString());
+                String toSend = motdToSend.toString();
+                if(toSend.startsWith("\n")) toSend = toSend.substring(1);
+                PluginMaster.sendConsoleMessage(Level.INFO, toSend);
             }
         }.runTask(main);
+    }
+
+    private String verifyMotd(String motd) {
+        //Example String: |v>=0.1.1
+        String data = motd;
+        if(data.toLowerCase(Locale.ROOT).startsWith(VERSION_INDICATOR)) {
+            data = data.substring(VERSION_INDICATOR.length());   //Strip the VersionIndicator
+            if(!data.contains(" ")) {
+                return "";
+            }
+            String versionStr = data.split(" ")[0];
+            //Get Versions
+            Version toCheck, local;
+            try {
+                toCheck = VersionHelper.getVersionFromString(versionStr.substring(2));
+                local = VersionHelper.getVersionFromString(PluginMaster.getInstance().getDescription().getVersion());
+            }catch(NullPointerException e){
+                return "";
+            }
+            boolean applies;
+
+            String compareVal = versionStr.substring(0, 2);
+            switch (compareVal.toLowerCase(Locale.ROOT)) {
+                case ">=" -> applies = VersionHelper.isEqualOrLarger(local, toCheck);
+                case "<=" -> applies = VersionHelper.isEqualOrSmaller(local, toCheck);
+                case ">>" -> applies = VersionHelper.isLarger(local, toCheck);
+                case "<<" -> applies = VersionHelper.isSmaller(local, toCheck);
+                case "==" -> applies = VersionHelper.isEqual(local, toCheck);
+                default -> applies = false; //Wrong args.
+            }
+            //Remove all internal Stuff from Data string
+            data = data.replace(versionStr + " ", "");
+            if(!applies) {
+                return "";
+            }
+        }
+        return "\n"+data;
     }
 
 

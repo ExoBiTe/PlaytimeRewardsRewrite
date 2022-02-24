@@ -38,6 +38,12 @@
         <resources>
             <resource>
                 <directory>src/resources</directory>
+                <excludes>
+                    <exclude>changelog.txt</exclude>
+                    <exclude>documentation.txt</exclude>
+                    <exclude>todo.txt</exclude>
+                    <exclude>lang.yml</exclude>
+                </excludes>
                 <includes>
                     <include>**/*.yml</include>
                 </includes>

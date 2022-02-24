@@ -41,12 +41,13 @@ Changelog Version 0.1.2:
         - This is an optional Field
 
     - Made small changes to the Debug tools:
-        - Now it is possible to store instances returned from a Method (without Parameters)
+        - Now it is possible to store reflection instances returned from a Method (without Parameters)
         - update the debug#reflect help
 
     - Added the Auto Save Task
-
     - Added a link to the Plugin resource page on spigot to all default *.yml files
     - Changed the PLAYER_PER_CYCLE Constant to 50 (from 100)
+    - The Plugin now fills the PlayerName in the <PLAYER> Placeholder
+    - Added a new Placeholder: <PLAYERDISPLAY> -> Fills in the Players Displayname (including prefixes, suffixes etc.)
 
 

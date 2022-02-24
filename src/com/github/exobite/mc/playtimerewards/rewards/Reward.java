@@ -260,7 +260,8 @@ public class Reward {
 
     private String fillInPlaceholders(String in, Player p) {
         String rVal = in;
-        rVal = rVal.replace("<PLAYER>", p.getDisplayName());
+        rVal = rVal.replace("<PLAYER>", p.getName());
+        rVal = rVal.replace("<PLAYERDISPLAY>", p.getName());
         rVal = rVal.replace("<REWARD>", displayName);
         rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
         return rVal;

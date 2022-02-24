@@ -14,7 +14,7 @@ SampleReward1: #No Duplicates allowed
   Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
   Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
   GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
-  PermissionNeeded: 'cool.long.time.player.rank'
+  PermissionNeeded: 'cool.long.time.player.rank' #The Permission needed in order to get this Reward
   ConsoleCommands: #Executes the specified Commands from the Console. Is Optional.
     - 'say <PLAYER> is a cool Person!'
   Display:

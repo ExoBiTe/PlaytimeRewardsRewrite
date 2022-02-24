@@ -135,9 +135,12 @@ public class PlayerData {
 
     protected void massSaveData(YamlConfiguration conf){
         //Remove SessionData before Saving, not needed
-        resetSessionRewardsBeforeSave();
+        //resetSessionRewardsBeforeSave();
         String px = id.toString() + ".";
-        receivedTimestamps.keySet().forEach(rwd -> conf.set(px + rwd.rewardName(), receivedTimestamps.get(rwd)));
+        for(RewardData rwd:receivedTimestamps.keySet()) {
+            if(rwd.isRepeating() && rwd.type()==RewardType.SESSION_TIME) continue;
+            conf.set(px + rwd.rewardName(), receivedTimestamps.get(rwd));
+        }
     }
 
     private RewardData getRewardDataFromName(String rewardName) {

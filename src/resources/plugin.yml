@@ -18,6 +18,7 @@ permissions:
     default: op
     children:
       playtimerewards.notifyOnUpdate: true
+      playtimerewards.cmd.playtime.other: true
 
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login

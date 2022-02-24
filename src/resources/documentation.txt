@@ -1,0 +1,161 @@
+Everything is stored as BBCode.
+
+//==========================================\\
+|||          Main Overview                  |||
+\\==========================================//
+
+[IMG]http://i.epvpimg.com/cmtmf.png[/IMG]
+Hello there... again. Welcome (back... again) to [I]PlaytimeRewards[/I]!
+This Plugin is a re-write of my "older" [URL='https://www.spigotmc.org/resources/32900/']PlaytimeRewards[/URL].
+
+I coded this Plugin completely new from scratch, removing unnessecary Features from the old Plugin and made it overall easier to read & maintain (at least in my opinion).
+And to be honest - i lost the sourcecode of the previous Version, as i didn´t upload that one go github... oops i guess.
+
+What does this Plugin?
+- This Plugin counts the Playtime for every of your Players and Rewards them when and how you configure it.
+
+How does it Rewards the Players?
+- You can choose! You can customize the Rewards as you want, from just rewarding a Player at fixed times, you may also reward them once every 24 Hours or
+
+What can the Players obtain?
+- Again, you can choose it. For now it supports Console Commands upon receiving the Reward. It also supporst some comsetic stuff like Particles and Sounds.
+Later - out of the Beta it´ll also support Items and maybe other stuff you guys suggest me (altough nothing you couldn´t do with Console Commands).
+
+[SPOILER="F.A.Q & Future Plans"]
+Q: I am using one of your older PlaytimeRewards. Is there way to transport Data inbetween these to Plugins?
+A: [I]No, there isn´t. This Plugin is a completely different Software, the only Thing they have in common is their Name.[/I]
+
+Q: Does this Plugin work with Version older than 1.17.1?
+A: [I]Theoretically yes, but this Plugin got compiled with Java17 to use some newer Features so it wo't run on older servers that don't use Java 17.(You may also take this as a No - for now).
+If many People are interested in older Version support, i may add a compatible Version.[/I]
+
+Q: How does this Plugin save its data?
+A: [I]A playerData.yml File will get created when the Plugin tries to save userdata. It will try to take as little space up as possible. Data get's also saved uising Players UUIDs rather than their Name, to keep up with Namechanges.[/I]
+
+Q: Does this Plugin work with /reload?
+A: [I]This is a.. topic... Theoretically it was designed with the ability to support server reloads, but i didn´t test it that much during development as it later wasn't that big of a priority anymore.[/I]
+
+Future Plans:
+[code]- Auto-Save all PlayerData each x Timeintervals
+- Ability to see other Players Playtime as well
+- Assign needed permissions to Rewards
+- Create a /playtimetop command, showing the top 10 Playtimes from the Server
+- Support Custom Advancements
+- An ingame Reward-Editor using Inventory GUIs[/code]
+If you´ve got any ideas feel free to suggest them in the Discussions or via pn!
+[/SPOILER]
+
+Check out the [URL='https://www.spigotmc.org/resources/100231/field?field=documentation']Documentations [/URL]Tab for more Info!
+
+Thanks to [URL='https://www.spigotmc.org/members/193389/']ViscousHurricane[/URL] for creating the awesome Artwork!
+
+[CENTER][I]This Plugin collects data using bStats![/I][/CENTER]
+[URL='https://bstats.org/plugin/bukkit/PlaytimeRewards_Rec/14369'][IMG]https://bstats.org/signatures/bukkit/PlaytimeRewards_Rec.svg[/IMG][/URL]
+
+
+//==========================================\\
+|||          Documentation                  |||
+\\==========================================//
+
+
+[IMG]http://i.epvpimg.com/y84Bf.png[/IMG]
+[code]/pt [Player] or /playtime [Player]
+      Permissions:
+      	playtimerewards.cmd.playtime.own - Permission to see own Playtime
+      	playtimerewards.cmd.playtime.others - Permission to see others Playtime
+      Description:
+      	Allows users to see their own or other Players Playtime.
+      Messages:
+      	'CMD_SUC_PT_OWN': Displays the own Playtime.
+      		-> Parameters:	0-3: The Total Playtime in Days to Seconds,
+      						4-7: The current Session Time in Days to Seconds.
+
+      	'CMD_SUC_PT_OTHER': Displays the specified Players Playtime.
+      		-> Parameters:	0 & 5: The specified Playername
+      						0-3: The Total Playtime in Days to Seconds,
+      						4-7: The current Session Time in Days to Seconds.
+
+      	'CMD_ERR_NO_PERMISSION': The "No Permission" Text from Commands.
+
+      	'CMD_ERR_PLAYER_NOT_FOUND': The Error Message, when a specified Player couldn't be found.
+      		-> Parameters:	0: The specified Player Name.
+[/code]
+
+[IMG]http://i.epvpimg.com/oHwJc.png[/IMG]
+
+Welcome to the Configuration area. There are three Configurable Files, the config.yml, the rewards.yml and the lang.yml.
+
+The config.yml File contains all our 'overall'-Plugin Configuration:
+[SPOILER="config.yml"]
+[code=YAML]#Configuration File for PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBite
+EnableUpdateCheck: true #This Option only Notifies you when a New Version is online, it doesn't download anything.
+DataSaveInterval: '1h' #Set to '-1' to Disable the Automatic Save Interval[/code]
+You may add additional Options to it, that are hidden in the normal Config:
+[SPOILER="Additional Options"]
+[code=YAML]ColorCode: '§' #Specifies the Color-Code the Plugin should use[/code]
+[/SPOILER]
+[/SPOILER]
+
+The rewards.yml File contains all reward data, let's dive into it:
+[SPOILER="rewards.yml"]
+[code=YAML]
+#PlaytimeRewards by ExoBiTe
+#
+#List of all Sounds can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+#List of all SoundCategories can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
+#List of all Particles can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+#
+#Available CountTypes are PLAYTIME, SESSION_TIME and GLOBAL_TIME
+#Time accepts Days(d), Hours(h), Minutes(m) and Seconds(s) and can be combined in any Variation, examples: '3d15m' or '1d25h35m12s'
+#Pay Attention that the RewardName doesn't allow Duplicates!
+
+SampleReward1: #No Duplicates allowed
+  DisplayName: '§3I´m a cool §4Reward§3!' #The Visible Name Ingame
+  CountType: 'PLAYTIME' #Specifies which type the Plugin counts
+  Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
+  Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
+  GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
+  PermissionNeeded: 'cool.long.time.player.rank' #The Permission needed in order to get this Reward
+  ConsoleCommands: #Executes the specified Commands from the Console. Is Optional.
+    - 'say <PLAYER> is a cool Person!'
+  Display:
+    PlayerMessages: #Sends the specified Messages to the Player which gets the Reward. Is Optional.
+      - 'Congrats <PLAYER> upon Earning <REWARD>'
+    GlobalMessages: #Sends the specified Messages to all Players. is Optional.
+      - '<PLAYER> earned the Achievement <REWARD>'
+    Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
+      - 'FLAME, 10, 0.2, 0.2, 0.2, 1'
+    Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH' Is Optional.
+      - 'BLOCK_BELL_USE, PLAYERS, 1.0, 1.0'
+[/code]
+The default rewards.yml contains one example Reward. You may change it to your likings and can also add as many new Rewards as you want.
+Every Row that has an "Is Optional" as Comment, can get removed if you don´t need it for your use-case, so you (hopefully) won´t clutter up that file with unused stuff.
+Just make sure to give each reward a unique name, otherwise unwanted stuff [B]will[/B] happen.
+[/SPOILER]
+
+The lang.yml File customizes the Messages the Plugin will send to your Players. For now there isn´t really that much to see.
+[SPOILER="lang.yml"]
+[code=YAML]CMD_ERR_NO_PERMISSION: §4You don't have the Permission to do this.
+           CMD_SUC_PT_OWN: |-
+             §aYour Playtime is %[0]d %[1]h %[2]m %[3]s
+             Your Sessiontime is %[4]d %[5]h %[6]m %[7]s
+           NOTIF_UPDATE_AVAILABLE: §6Version %[0] of PlaytimeRewards is available (Running v%[1])!
+           CMD_SUC_PT_OTHER: |-
+             §6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s
+             §6%[5]§a's Sessiontime is %[6]d %[7]h %[8]m %[9]s
+           CMD_ERR_PLAYER_NOT_FOUND: §4Can't find the Player §6'%[0]'§4!
+[/code]
+This File is rather simple, you may change it to your likings.
+Every "%[x]" represents a Parameter to be filled in later by the Plugin,
+so make sure to use all Parameters for a Message in the correct order.
+[/SPOILER]
+
+All files will get automatically generated upon the first Plugin start & updated if there is new Stuff.
+
+
+
+
+
+
+
+
