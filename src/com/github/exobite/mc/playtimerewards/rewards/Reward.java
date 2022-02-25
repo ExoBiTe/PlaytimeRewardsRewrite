@@ -150,6 +150,8 @@ public class Reward {
     private RewardSound[] sounds;
     private String permissionNeeded;
 
+    private boolean isInEdit;
+
     private Reward(String name, RewardType type, long timeMs, boolean isRepeating, boolean grantFirst) {
         this.name = name;
         this.type = type;
@@ -196,6 +198,10 @@ public class Reward {
         return this;
     }
 
+    protected void setEditStatus(boolean inEdit){
+        this.isInEdit = inEdit;
+    }
+
     public String getName() {
         return name;
     }
@@ -222,6 +228,10 @@ public class Reward {
 
     public boolean needsPermission() {
         return !permissionNeeded.equals("");
+    }
+
+    public boolean isInEdit(){
+        return isInEdit;
     }
 
     public void grantRewardToPlayer(Player p) {

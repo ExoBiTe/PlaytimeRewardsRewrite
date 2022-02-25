@@ -99,6 +99,16 @@ public class Lang {
         data.put("CMD_ERR_PLAYER_NOT_FOUND", createMessageData("§4Can't find the Player §6'%[0]'§4!"));
 
         data.put("NOTIF_UPDATE_AVAILABLE", createMessageData("§6Version %[0] of PlaytimeRewards is available (Running v%[1])!"));
+
+        //GUI Strings (a whole bunch)
+        data.put("GUI_EDIT_REWARD_WINDOWNAME", createMessageData("§6Editing Reward: §2%[0]"));
+        data.put("GUI_EDIT_REWARD_EXIT_NOSAVE_NAME", createMessageData("§4Exit and discard Changes"));
+        data.put("GUI_EDIT_REWARD_EXIT_NOSAVE_LORE", createMessageData("§cThis Option discards all changes\n§cyou've made and ends the editing."));
+        data.put("GUI_EDIT_REWARD_EXIT_SAVE_NAME", createMessageData("§2Exit and Save Changes"));
+        data.put("GUI_EDIT_REWARD_EXIT_SAVE_LORE", createMessageData("§aThis Option saves all changes\n§ayou've made and ends the editing."));
+
+
+
         return data;
     }
 

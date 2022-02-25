@@ -10,22 +10,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class GUIManager implements Listener {
 
     //Static stuff
     private static GUIManager instance;
 
-    //Singleton
+    //Instance
     private final JavaPlugin main;
     private final Map<Inventory, GUI> guis;
+    private final Map<UUID, Boolean> canClose;
 
     //Singleton
     /**
@@ -40,8 +41,12 @@ public class GUIManager implements Listener {
         return instance;
     }
 
-    public static GUI createGUI(String title, int size){
-        return instance.new GUI(title, size);
+    public static GUIManager getInstance() {
+        return instance;
+    }
+
+    public GUI createGUI(String title, int size){
+        return new GUI(title, size);
     }
 
 
@@ -55,6 +60,7 @@ public class GUIManager implements Listener {
         // - InventoryCloseEvent
         main.getServer().getPluginManager().registerEvents(this, main);
         guis = new HashMap<>();
+        canClose = new HashMap<>();
     }
 
     @EventHandler
@@ -74,8 +80,8 @@ public class GUIManager implements Listener {
         if(guis.containsKey(e.getInventory())) {
             final GUI g = guis.get(e.getInventory());
             final HumanEntity p = e.getPlayer();
-            final PlayerData pDat = PlayerManager.getInstance().getPlayerData(p.getUniqueId());
-            if(!g.canClose && !pDat.isAllowedToCloseNExtGUI()) {
+            final UUID id = p.getUniqueId();
+            if(!g.canClose && !allowNextGUIClose(id)) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -83,9 +89,18 @@ public class GUIManager implements Listener {
                     }
                 }.runTaskLater(main, 1L);
             }
-            pDat.allowNextGUIClose(false);
+            setAllowNextGUIClose(false, id);
         }
     }
+
+    public void setAllowNextGUIClose(boolean allow, UUID id) {
+        canClose.put(id, allow);
+    }
+
+    public boolean allowNextGUIClose(UUID id) {
+        return canClose.getOrDefault(id, false);
+    }
+
 
     //GUI Class
     public class GUI {
@@ -127,7 +142,7 @@ public class GUIManager implements Listener {
             return this;
         }
 
-        public GUI setItemstack(ItemStack is, int slot) {
+        public GUI setItemstack(int slot, ItemStack is) {
             if(slot > inv.getSize() || slot < 0) return this;
             GUISlot gs = getSlotData(slot, true);
             gs.setItemStack(is);
@@ -139,12 +154,6 @@ public class GUIManager implements Listener {
             GUISlot gs = getSlotData(slot, true);
             gs.setAction(action);
             return this;
-        }
-
-        public void closeInventory(Player p) {
-            if(p==null || canClose) return;
-            Inventory i = p.getOpenInventory().getTopInventory();
-            if(i!=inv) return;
         }
 
         /**
@@ -183,8 +192,8 @@ public class GUIManager implements Listener {
 
     private class GUISlot {
 
-        private GUI g;
-        private int slot;
+        private final GUI g;
+        private final int slot;
         private boolean cancelClick;
         private GUIClickAction action;
 
@@ -219,6 +228,19 @@ public class GUIManager implements Listener {
          * @param e The corresponding ClickEvent
          */
         protected abstract void click(InventoryClickEvent e, GUI gui);
+    }
+
+    //Utility, default methods
+
+    public GUIClickAction getDefaultCloseGUIAction(){
+        return new GUIClickAction() {
+            @Override
+            protected void click(InventoryClickEvent e, GUI gui) {
+                UUID id = e.getWhoClicked().getUniqueId();
+                setAllowNextGUIClose(true, id);
+                e.getWhoClicked().closeInventory();
+            }
+        };
     }
 
     public abstract class GUIHolder {

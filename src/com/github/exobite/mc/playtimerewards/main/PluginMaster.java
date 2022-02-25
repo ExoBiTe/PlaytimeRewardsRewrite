@@ -63,6 +63,7 @@ public class PluginMaster extends JavaPlugin {
         Lang.registerLangManager(this);
         PlayerManager.registerPlayerManager(this);
         RewardManager.setupRewardManager(this);
+        MojangAPI.register(this);
         //Load Metrics
         setupMetrics();
         //Load Game-Interaction Stuff

@@ -2,6 +2,10 @@ package com.github.exobite.mc.playtimerewards.main;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
-public class PlayerManager {
+public class PlayerManager implements Listener {
 
     private static PlayerManager instance;
 
@@ -30,9 +34,10 @@ public class PlayerManager {
 
     private PlayerManager(JavaPlugin main) {
         this.main = main;
-        long ms = Config.getInstance().getAutoSaveTimerMS();
-        long ticks = ms / 50;
-        if(ms>0){
+        main.getServer().getPluginManager().registerEvents(this, main);
+
+        long ticks = Config.getInstance().getAutoSaveTimerMS() / 50;
+        if(ticks>0){
             new BukkitRunnable() {
 
                 private final File f = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "playerData.yml");
@@ -62,6 +67,17 @@ public class PlayerManager {
             }.runTaskTimerAsynchronously(this.main, ticks, ticks);
 
         }
+    }
+
+    @EventHandler
+    private void onJoin(PlayerJoinEvent e){
+        createPlayerData(e.getPlayer());
+    }
+
+    @EventHandler
+    private void onLeave(PlayerQuitEvent e){
+        getPlayerData(e.getPlayer()).onLeave(false);
+        removePlayerData(e.getPlayer().getUniqueId());
     }
 
     public PlayerData createPlayerData(Player p){

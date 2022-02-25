@@ -2,9 +2,9 @@ package com.github.exobite.mc.playtimerewards.web;
 
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
+import com.github.exobite.mc.playtimerewards.utils.ReflectionHelper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -94,7 +94,7 @@ public class AutoUpdater {
             InputStream is = con.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
 
-            JsonElement e = new JsonParser().parse(isr);
+            JsonElement e = ReflectionHelper.getInstance().parseReader(isr);
 
             latestVersion = unpackVersionFromJson(e);
             if(latestVersion==null) {

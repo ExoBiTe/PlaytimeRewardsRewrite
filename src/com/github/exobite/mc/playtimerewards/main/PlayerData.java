@@ -23,8 +23,6 @@ public class PlayerData {
 
     private final Map<RewardData, Long> receivedTimestamps = new HashMap<>();
 
-    private boolean allowNextGUIClose = false;
-
     PlayerData(Player p) {
         id = p.getUniqueId();
         loginTimestamp = Utils.getPlaytimeInMS(p);
@@ -34,15 +32,7 @@ public class PlayerData {
         /*GUI = GUIManager.createGUI("I´m a cool GUI", 18);
         GUI.canClose(false);
         GUI.setItemstack(new ItemStack(Material.OAK_LOG), 1);
-        GUI.setSlotAction(1, new GUIManager.GUIClickAction() {
-
-            @Override
-            protected void click(InventoryClickEvent e, GUIManager.GUI g) {
-                if(!(e.getWhoClicked() instanceof Player p)) return;
-                allowNextGUIClose = true;
-                p.closeInventory();
-            }
-        });*/
+        GUI.setSlotAction(1, getDefaultCloseGUIAction());*/
 
     }
 
@@ -190,19 +180,10 @@ public class PlayerData {
 
     public void onLeave(boolean saveDataSync) {
         savePlayerData(saveDataSync);
-        PlayerManager.getInstance().removePlayerData(id);
     }
 
     public long getSessionTime() {
         return Utils.getPlaytimeInMS(p()) - loginTimestamp;
-    }
-
-    public void allowNextGUIClose(boolean allow){
-        allowNextGUIClose = allow;
-    }
-
-    public boolean isAllowedToCloseNExtGUI(){
-        return allowNextGUIClose;
     }
 
     public Player p() {

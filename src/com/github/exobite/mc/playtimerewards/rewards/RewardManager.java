@@ -5,15 +5,19 @@ import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class RewardManager {
+public class RewardManager implements Listener {
 
     private static RewardManager instance;
 
@@ -29,9 +33,11 @@ public class RewardManager {
 
     private final PluginMaster main;
     private final List<Reward> registeredRewards = new ArrayList<>();
+    private final Map<UUID, RewardEdit> currentEdits = new HashMap<>();
 
     private RewardManager(PluginMaster main){
         this.main = main;
+        main.getServer().getPluginManager().registerEvents(this, main);
     }
 
     private void setup(boolean sync) {
@@ -98,6 +104,33 @@ public class RewardManager {
         }
     }
 
+    public RewardEdit startRewardEdit(Reward rw, Player p){
+        if(rw==null || p==null) return null;
+        if(rw.isInEdit()) throw new IllegalArgumentException("Can't edit a Reward that is already being edited!");
+        if(currentEdits.containsKey(p.getUniqueId())) throw new IllegalArgumentException("One Player can't edit multiple Rewards!");
+        currentEdits.remove(p.getUniqueId());
+        return new RewardEdit(rw, p);
+    }
 
+    protected void removeFromEditMap(UUID id){
+        currentEdits.remove(id);
+    }
+
+    @EventHandler
+    private void onQuit(PlayerQuitEvent e){
+        UUID id = e.getPlayer().getUniqueId();
+        if(currentEdits.containsKey(id)) {
+            currentEdits.get(id).discardChanges();
+            currentEdits.remove(id);
+        }
+    }
+
+    @EventHandler
+    private void onChat(AsyncPlayerChatEvent e){
+        UUID id = e.getPlayer().getUniqueId();
+        if(currentEdits.containsKey(id)) {
+            currentEdits.get(id).passStringFromChat(e.getMessage());
+        }
+    }
 
 }

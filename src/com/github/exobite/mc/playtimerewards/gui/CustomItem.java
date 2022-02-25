@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.gui;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ public class CustomItem {
     private List<String> Lore;
     private Material Mat;
     private int Amount;
-    //private short data;
     private Map<Enchantment, Integer> Enchants = new HashMap<>();
 
     public CustomItem(Material Mat) {
@@ -36,21 +36,18 @@ public class CustomItem {
         this.Lore = null;
         this.Mat = Mat;
         this.Amount = 1;
-        //this.data = 0;
     }
 
-    public CustomItem(String Name, List<String> Lore, Material Mat, /*short Damage, */int Amount) {
+    public CustomItem(String Name, List<String> Lore, Material Mat, int Amount) {
         this.Name = Name;
         this.Lore = Lore;
         this.Mat = Mat;
         this.Amount = Amount;
-        //this.data = Damage;
     }
 
     public CustomItem(ItemStack is) {
         Amount = is.getAmount();
         Mat = is.getType();
-        //data = is.getDurability();
         Enchants = is.getEnchantments();
         Lore = is.getItemMeta().getLore();
     }
@@ -67,6 +64,21 @@ public class CustomItem {
 
     public CustomItem setLore(List<String> Lore) {
         this.Lore = Lore;
+        return this;
+    }
+
+    public CustomItem setLore(String ... loreRows) {
+        if(loreRows!=null) {
+            this.Lore = Arrays.asList(loreRows);
+        }
+        return this;
+    }
+
+    public CustomItem setLoreFromString(String lore) {
+        String[] splits = lore.split("\n");
+        if(splits.length>0) {
+            this.Lore = Arrays.asList(splits);
+        }
         return this;
     }
 
