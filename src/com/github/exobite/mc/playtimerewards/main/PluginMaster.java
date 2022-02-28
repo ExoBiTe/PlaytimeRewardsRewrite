@@ -1,6 +1,7 @@
 package com.github.exobite.mc.playtimerewards.main;
 
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
+import com.github.exobite.mc.playtimerewards.listeners.AFKManager;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
@@ -65,6 +66,7 @@ public class PluginMaster extends JavaPlugin {
         PlayerManager.registerPlayerManager(this);
         RewardManager.setupRewardManager(this);
         MojangAPI.register(this);
+        AFKManager.register(this);
         //Load Metrics
         setupMetrics();
         //Load Game-Interaction Stuff

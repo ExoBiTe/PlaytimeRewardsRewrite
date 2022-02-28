@@ -24,6 +24,8 @@ Basic Concept:
                 - #s -> Seconds
 
 Ideas:
+    - PlaceholderAPI Support:
+        - https://www.spigotmc.org/resources/placeholderapi.6245/
     - Custom Advancements:
         Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
         or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/

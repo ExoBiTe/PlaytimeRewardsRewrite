@@ -53,6 +53,16 @@ public class PlaytimeCommand implements CommandExecutor {
                 rVal = getPlaytimeStringForPlayerOwn(p);
             }
         }else if(args.length>=1 && sender.hasPermission("playtimerewards.cmd.playtime.other")) {
+
+            //Validate user Input: Minecraft names consist of Letters a-z(A-Z), Numbers 0-9 and underscore
+            //They need a Minimum of 3 Chars and have a Maximum of 16 Chars
+            String unallowedChars = args[0].replaceAll("^[a-zA-Z0-9_]{3,16}$", "");
+            if(!unallowedChars.equals("")) {
+                //Not a valid username
+                sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
+                return true;
+            }
+
             Player p = Bukkit.getPlayer(args[0]);
             if(p==null){
                 if(!sender.hasPermission("playtimerewards.cmd.playtime.other.offline")) {

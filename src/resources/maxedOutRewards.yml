@@ -1,0 +1,32 @@
+SampleReward1: #No Duplicates allowed
+  DisplayName: '§3I´m a cool §4Reward§3!' #The Visible Name Ingame
+  CountType: 'PLAYTIME' #Specifies which type the Plugin counts
+  Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
+  Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
+  GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
+  PermissionNeeded: 'cool.long.time.player.rank' #The Permission needed in order to get this Reward
+  ConsoleCommands: #Executes the specified PlaytimeCommand from the Console. Is Optional.
+    - 'say <PLAYER> is a cool Person!'
+
+  Optionals:
+    #These may need heavy modifications to the current reward&playerdata Storage
+    MinPlaytimeNeeded: ''
+    MaxPlaytimeAllowed: ''
+    MinSessionTimeNeeded: ''
+    MaxSessionTimeAllowed: ''
+    RewardHours: '' #Allow specification Time of Day, e.g. 0:30-15:00, 17:00-23:59
+    RewardDaysInWeek: '' #Mon-Fri, [Tue, Wed], Wed-Mon (Everyday except Tuesday)
+    RewardDaysInMonth: '' #1-31, [1, 3, 5], 20-30
+    RewardMonthsInYear: '' #
+
+  Display:
+    PlayerMessages: #Sends the specified Messages to the Player which gets the Reward. Is Optional.
+      - 'Congrats <PLAYER> upon Earning <REWARD>'
+    GlobalMessages: #Sends the specified Messages to all Players. is Optional.
+      - '<PLAYER> earned the Achievement <REWARD>'
+    ActionBarMessage: ''##############################################################################
+    BossBarMessage: ''##############################################################################
+    Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
+      - 'FLAME, 10, 0.2, 0.2, 0.2, 1'
+    Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH' Is Optional.
+      - 'BLOCK_BELL_USE, PLAYERS, 1.0, 1.0'

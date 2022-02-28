@@ -42,6 +42,7 @@
                     <exclude>changelog.txt</exclude>
                     <exclude>documentation.txt</exclude>
                     <exclude>todo.txt</exclude>
+                    <exclude>maxedOutRewards.yml</exclude>
                 </excludes>
                 <includes>
                     <include>**/*.yml</include>

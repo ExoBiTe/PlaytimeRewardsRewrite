@@ -68,7 +68,6 @@ public class Config {
         }
         //Read Data from File
         checkForUpdate = conf.getBoolean("EnableUpdateCheck", true);
-        allowAutoDownload = conf.getBoolean("AllowAutoUpdate", true);
         String saveTimerIntervalStr = conf.getString("DataSaveInterval", "30m");
         if(saveTimerIntervalStr.equals("-1")) {
             PluginMaster.sendConsoleMessage(Level.INFO, "Auto Saving the PlayerData is disabled from the Config.");
@@ -85,9 +84,11 @@ public class Config {
                 }
             }
         }
+        playtimetopamount = conf.getInt("PlaytimeTopAmount", 10);
 
         //Hidden values
         allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);  //Hidden in default config
+        allowAutoDownload = conf.getBoolean("AllowAutoUpdate", false);
         String colorStr = conf.getString("ColorCode", "§");
         colorCode = colorStr.charAt(0);
     }
