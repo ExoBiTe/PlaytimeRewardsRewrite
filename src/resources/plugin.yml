@@ -11,6 +11,10 @@ commands:
     description: Display the players Playtime
     usage: /Playtime [Player]
     aliases: pt
+  Playtimetop:
+    description: Displays the Players with the most Playtime
+    usage: /Playtimetop
+    aliases: pttop
 
 permissions:
   playtimerewards.*:
@@ -32,3 +36,12 @@ permissions:
     default: op
     children:
       playtimerewards.cmd.playtime.own: true
+
+  playtimerewards.cmd.playtime.other.offline:
+    description: Grants access to the /playtime command (including seeing others playtime, even from offline players)
+    default: op
+    children:
+      playtimerewards.cmd.playtime.other: true
+
+  playtimerewards.cmd.playtimetop:
+    description: Grants access to the /playtimetop command

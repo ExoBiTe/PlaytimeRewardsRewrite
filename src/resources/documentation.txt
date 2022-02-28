@@ -38,7 +38,8 @@ A: [I]This is a.. topic... Theoretically it was designed with the ability to sup
 Future Plans:
 [code]- Create a /playtimetop command, showing the top 10 Playtimes from the Server
 - Support Custom Advancements
-- An ingame Reward-Editor using Inventory GUIs[/code]
+- An ingame Reward-Editor using Inventory GUIs
+- Add OfflineTime - Use Time between Logout and Login[/code]
 If you´ve got any ideas feel free to suggest them in the Discussions or via pn!
 [/SPOILER]
 

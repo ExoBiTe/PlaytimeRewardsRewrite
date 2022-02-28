@@ -46,6 +46,14 @@ public class Listeners implements Listener {
                     e.getPlayer().sendMessage("Retrieved "+data+".");
                 }
             });
+        }else if(e.getMessage().toLowerCase(Locale.ROOT).startsWith("getid")) {
+            e.setCancelled(true);
+            MojangAPI.getInstance().getUUIDFromName(e.getPlayer().getName(), new APIReturnAction() {
+                @Override
+                public void onFinish(String data) {
+                    e.getPlayer().sendMessage("Retrieved "+data+".");
+                }
+            });
         }
     }
 

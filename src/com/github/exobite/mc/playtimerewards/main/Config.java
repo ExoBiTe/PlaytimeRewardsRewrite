@@ -34,7 +34,7 @@ public class Config {
             allowDebugTools = false;
     private long autoSaveTimerMS = 30 * 60000;   //30 Minutes
     private char colorCode = '§';
-
+    private int playtimetopamount = 10;
 
 
     private Config(JavaPlugin main) {
@@ -58,7 +58,7 @@ public class Config {
         File f = new File(main.getDataFolder() + File.separator + CONF_FILENAME);
         if(!f.exists()) {
             PluginMaster.sendConsoleMessage(Level.INFO, "Couldn't find a Config.yml, generated a new one.");
-            Utils.fillDefaultFile(CONF_FILENAME);
+            main.saveResource(CONF_FILENAME, true);
         }
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
         if(conf.getKeys(true).size() <= 0) {
@@ -110,6 +110,10 @@ public class Config {
 
     public long getAutoSaveTimerMS(){
         return autoSaveTimerMS;
+    }
+
+    public int getPlaytimetopamount(){
+        return playtimetopamount;
     }
 
 

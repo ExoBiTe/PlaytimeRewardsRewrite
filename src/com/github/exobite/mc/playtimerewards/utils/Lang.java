@@ -94,9 +94,15 @@ public class Lang {
         Map<String, MessageData> data = new HashMap<>();
         data.put("CMD_SUC_PT_OWN", createMessageData("§aYour Playtime is %[0]d %[1]h %[2]m %[3]s\nYour Sessiontime is %[4]d %[5]h %[6]m %[7]s"));
         data.put("CMD_SUC_PT_OTHER", createMessageData("§6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s\n§6%[5]§a's Sessiontime is %[6]d %[7]h %[8]m %[9]s"));
+        data.put("CMD_SUC_PT_OTHER_OFFLINE", createMessageData("§6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s"));
 
+        data.put("CMD_SUC_PTTOP_HEADER", createMessageData("§7Listing the top §b%[0] §7Playtimes:"));
+        data.put("CMD_SUC_PTTOP_ENTRY", createMessageData("§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s"));
+
+
+        data.put("CMD_ERR_TOO_MANY_REQUESTS", createMessageData("§4You can't do that right now. Try again later!"));
         data.put("CMD_ERR_NO_PERMISSION", createMessageData("§4You don't have the Permission to do this."));
-        data.put("CMD_ERR_PLAYER_NOT_FOUND", createMessageData("§4Can't find the Player §6'%[0]'§4!"));
+        data.put("CMD_ERR_PLAYER_NOT_FOUND", createMessageData("§4Can't find the Player '§6%[0]§4'!"));
 
         data.put("NOTIF_UPDATE_AVAILABLE", createMessageData("§6Version %[0] of PlaytimeRewards is available (Running v%[1])!"));
 

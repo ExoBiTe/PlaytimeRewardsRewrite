@@ -2,7 +2,8 @@ package com.github.exobite.mc.playtimerewards.main;
 
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
-import com.github.exobite.mc.playtimerewards.listeners.Commands;
+import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
+import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
@@ -67,7 +68,8 @@ public class PluginMaster extends JavaPlugin {
         //Load Metrics
         setupMetrics();
         //Load Game-Interaction Stuff
-        getCommand("Playtime").setExecutor(new Commands());
+        getCommand("Playtime").setExecutor(new PlaytimeCommand());
+        getCommand("Playtimetop").setExecutor(new PlaytimetopCommand());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
 
         //reload support, check for online Players in onEnable & create playerData for them.

@@ -3,15 +3,36 @@ Changelog Version 0.1.3:
         - Removed internal, unneeded resources from being packed into the final Jar
         - Removed older classes, that weren't used anymore from the project
 
+    - Created a MojangAPI Utility Class
+            - Allows to lookup Player UUIDs from their Name
+            - This Allows the Plugin to retrieve Playtime from Offline Players
+            - This is currently limited to 6 Requests per Minute per Player
 
+    - Added a bunch of new Messages:
+        - CMD_SUC_PT_OTHER_OFFLINE -> The Message returned upon requesting the Playtime of an Offline Player
+        - CMD_ERR_TOO_MANY_REQUESTS -> The Message when a user tries to send too many API-Requests
+        - CMD_SUC_PTTOP_HEADER -> Defines the Header of the /Playtimetop Command
+        - CMD_SUC_PTTOP_ENTRY -> Defines each Data-Entry of the /Playtimetop Command
 
+        - GUI_EDIT_REWARD_WINDOWNAME -> The Windowname of the Edit-Reward GUI
+        - GUI_EDIT_REWARD_EXIT_NOSAVE_NAME -> The Name of the Exit-without-Saving-Reward-GUI Item
+        - GUI_EDIT_REWARD_EXIT_NOSAVE_LORE -> The Lore of the Exit-without-Saving-Reward-GUI Item
+        - GUI_EDIT_REWARD_EXIT_SAVE_NAME -> The Name of the Exit-with-Saving-Reward-GUI Item
+        - GUI_EDIT_REWARD_EXIT_SAVE_LORE -> The Lore of the Exit-with-Saving-Reward-GUI Item
 
+    - New Permissions:
+        - playtimerewards.cmd.playtime.other.offline -> Allows the Player to see Offline Players Playtime
+        - playtimerewards.cmd.playtimetop -> Allows access to the /playtimetop command
 
+    - New Commands:
+        - /playtime [player] can now look up data from Players that aren't online
+            - Needs the new Permission 'playtimerewards.cmd.playtime.other.offline'
+        - /playtimetop (or /pttop)
+            - Lists the top x(amount specified in config.yml) players with the highest playtime
+            - Needs the new Permission 'playtimerewards.cmd.playtimetop'
 
-
-
-
-
+    - Config Values:
+        - Value "AllowAutoUpdate" (boolean) allows to Automatically download the newest Plugin Version and install at the next server restart
 
 
 

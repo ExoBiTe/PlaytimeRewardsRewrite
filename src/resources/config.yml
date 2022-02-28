@@ -1,3 +1,4 @@
 #Configuration File for PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBite
 EnableUpdateCheck: true #This Option only Notifies you when a New Version is online, it doesn't download anything.
+AllowAutoUpdate: false #This Options downloads the latest Version of the Plugin and installs it upon a reboot.
 DataSaveInterval: '1h30m' #Set to '-1' to Disable the Automatic Save Interval
