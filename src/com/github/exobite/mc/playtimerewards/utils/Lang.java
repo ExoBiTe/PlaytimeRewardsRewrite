@@ -2,9 +2,12 @@ package com.github.exobite.mc.playtimerewards.utils;
 
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,15 +34,19 @@ public class Lang {
     }
 
     private record MessageData(String message,
-                               int varAmount) {
+                               int varAmount,
+                               boolean usesPAPI) {
     }
 
     private Map<String, MessageData> Messages = new HashMap<>();
     private final JavaPlugin main;
     private final File langFile;
+    private final boolean usePAPI;
 
     private Lang(JavaPlugin main){
         this.main = main;
+        usePAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+
         langFile = new File(main.getDataFolder()+File.separator+"lang.yml");
         if(!langFile.exists()) {
             Messages = getDefaultMap();
@@ -99,6 +106,7 @@ public class Lang {
         data.put("CMD_SUC_PTTOP_HEADER", createMessageData("§7Listing the top §b%[0] §7Playtimes:"));
         data.put("CMD_SUC_PTTOP_ENTRY", createMessageData("§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s"));
 
+        data.put("EXT_PAPI_TIME_FORMAT", createMessageData("%[0]d %[1]h %[2]m %[3]s"));
 
         data.put("CMD_ERR_TOO_MANY_REQUESTS", createMessageData("§4You can't do that right now. Try again later!"));
         data.put("CMD_ERR_NO_PERMISSION", createMessageData("§4You don't have the Permission to do this."));
@@ -113,16 +121,19 @@ public class Lang {
         data.put("GUI_EDIT_REWARD_EXIT_SAVE_NAME", createMessageData("§2Exit and Save Changes"));
         data.put("GUI_EDIT_REWARD_EXIT_SAVE_LORE", createMessageData("§aThis Option saves all changes\n§ayou've made and ends the editing."));
 
-
-
         return data;
     }
 
     private MessageData createMessageData(String msg) {
-        if(msg==null) return new MessageData("ERR_NO_MESSAGE_FOUND_", 0);
+        if(msg==null) return new MessageData("ERR_NO_MESSAGE_FOUND_", 0, false);
         String replaced = msg.replaceAll("%\\[[0-9]]", "%[#]");
         int amount = StringUtils.countMatches(replaced, "%[#]");
-        return new MessageData(msg, amount);
+        //boolean usepapi = replaced.matches("%[\\w\\d]*_[\\w\\d]*%"); PAPI has a bilt in function, let's use that
+        boolean containsPlaceholder = false;
+        if(this.usePAPI) {
+            containsPlaceholder = PlaceholderAPI.containsPlaceholders(msg);
+        }
+        return new MessageData(msg, amount, containsPlaceholder);
     }
 
     protected void reloadAsync(){
@@ -154,6 +165,10 @@ public class Lang {
     }
 
     public String getMessageWithArgs(String msg, String ... args) {
+        return getMessageWithArgs(null, msg, args);
+    }
+
+    public String getMessageWithArgs(Player p, String msg, String ... args) {
         if(!exists(msg)) return "ERR_NO_MESSAGE_FOUND__"+msg;
         MessageData md = Messages.get(msg);
         if(md.varAmount>0) {
@@ -172,6 +187,9 @@ public class Lang {
                 return "ERR_NULL_PASSED__"+msg;
             }
             rVal = rVal.replace("%["+i+"]", args[i]);
+        }
+        if(md.usesPAPI && p != null) {
+            rVal = PlaceholderAPI.setPlaceholders(p, rVal);
         }
         rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
         return rVal;

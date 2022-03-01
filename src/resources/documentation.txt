@@ -39,7 +39,9 @@ Future Plans:
 [code]- Create a /playtimetop command, showing the top 10 Playtimes from the Server
 - Support Custom Advancements
 - An ingame Reward-Editor using Inventory GUIs
-- Add OfflineTime - Use Time between Logout and Login[/code]
+- Add OfflineTime - Use Time between Logout and Login
+- Add AFK-Detection & and AFK-Time
+- Add PlaceholderAPI support[/code]
 If you´ve got any ideas feel free to suggest them in the Discussions or via pn!
 [/SPOILER]
 

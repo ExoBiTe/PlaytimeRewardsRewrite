@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.main;
 
+import com.github.exobite.mc.playtimerewards.external.PAPIManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.AFKManager;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
@@ -73,6 +74,11 @@ public class PluginMaster extends JavaPlugin {
         getCommand("Playtime").setExecutor(new PlaytimeCommand());
         getCommand("Playtimetop").setExecutor(new PlaytimetopCommand());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
+
+        //Load Placeholderapi, if it exists
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            PAPIManager.register(this);
+        }
 
         //reload support, check for online Players in onEnable & create playerData for them.
         if(Bukkit.getOnlinePlayers().size() > 0){

@@ -63,7 +63,6 @@ public class AFKManager implements Listener {
      */
 
     private void runScheduler(){
-        System.out.println("Uhm.. hello?");
         new BukkitRunnable() {
             @Override
             public void run() {

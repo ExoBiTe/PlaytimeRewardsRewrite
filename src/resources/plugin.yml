@@ -5,6 +5,7 @@ author: ExoBiTe
 website: https://www.spigotmc.org/resources/100231/
 description: This Plugin rewards players for their Playtime
 api-version: 1.17
+softdepend: [PlaceholderAPI]
 
 commands:
   Playtime:
