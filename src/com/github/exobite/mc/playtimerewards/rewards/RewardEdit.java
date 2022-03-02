@@ -2,14 +2,10 @@ package com.github.exobite.mc.playtimerewards.rewards;
 
 import com.github.exobite.mc.playtimerewards.gui.CustomItem;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
-import com.github.exobite.mc.playtimerewards.main.PlayerData;
-import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.UUID;
 
 public class RewardEdit {
@@ -63,6 +59,8 @@ public class RewardEdit {
         });
 
     }
+
+    //private void
 
     private void saveDataToReward() {
         cleanUp();

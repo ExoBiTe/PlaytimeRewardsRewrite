@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
+import org.bstats.bukkit.Metrics;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

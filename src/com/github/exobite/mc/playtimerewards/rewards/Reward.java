@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class Reward {
+public class Reward extends RewardOptions {
 
     protected static Reward getRewardFromYaml(ConfigurationSection cs){
         if(cs==null) return null;
@@ -137,7 +137,7 @@ public class Reward {
         return new RewardSound(sound, sc, volume, pitch);
     }
 
-    private final String name;
+    /*private final String name;
     private String displayName;
     private boolean isRepeating, grantFirst;
     private long timeMs;
@@ -148,22 +148,15 @@ public class Reward {
     private String[] globalMessages;
     private RewardParticle[] particles;
     private RewardSound[] sounds;
-    private String permissionNeeded;
+    private String permissionNeeded;*/
 
     private boolean isInEdit;
 
     private Reward(String name, RewardType type, long timeMs, boolean isRepeating, boolean grantFirst) {
-        this.name = name;
-        this.type = type;
-        this.timeMs = timeMs;
-        this.isRepeating = isRepeating;
-        this.grantFirst = grantFirst;
-
-        //Debug
-        playerMessages = new String[]{name+"earned! (Debug Message, no custom Messages set.)"};
+        super(name, type, timeMs, isRepeating, grantFirst);
     }
 
-    private Reward setDisplayName(String displayName) {
+    /*private Reward setDisplayName(String displayName) {
         this.displayName = displayName;
         return this;
     }
@@ -196,12 +189,13 @@ public class Reward {
     private Reward setNeededPermission(String permissionNeeded) {
         this.permissionNeeded = permissionNeeded;
         return this;
-    }
+    }*/
 
     protected void setEditStatus(boolean inEdit){
         this.isInEdit = inEdit;
     }
 
+    /*
     public String getName() {
         return name;
     }
@@ -224,7 +218,7 @@ public class Reward {
 
     public String getPermissionNeeded() {
         return permissionNeeded;
-    }
+    }*/
 
     public boolean needsPermission() {
         return !permissionNeeded.equals("");
