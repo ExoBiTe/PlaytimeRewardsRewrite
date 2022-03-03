@@ -33,6 +33,11 @@ public class Lang {
         return instance;
     }
 
+    public static void reloadLang(){
+        Lang newInst = new Lang(instance.main);
+        instance = newInst;
+    }
+
     private record MessageData(String message,
                                int varAmount,
                                boolean usesPAPI) {

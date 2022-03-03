@@ -265,7 +265,7 @@ public class Reward extends RewardOptions {
     private String fillInPlaceholders(String in, Player p) {
         String rVal = in;
         rVal = rVal.replace("<PLAYER>", p.getName());
-        rVal = rVal.replace("<PLAYERDISPLAY>", p.getName());
+        rVal = rVal.replace("<PLAYERDISPLAY>", p.getDisplayName());
         rVal = rVal.replace("<REWARD>", displayName);
         rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
         return rVal;

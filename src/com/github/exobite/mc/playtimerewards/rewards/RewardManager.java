@@ -1,12 +1,15 @@
 package com.github.exobite.mc.playtimerewards.rewards;
 
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
+import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -29,6 +32,35 @@ public class RewardManager implements Listener {
         if(instance!=null) return;
         instance = new RewardManager(main);
         instance.setup(true);
+    }
+
+    public static boolean reloadRewards(boolean force) {
+        if(instance.currentEdits.size() > 0 ){
+            if(!force) return false;
+            for(RewardEdit re:instance.currentEdits.values()) {
+                re.forceClose();
+            }
+            instance.currentEdits.clear();
+        }
+        HandlerList.unregisterAll(instance);
+        RewardManager rwMan = new RewardManager(instance.main);
+        //Check if there were changed reward names or if some were added/removed
+        List<String> oldRewards = instance.getRegisteredRewardNames();
+        List<String> newRewards = rwMan.getRegisteredRewardNames();
+        boolean equal = true;
+        if(oldRewards.size() != newRewards.size()) equal = false;
+        if(equal) {
+            for(int i=0;i<oldRewards.size();i++) {
+                if(oldRewards.get(i).equals(newRewards.get(i))) {
+                    equal = false;
+                    break;
+                }
+            }
+        }
+        instance = rwMan;
+        //If the Rewards changed, update every registered PlayerData
+        if(!equal) PlayerManager.getInstance().refreshRewardData();
+        return true;
     }
 
     private final PluginMaster main;
@@ -93,6 +125,10 @@ public class RewardManager implements Listener {
     public List<RewardData> getRegisteredRewardData(){
         return registeredRewards.stream().map(
                 rw -> new RewardData(rw.getName(), rw.getType(), rw.isRepeating(), rw.grantFirst())).collect(Collectors.toList());
+    }
+
+    private List<String> getRegisteredRewardNames() {
+        return registeredRewards.stream().map(RewardOptions::getName).collect(Collectors.toList());
     }
 
     public void checkAndGrantRewards(PlayerData pDat){

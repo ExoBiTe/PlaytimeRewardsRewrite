@@ -39,6 +39,7 @@ public class PluginMaster extends JavaPlugin {
 
     private Logger log;
     private Version bukkitVersion;
+    private boolean pauseAsyncTimer = false;
 
     //Constants
     private final int BSTATS_ID = 14369;
@@ -101,11 +102,35 @@ public class PluginMaster extends JavaPlugin {
         if(Config.getInstance().checkForUpdate()) AutoUpdater.getInstance().moveUpdate();
     }
 
+    public void reloadConfigurationData(final boolean forceRewardReload){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                PluginMaster.sendConsoleMessage(Level.INFO, "Reloading the Configuration Files...");
+                long ms = System.currentTimeMillis();
+                pauseAsyncTimer = true; //Pause the Clock while reloading data
+                Config.reloadConfig(true);
+                Lang.reloadLang();
+                if(!RewardManager.reloadRewards(forceRewardReload)) {
+                    sendConsoleMessage(Level.WARNING, "Couldn't reload the Rewards while they are being edited.");
+                }
+                pauseAsyncTimer = false;
+                PluginMaster.sendConsoleMessage(Level.INFO, "Reload done (took "+(System.currentTimeMillis() - ms)+"ms)!");
+                PlayerManager.getInstance().checkForMissedTask();
+            }
+        }.runTaskAsynchronously(this);
+    }
+
     public Version getBukkitVersion(){
         return bukkitVersion;
     }
 
+    public boolean pauseAsyncTimers(){
+        return pauseAsyncTimer;
+    }
+
     private void setupMetrics() {
+        if(!Config.getInstance().allowMetrics()) return;
         new Metrics(this, BSTATS_ID);
         //No Custom Charts for now.
     }
@@ -117,9 +142,9 @@ public class PluginMaster extends JavaPlugin {
             private Queue<Player> playerQueue;
             private boolean createNewQueue = true;
 
-
             @Override
             public void run() {
+                if(pauseAsyncTimer) return;
                 if(createNewQueue) {
                     playerQueue = new ArrayDeque<>(Bukkit.getOnlinePlayers());
                     createNewQueue = false;

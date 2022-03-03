@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +33,15 @@ public class PlayerManager implements Listener {
     private final JavaPlugin main;
     private final Map<UUID, PlayerData> registeredPlayers = new HashMap<>();
 
+    private boolean updateGotCalledWhileInPause = false;
+
     private PlayerManager(JavaPlugin main) {
         this.main = main;
         main.getServer().getPluginManager().registerEvents(this, main);
 
         long ticks = Config.getInstance().getAutoSaveTimerMS() / 50;
         if(ticks>0){
-            new BukkitRunnable() {
+            BukkitRunnable rb = new BukkitRunnable() {
 
                 private final File f = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "playerData.yml");
 
@@ -47,6 +50,12 @@ public class PlayerManager implements Listener {
                     long ms1 = System.currentTimeMillis();
                     if(registeredPlayers.size()<=0) {
                         //No PlayerData registered, so there is nothing to save.
+                        return;
+                    }
+                    //Check if the Main locked the Async Tasks
+                    if(PluginMaster.getInstance().pauseAsyncTimers()) {
+                        //Set Helper Variable
+                        updateGotCalledWhileInPause = true;
                         return;
                     }
                     PluginMaster.sendConsoleMessage(Level.INFO, "Saving PlayerData from all Online Players...");
@@ -64,8 +73,8 @@ public class PlayerManager implements Listener {
                     PluginMaster.sendConsoleMessage(Level.INFO, "Saved Data for "+amount+" Players (took "+(System.currentTimeMillis()-ms1)+"ms)!");
                 }
 
-            }.runTaskTimerAsynchronously(this.main, ticks, ticks);
-
+            };
+            BukkitTask bt = rb.runTaskTimerAsynchronously(this.main, ticks, ticks);
         }
     }
 
@@ -78,6 +87,19 @@ public class PlayerManager implements Listener {
     private void onLeave(PlayerQuitEvent e){
         getPlayerData(e.getPlayer()).onLeave(false);
         removePlayerData(e.getPlayer().getUniqueId());
+    }
+
+    public void checkForMissedTask(){
+        if(updateGotCalledWhileInPause) {
+            updateGotCalledWhileInPause = false;
+
+        }
+    }
+
+    public void refreshRewardData() {
+        for(PlayerData pDat:registeredPlayers.values()) {
+            pDat.refreshRewards();
+        }
     }
 
     public PlayerData createPlayerData(Player p){

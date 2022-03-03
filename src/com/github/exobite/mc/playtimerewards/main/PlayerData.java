@@ -21,19 +21,12 @@ public class PlayerData {
     private final UUID id;
     private boolean hasData;
 
-    private final Map<RewardData, Long> receivedTimestamps = new HashMap<>();
+    private Map<RewardData, Long> receivedTimestamps = new HashMap<>();
 
     PlayerData(Player p) {
         id = p.getUniqueId();
         loginTimestamp = Utils.getPlaytimeInMS(p);
         loadPlayerData();
-
-        //Removed for Release Version
-        /*GUI = GUIManager.createGUI("I´m a cool GUI", 18);
-        GUI.canClose(false);
-        GUI.setItemstack(new ItemStack(Material.OAK_LOG), 1);
-        GUI.setSlotAction(1, getDefaultCloseGUIAction());*/
-
     }
 
     private void loadPlayerData(){
@@ -44,58 +37,67 @@ public class PlayerData {
             public void run() {
                 //Fill rewardsList with all registered Rewards
                 RewardManager.getInstance().getRegisteredRewardData().forEach(rwd -> receivedTimestamps.put(rwd, 0L));
-                File f = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "playerData.yml");
-                if(f.exists()) {
-                    YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
-                    if(conf.getKeys(false).contains(id.toString())) {
-                        ConfigurationSection playerSection = conf.getConfigurationSection(id.toString());
-                        if(playerSection!=null) {
-                            for(String key:playerSection.getKeys(false)){
-                                boolean contains = false;
-                                for(RewardData rwd: receivedTimestamps.keySet()){
-                                    if(rwd.rewardName().equals(key)) {
-                                        receivedTimestamps.put(rwd, playerSection.getLong(key, 0L));
-                                        contains = true;
-                                        break;
-                                    }
-                                }
-                                if(!contains){
-                                    //Found a non-existing reward (Maybe a deleted one, or someone messed with the storage file),
-                                    //removing it from the Map -> also removing it from the file upon logout
-                                    receivedTimestamps.put(new RewardData(key, null, false, false), null);
-                                }
-                            }
-                        }
-                    }
-                }
+                //Read data from the file (if something exists)
+                loadDataFromFile();
                 //Set Default Values for "new" Rewards
-                for(RewardData rwd:receivedTimestamps.keySet()) {
-                    //Faulty Rewards that may not exist (anymore) get stored with a value of null
-                    //That's why we get it as Object first, check it against null and then cast it to a long
-                    //Getting a Long value directly from the Map causes an NPE.
-                    Object valObj = receivedTimestamps.get(rwd);
-                    if(valObj==null){
-                        continue;
-                    }
-                    long val = (long) valObj;
-                    if(val==0 && rwd.type()==RewardType.PLAYTIME && !rwd.grantFirst()) {
-                        long newVal = Utils.getPlaytimeInMS(p());
-                        //New Players with no Playtime get offset by 100ms. This is used to save the first timestamp instead of saving 0ms
-                        //Saving them with 0ms would effectively prevent the Earning of the Reward until they once reach the wanted Playtime
-                        //in one Session, resulting them to save a new timestamp.
-                        if(newVal==0) newVal = 100;
-                        receivedTimestamps.put(rwd, newVal);
-                    }else if(val==0 && rwd.type()==RewardType.GLOBAL_TIME && !rwd.grantFirst()) {
-                        receivedTimestamps.put(rwd, loginTimestamp);
-                    }else if(val==0 && rwd.type()==RewardType.SESSION_TIME && rwd.grantFirst()) {
-                        //Should start SessionRewards with a negative Value, granting it the Player instantly once upon login
-                        long timeVal = RewardManager.getInstance().getRewardFromName(rwd.rewardName()).getTimeMs();
-                        receivedTimestamps.put(rwd, -1*timeVal);
-                    }
-                }
+                setRewardsToDefault();
                 hasData = true;
             }
         }.runTaskAsynchronously(PluginMaster.getInstance());
+    }
+
+    private void loadDataFromFile() {
+        File f = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "playerData.yml");
+        if(f.exists()) {
+            YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+            if(conf.getKeys(false).contains(id.toString())) {
+                ConfigurationSection playerSection = conf.getConfigurationSection(id.toString());
+                if(playerSection!=null) {
+                    for(String key:playerSection.getKeys(false)){
+                        boolean contains = false;
+                        for(RewardData rwd: receivedTimestamps.keySet()){
+                            if(rwd.rewardName().equals(key)) {
+                                receivedTimestamps.put(rwd, playerSection.getLong(key, 0L));
+                                contains = true;
+                                break;
+                            }
+                        }
+                        if(!contains){
+                            //Found a non-existing reward (Maybe a deleted one, or someone messed with the storage file),
+                            //removing it from the Map -> also removing it from the file upon logout
+                            receivedTimestamps.put(new RewardData(key, null, false, false), null);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setRewardsToDefault() {
+        for(RewardData rwd:receivedTimestamps.keySet()) {
+            //Faulty Rewards that may not exist (anymore) get stored with a value of null
+            //That's why we get it as Object first, check it against null and then cast it to a long
+            //Getting a Long value directly from the Map causes an NPE.
+            Object valObj = receivedTimestamps.get(rwd);
+            if(valObj==null){
+                continue;
+            }
+            long val = (long) valObj;
+            if(val==0 && rwd.type()==RewardType.PLAYTIME && !rwd.grantFirst()) {
+                long newVal = Utils.getPlaytimeInMS(p());
+                //New Players with no Playtime get offset by 100ms. This is used to save the first timestamp instead of saving 0ms
+                //Saving them with 0ms would effectively prevent the Earning of the Reward until they once reach the wanted Playtime
+                //in one Session, resulting them to save a new timestamp.
+                if(newVal==0) newVal = 100;
+                receivedTimestamps.put(rwd, newVal);
+            }else if(val==0 && rwd.type()==RewardType.GLOBAL_TIME && !rwd.grantFirst()) {
+                receivedTimestamps.put(rwd, loginTimestamp);
+            }else if(val==0 && rwd.type()==RewardType.SESSION_TIME && rwd.grantFirst()) {
+                //Should start SessionRewards with a negative Value, granting it the Player instantly once upon login
+                long timeVal = RewardManager.getInstance().getRewardFromName(rwd.rewardName()).getTimeMs();
+                receivedTimestamps.put(rwd, -1*timeVal);
+            }
+        }
     }
 
     private void savePlayerData(boolean sync) {
@@ -121,6 +123,21 @@ public class PlayerData {
         }else{
             rb.runTaskAsynchronously(PluginMaster.getInstance());
         }
+    }
+
+    public void refreshRewards() {
+        Map<RewardData, Long> newData = new HashMap<>();
+        RewardManager.getInstance().getRegisteredRewardData().forEach(rwd -> newData.put(rwd, 0L));
+        for(RewardData rwd: newData.keySet()) {
+            for(RewardData old:receivedTimestamps.keySet()) {
+                if(rwd.rewardName().equals(old.rewardName())) {
+                    newData.put(rwd, receivedTimestamps.getOrDefault(old, 0L));
+                    break;
+                }
+            }
+        }
+        receivedTimestamps = newData;
+        setRewardsToDefault();
     }
 
     protected void massSaveData(YamlConfiguration conf){

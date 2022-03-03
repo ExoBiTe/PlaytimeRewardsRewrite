@@ -24,6 +24,12 @@ public class Config {
         return instance;
     }
 
+    public static void reloadConfig(boolean sync) {
+        Config newInst = new Config(instance.main);
+        newInst.start(sync);
+        instance = newInst;
+    }
+
     private final String CONF_FILENAME = "config.yml";
 
     private final JavaPlugin main;
@@ -31,6 +37,7 @@ public class Config {
     //Config values
     private boolean checkForUpdate = true,
             allowAutoDownload = false,
+            allowMetrics = true,
             allowDebugTools = false;
     private long autoSaveTimerMS = 30 * 60000;   //30 Minutes
     private char colorCode = '§';
@@ -89,6 +96,7 @@ public class Config {
         //Hidden values
         allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);  //Hidden in default config
         allowAutoDownload = conf.getBoolean("AllowAutoUpdate", false);
+        allowMetrics = conf.getBoolean("AllowMetrics", true);
         String colorStr = conf.getString("ColorCode", "§");
         colorCode = colorStr.charAt(0);
     }
@@ -103,6 +111,10 @@ public class Config {
 
     public boolean allowAutoDownload(){
         return allowAutoDownload;
+    }
+
+    public boolean allowMetrics(){
+        return allowMetrics;
     }
 
     public char getColorCode(){

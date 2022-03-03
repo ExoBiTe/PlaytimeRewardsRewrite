@@ -3,6 +3,8 @@ package com.github.exobite.mc.playtimerewards.rewards;
 import com.github.exobite.mc.playtimerewards.gui.CustomItem;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -63,7 +65,18 @@ public class RewardEdit {
     //private void
 
     private void saveDataToReward() {
+        //TODO: Copy data to Reward
         cleanUp();
+    }
+
+    protected void forceClose(){
+        Player p = Bukkit.getPlayer(editor);
+        if(p!=null) {
+            GUIManager.getInstance().setAllowNextGUIClose(true, editor);
+            p.closeInventory();
+            p.sendMessage(ChatColor.RED + "The Reward Edit got cancelled because a forced reload was requested.\nYour editing Progress is lost.");
+        }
+        discardChanges();
     }
 
     protected void discardChanges() {
