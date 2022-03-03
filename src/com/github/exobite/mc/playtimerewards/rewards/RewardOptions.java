@@ -2,11 +2,11 @@ package com.github.exobite.mc.playtimerewards.rewards;
 
 public class RewardOptions {
 
-    protected final String name;
+    private final String name;
     protected String displayName;
     protected boolean isRepeating, grantFirst;
     protected long timeMs;
-    protected RewardType type;
+    private RewardType type;
 
     protected String[] consoleCommands;
     protected String[] playerMessages;

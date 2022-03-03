@@ -188,6 +188,10 @@ public class GUIManager implements Listener {
             slotData.put(to, tar);
         }
 
+        public int getSize(){
+            return inv.getSize();
+        }
+
     }
 
     private class GUISlot {

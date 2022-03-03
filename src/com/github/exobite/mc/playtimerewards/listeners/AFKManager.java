@@ -42,7 +42,7 @@ public class AFKManager implements Listener {
     private final Map<UUID, Long> isAfk = new HashMap<>();
     private final JavaPlugin main;
 
-    private final long FLAGGED_AS_AFK_SECONDS = 30 * 1;  //5 Minutes
+    private final long FLAGGED_AS_AFK_SECONDS = 60 * 5;  //5 Minutes
 
     private AFKManager(JavaPlugin main){
         this.main = main;

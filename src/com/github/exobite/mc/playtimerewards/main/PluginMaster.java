@@ -116,7 +116,6 @@ public class PluginMaster extends JavaPlugin {
                 }
                 pauseAsyncTimer = false;
                 PluginMaster.sendConsoleMessage(Level.INFO, "Reload done (took "+(System.currentTimeMillis() - ms)+"ms)!");
-                PlayerManager.getInstance().checkForMissedTask();
             }
         }.runTaskAsynchronously(this);
     }

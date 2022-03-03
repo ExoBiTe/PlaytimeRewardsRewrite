@@ -125,6 +125,20 @@ public class Lang {
         data.put("GUI_EDIT_REWARD_EXIT_NOSAVE_LORE", createMessageData("§cThis Option discards all changes\n§cyou've made and ends the editing."));
         data.put("GUI_EDIT_REWARD_EXIT_SAVE_NAME", createMessageData("§2Exit and Save Changes"));
         data.put("GUI_EDIT_REWARD_EXIT_SAVE_LORE", createMessageData("§aThis Option saves all changes\n§ayou've made and ends the editing."));
+        data.put("GUI_EDIT_REWARD_FIELD_ITEM_NAME", createMessageData("§6Change the %[0]§6."));
+        //The following Strings translate Fields to Readable User Messages
+        //They need to be exactly named like GUI_EDIT_TRANSL_<FIELDNAME IN UPPERCASE>
+        //Otherwise an error may get thrown
+        data.put("GUI_EDIT_TRANSL_TIMEMS", createMessageData("needed §btime"));
+        data.put("GUI_EDIT_TRANSL_DISPLAYNAME", createMessageData("display §bname"));
+        data.put("GUI_EDIT_TRANSL_ISREPEATING", createMessageData("option is §brepeating"));
+        data.put("GUI_EDIT_TRANSL_GRANTFIRST", createMessageData("option grant §bfirst"));
+        data.put("GUI_EDIT_TRANSL_CONSOLECOMMANDS", createMessageData("executed §bcommands"));
+        data.put("GUI_EDIT_TRANSL_PLAYERMESSAGES", createMessageData("sent §bplayer messages"));
+        data.put("GUI_EDIT_TRANSL_GLOBALMESSAGES", createMessageData("sent §bglobal messages"));
+        data.put("GUI_EDIT_TRANSL_PERMISSIONNEEDED", createMessageData("needed §bpermission"));
+        data.put("GUI_EDIT_TRANSL_PARTICLES", createMessageData("§bparticles"));
+        data.put("GUI_EDIT_TRANSL_SOUNDS", createMessageData("§bsounds"));
 
         return data;
     }

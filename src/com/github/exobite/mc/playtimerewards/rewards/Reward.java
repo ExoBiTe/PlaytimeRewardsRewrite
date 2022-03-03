@@ -137,6 +137,8 @@ public class Reward extends RewardOptions {
         return new RewardSound(sound, sc, volume, pitch);
     }
 
+
+
     /*private final String name;
     private String displayName;
     private boolean isRepeating, grantFirst;

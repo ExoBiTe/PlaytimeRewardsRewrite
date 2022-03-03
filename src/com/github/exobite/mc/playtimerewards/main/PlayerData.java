@@ -164,6 +164,7 @@ public class PlayerData {
     }
 
     public boolean checkReward(Reward rw){
+        System.out.println("Checking rw "+rw.getName());
         if(!hasData()) return false;
         RewardData rwd = getRewardDataFromName(rw.getName());
         if(rwd==null) return false;
@@ -179,6 +180,7 @@ public class PlayerData {
         }
         boolean permissionIsOK = !rw.needsPermission() || (rw.needsPermission() && p().hasPermission(rw.getPermissionNeeded()));
         grant = nowTimestamp >= oldTimestamp + rw.getTimeMs() && permissionIsOK;
+        System.out.println("ot: "+oldTimestamp+", needed: "+rw.getTimeMs()+", nt: "+nowTimestamp+", permio: "+permissionIsOK);
         if(grant) {
             //Save Repeating Rewards with their Timestamp,
             //Save non Repeating Rewards with -1L

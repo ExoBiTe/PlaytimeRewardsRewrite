@@ -4,7 +4,6 @@ import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -144,8 +143,9 @@ public class RewardManager implements Listener {
         if(rw==null || p==null) return null;
         if(rw.isInEdit()) throw new IllegalArgumentException("Can't edit a Reward that is already being edited!");
         if(currentEdits.containsKey(p.getUniqueId())) throw new IllegalArgumentException("One Player can't edit multiple Rewards!");
-        currentEdits.remove(p.getUniqueId());
-        return new RewardEdit(rw, p);
+        RewardEdit rwd = new RewardEdit(rw, p);
+        currentEdits.put(p.getUniqueId(), rwd);
+        return rwd;
     }
 
     protected void removeFromEditMap(UUID id){

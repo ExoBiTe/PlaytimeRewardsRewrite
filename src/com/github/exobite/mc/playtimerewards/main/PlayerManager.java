@@ -33,8 +33,6 @@ public class PlayerManager implements Listener {
     private final JavaPlugin main;
     private final Map<UUID, PlayerData> registeredPlayers = new HashMap<>();
 
-    private boolean updateGotCalledWhileInPause = false;
-
     private PlayerManager(JavaPlugin main) {
         this.main = main;
         main.getServer().getPluginManager().registerEvents(this, main);
@@ -48,14 +46,8 @@ public class PlayerManager implements Listener {
                 @Override
                 public void run() {
                     long ms1 = System.currentTimeMillis();
-                    if(registeredPlayers.size()<=0) {
+                    if(registeredPlayers.size()<=0 || PluginMaster.getInstance().pauseAsyncTimers()) {
                         //No PlayerData registered, so there is nothing to save.
-                        return;
-                    }
-                    //Check if the Main locked the Async Tasks
-                    if(PluginMaster.getInstance().pauseAsyncTimers()) {
-                        //Set Helper Variable
-                        updateGotCalledWhileInPause = true;
                         return;
                     }
                     PluginMaster.sendConsoleMessage(Level.INFO, "Saving PlayerData from all Online Players...");
@@ -87,13 +79,6 @@ public class PlayerManager implements Listener {
     private void onLeave(PlayerQuitEvent e){
         getPlayerData(e.getPlayer()).onLeave(false);
         removePlayerData(e.getPlayer().getUniqueId());
-    }
-
-    public void checkForMissedTask(){
-        if(updateGotCalledWhileInPause) {
-            updateGotCalledWhileInPause = false;
-
-        }
     }
 
     public void refreshRewardData() {

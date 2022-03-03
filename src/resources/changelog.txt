@@ -36,6 +36,7 @@ Changelog Version 0.1.3:
     - Config Values:
         - Value "AllowAutoUpdate" (boolean) allows to Automatically download the newest Plugin Version and install at the next server restart
             -> Made it hidden. Users who explicitly want to use it, may still enable it.
+        - Hidden Value "AllowMetrics" (boolean) allows the user to disable bstats for this plugin. Default is true.
 
     - PlaceholderAPI Support:
         - Added the following Placeholders:
