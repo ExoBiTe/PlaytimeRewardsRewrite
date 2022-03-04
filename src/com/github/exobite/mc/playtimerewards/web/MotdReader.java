@@ -67,9 +67,7 @@ public class MotdReader {
                 data.add(s.nextLine());
             }
             s.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) {}
         return data;
     }
 

@@ -40,7 +40,6 @@ public class RewardEdit extends RewardOptions {
     }
 
     private void copyFields(RewardOptions src, RewardOptions dst) {
-        long ms = System.currentTimeMillis();
         for(Field f:src.getClass().getDeclaredFields()) {
             //Only copy protected fields
             if(!Modifier.isProtected(f.getModifiers())) continue;
@@ -52,7 +51,6 @@ public class RewardEdit extends RewardOptions {
                 e.printStackTrace();
             }
         }
-        PluginMaster.sendConsoleMessage(Level.INFO, "Copying took "+(System.currentTimeMillis()-ms)+"ms.");
     }
 
     protected void passStringFromChat(String message) {

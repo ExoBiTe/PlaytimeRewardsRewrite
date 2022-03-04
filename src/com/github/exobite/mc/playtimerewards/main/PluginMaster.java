@@ -2,10 +2,7 @@ package com.github.exobite.mc.playtimerewards.main;
 
 import com.github.exobite.mc.playtimerewards.external.PAPIManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
-import com.github.exobite.mc.playtimerewards.listeners.AFKManager;
-import com.github.exobite.mc.playtimerewards.listeners.Listeners;
-import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
-import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
+import com.github.exobite.mc.playtimerewards.listeners.*;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
@@ -74,6 +71,7 @@ public class PluginMaster extends JavaPlugin {
         //Load Game-Interaction Stuff
         getCommand("Playtime").setExecutor(new PlaytimeCommand());
         getCommand("Playtimetop").setExecutor(new PlaytimetopCommand());
+        getCommand("PlaytimeRewards").setExecutor(new PlaytimeRewardsCommand());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
 
         //Load Placeholderapi, if it exists
@@ -100,6 +98,10 @@ public class PluginMaster extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         PlayerManager.getInstance().cleanAllPlayerData();
         if(Config.getInstance().checkForUpdate()) AutoUpdater.getInstance().moveUpdate();
+    }
+
+    public void reloadConfigurationData() {
+        reloadConfigurationData(false);
     }
 
     public void reloadConfigurationData(final boolean forceRewardReload){

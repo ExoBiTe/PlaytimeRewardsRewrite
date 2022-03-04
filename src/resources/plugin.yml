@@ -16,6 +16,10 @@ commands:
     description: Displays the Players with the most Playtime
     usage: /Playtimetop
     aliases: pttop
+  PlaytimeRewards:
+    description: PlaytimeRewards Management Main Command
+    usage: /Playtimerewatds
+    aliases: ptr
 
 permissions:
   playtimerewards.*:
@@ -24,6 +28,7 @@ permissions:
     children:
       playtimerewards.notifyOnUpdate: true
       playtimerewards.cmd.playtime.other: true
+      playtimerewards.cmd.playtimerewards.*: true
 
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login
@@ -46,3 +51,17 @@ permissions:
 
   playtimerewards.cmd.playtimetop:
     description: Grants access to the /playtimetop command
+
+  playtimerewards.cmd.playtimerewards.*:
+    description: Grants full access to the /playtimerewards command
+    default: op
+    children:
+      playtimerewards.cmd.playtimerewards.list: true
+      playtimerewards.cmd.playtimerewards.editreward: true
+
+  playtimerewards.cmd.playtimerewards.list:
+    description: Grants access to the /playtimerewards list command
+
+  playtimerewards.cmd.playtimerewards.editreward:
+    description: Grants access to the /playtimerewards editReward command
+

@@ -111,11 +111,15 @@ public class Lang {
         data.put("CMD_SUC_PTTOP_HEADER", createMessageData("§7Listing the top §b%[0] §7Playtimes:"));
         data.put("CMD_SUC_PTTOP_ENTRY", createMessageData("§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s"));
 
+        data.put("CMD_SUC_PTR_LIST_HEADER", createMessageData(""));
+        data.put("CMD_SUC_PTR_LIST_ENTRY", createMessageData(""));
+
         data.put("EXT_PAPI_TIME_FORMAT", createMessageData("%[0]d %[1]h %[2]m %[3]s"));
 
         data.put("CMD_ERR_TOO_MANY_REQUESTS", createMessageData("§4You can't do that right now. Try again later!"));
         data.put("CMD_ERR_NO_PERMISSION", createMessageData("§4You don't have the Permission to do this."));
         data.put("CMD_ERR_PLAYER_NOT_FOUND", createMessageData("§4Can't find the Player '§6%[0]§4'!"));
+        data.put("CMD_ERR_REWARD_NOT_FOUND", createMessageData("§4Can't find the Reward '§6%[0]§4'!"));
 
         data.put("NOTIF_UPDATE_AVAILABLE", createMessageData("§6Version %[0] of PlaytimeRewards is available (Running v%[1])!"));
 
