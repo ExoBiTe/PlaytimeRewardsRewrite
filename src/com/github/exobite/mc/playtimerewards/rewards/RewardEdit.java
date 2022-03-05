@@ -2,18 +2,19 @@ package com.github.exobite.mc.playtimerewards.rewards;
 
 import com.github.exobite.mc.playtimerewards.gui.CustomItem;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
-import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
+import com.github.exobite.mc.playtimerewards.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.logging.Level;
 
 public class RewardEdit extends RewardOptions {
 
@@ -28,13 +29,18 @@ public class RewardEdit extends RewardOptions {
     private final UUID editor;
     private final Reward rw;
     private final Map<String, GUIManager.GUI> guis = new HashMap<>();
+    private final RewardEdit inst;
+
+    private ChatInputAction nextAction;
+    private GUIManager.GUI guiAfterChat;
 
     protected RewardEdit(Reward rw, Player p) {
         super(rw.getName(), rw.getType(), rw.timeMs, rw.isRepeating, rw.grantFirst);
+        inst = this;
         rw.setEditStatus(true); //Block reward for other Edits
         editor = p.getUniqueId();
         this.rw = rw;
-        copyFields(rw, this);
+        copyFields(rw, inst);
         createMainGui();
         guis.get("main").openInventory(p);
     }
@@ -53,15 +59,26 @@ public class RewardEdit extends RewardOptions {
         }
     }
 
-    protected void passStringFromChat(String message) {
-
+    protected void passStringFromChat(Player p, String message) {
+        if(nextAction!=null) {
+            if(nextAction.parseInput(p, message)){
+                nextAction = null;
+                if(guiAfterChat!=null) {
+                    guiAfterChat.openInventory(p);
+                    guiAfterChat = null;
+                }
+            }else{
+                p.sendMessage("Error, try again.");
+            }
+        }
     }
 
     private void createMainGui() {
         Lang langInst = Lang.getInstance();
         String guiTitle = langInst.getMessageWithArgs("GUI_EDIT_REWARD_WINDOWNAME", rw.getName());
-        GUIManager.GUI editGui = GUIManager.getInstance().createGUI(guiTitle, 27);
-        editGui.canClose(false);
+        GUIManager.GUI editGui = GUIManager.getInstance().createGUI(guiTitle, 27)
+                .cancelAll(true)
+                .canClose(false);
 
         CustomItem ci = new CustomItem(Material.BARRIER)
                 .setDisplayName(langInst.getMessageWithArgs("GUI_EDIT_REWARD_EXIT_NOSAVE_NAME"))
@@ -96,7 +113,6 @@ public class RewardEdit extends RewardOptions {
             idx++;
         }
 
-
         guis.put("main", editGui);
     }
 
@@ -109,7 +125,7 @@ public class RewardEdit extends RewardOptions {
             m = INPUT_STRING_ITEM;
         }else if(f.getType()==boolean.class) {
             try {
-                m = (boolean) f.get(this) ? INPUT_BOOL_TRUE_ITEM : INPUT_BOOL_FALSE_ITEM;
+                m = (boolean) f.get(inst) ? INPUT_BOOL_TRUE_ITEM : INPUT_BOOL_FALSE_ITEM;
             } catch (IllegalAccessException e) {
                 m = INPUT_BOOL_FALSE_ITEM;
             }
@@ -131,14 +147,120 @@ public class RewardEdit extends RewardOptions {
         GUIManager.GUIClickAction action = new GUIManager.GUIClickAction() {
             @Override
             protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
-
+                clickedItem(e.getWhoClicked(), f);
+                guiAfterChat = guis.get("main");
             }
         };
         gui.setSlotAction(slot, action);
     }
 
+    private void clickedItem(HumanEntity clicker, final Field f) {
+        if(f.getType().isArray()) {
+            GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
+            clicker.closeInventory();
+            createAndOpenArrayGUI(f).openInventory(clicker);
+        }else if(f.getType()==String.class) {
+            nextAction = new ChatInputAction() {
+                @Override
+                boolean parseInput(Player p, String input) {
+                    try {
+                        f.set(inst, input);
+                        return true;
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                }
+            };
+            GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
+            clicker.closeInventory();
+        }else if(f.getType()==long.class && f.getName().equals("timeMs")) {
+            nextAction = new ChatInputAction() {
+                @Override
+                boolean parseInput(Player p, String input) {
+                    long newms = Utils.convertTimeStringToMS(input);
+                    if(newms>0) {
+                        try {
+                            f.set(inst, newms);
+                            return true;
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return false;
+                }
+            };
+            GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
+            clicker.closeInventory();
+        }
+    }
+
+    private GUIManager.GUI createAndOpenArrayGUI(final Field f) {
+        GUIManager.GUI g = GUIManager.getInstance().createGUI("Array "+f.getName(), 27)
+                .cancelAll(true)
+                .canClose(false);
+        Material m;
+        if(f.getType()==String.class) {
+            m = INPUT_STRING_ITEM;
+        }else if(f.getType()==boolean.class) {
+            try {
+                m = (boolean) f.get(inst) ? INPUT_BOOL_TRUE_ITEM : INPUT_BOOL_FALSE_ITEM;
+            } catch (IllegalAccessException e) {
+                m = INPUT_BOOL_FALSE_ITEM;
+            }
+        }else if(f.getType()==long.class) {
+            m = INPUT_TIME_ITEM;
+        }else if(f.getType()==RewardParticle.class) {
+            m = INPUT_PARTICLE_ITEM;
+        }else if(f.getType()==RewardSound.class) {
+            m = INPUT_SOUND_ITEM;
+        }else{
+            //Unknown
+            m = Material.BEDROCK;
+        }
+        Object[] content;
+        try {
+            f.setAccessible(true);
+            Object arr = f.get(inst);
+            System.out.println(f.getName()+", "+f.getType()+", "+f.getType().isArray());
+            System.out.println(inst + ", " + arr);
+            int len = Array.getLength(arr);
+            content = new Object[len];
+            for(int i=0;i<len;i++) {
+                content[i] = Array.get(arr, i);
+            }
+        } catch (IllegalAccessException e) {
+            content = new Object[0];
+            e.printStackTrace();
+        }
+        int idx = 2;
+        for(Object e:content) {
+            g.setItemstack(idx, new CustomItem(m).setDisplayName(String.valueOf(idx)).getItemStack());
+            g.setSlotAction(idx, new GUIManager.GUIClickAction() {
+                @Override
+                protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
+                    clickedItem(e.getWhoClicked(), f);
+                    guiAfterChat = g;
+                }
+            });
+            idx++;
+            if(idx>=g.getSize()) break;
+        }
+        g.setItemstack(0, new CustomItem(Material.BARRIER).setDisplayName("Go back").getItemStack());
+        g.setSlotAction(0, new GUIManager.GUIClickAction() {
+            @Override
+            protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
+                GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
+                guiAfterChat = guis.get("main");
+                g.deleteGUI();
+            }
+        });
+        return g;
+    }
+
     private void saveDataToReward() {
         //TODO: Copy data to Reward
+        copyFields(inst, rw);
         cleanUp();
     }
 
@@ -158,8 +280,17 @@ public class RewardEdit extends RewardOptions {
     }
 
     private void cleanUp() {
+        for(GUIManager.GUI g:guis.values()) {
+            g.deleteGUI();
+        }
         RewardManager.getInstance().removeFromEditMap(editor);
         rw.setEditStatus(false);
+    }
+
+    private abstract class ChatInputAction {
+
+        abstract boolean parseInput(Player p, String input);
+
     }
 
 }

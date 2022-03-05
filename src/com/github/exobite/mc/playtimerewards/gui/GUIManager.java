@@ -68,6 +68,7 @@ public class GUIManager implements Listener {
         Inventory i = e.getClickedInventory();
         if(!guis.containsKey(i)) return;
         GUI g = guis.get(i);
+        if(g.cancelAll) e.setCancelled(true);
         int slot = e.getSlot();
         GUISlot gs = g.getSlotData(slot, false);
         if(gs==null) return;
@@ -107,6 +108,7 @@ public class GUIManager implements Listener {
 
         private Inventory inv;
         private boolean canClose;
+        private boolean cancelAll;
         private Map<Integer, GUISlot> slotData;
 
         private GUI(String title, int size) {
@@ -128,7 +130,7 @@ public class GUIManager implements Listener {
          * Opens the Inventory for the specified Player
          * @param p The target Player
          */
-        public void openInventory(Player p){
+        public void openInventory(HumanEntity p){
             p.openInventory(inv);
         }
 
@@ -139,6 +141,11 @@ public class GUIManager implements Listener {
          */
         public GUI canClose(boolean canClose){
             this.canClose = canClose;
+            return this;
+        }
+
+        public GUI cancelAll(boolean cancelAll) {
+            this.cancelAll = cancelAll;
             return this;
         }
 

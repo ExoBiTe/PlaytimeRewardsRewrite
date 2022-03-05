@@ -165,7 +165,14 @@ public class RewardManager implements Listener {
     private void onChat(AsyncPlayerChatEvent e){
         UUID id = e.getPlayer().getUniqueId();
         if(currentEdits.containsKey(id)) {
-            currentEdits.get(id).passStringFromChat(e.getMessage());
+            e.setCancelled(true);
+            new BukkitRunnable(){
+
+                @Override
+                public void run() {
+                    currentEdits.get(id).passStringFromChat(e.getPlayer(), e.getMessage());
+                }
+            }.runTask(main);
         }
     }
 
