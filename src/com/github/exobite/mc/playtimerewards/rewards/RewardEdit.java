@@ -11,6 +11,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -46,11 +47,13 @@ public class RewardEdit extends RewardOptions {
     }
 
     private void copyFields(RewardOptions src, RewardOptions dst) {
-        for(Field f:src.getClass().getDeclaredFields()) {
+        for(Field f:src.getClass().getSuperclass().getDeclaredFields()) {
             //Only copy protected fields
+            //System.out.println("Field "+f.getName());
             if(!Modifier.isProtected(f.getModifiers())) continue;
             try {
-                dst.getClass().getField(f.getName()).set(dst, f.get(src));
+                dst.getClass().getSuperclass().getDeclaredField(f.getName()).set(dst, f.get(src));
+                //System.out.println("Copying "+f.getName()+"!");
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 //None of them should ever be called, as they are both the same class
                 //and this method only accesses protected fields
@@ -155,6 +158,8 @@ public class RewardEdit extends RewardOptions {
     }
 
     private void clickedItem(HumanEntity clicker, final Field f) {
+        //Array(or Member) is printed as [java.lang String, single-String field is printed as java.lang.String
+        //Check for non-array types when bool checkForArray isnt true
         if(f.getType().isArray()) {
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
             clicker.closeInventory();
@@ -195,7 +200,39 @@ public class RewardEdit extends RewardOptions {
         }
     }
 
+    private void clickedItemInArray(HumanEntity clicker, final Object arrayInstance, int index) {
+        if(!arrayInstance.getClass().isArray()) {
+            return;
+        }
+        System.out.println(arrayInstance.getClass().getName() + ", " + String.class.getName());
+        String strippedName = arrayInstance.getClass().getName().substring(2).substring(0, arrayInstance.getClass().getName().length()-3);
+        if(strippedName.equals(String.class.getName())) {
+            nextAction = new ChatInputAction() {
+                @Override
+                boolean parseInput(Player p, String input) {
+                    Array.set(arrayInstance, index, input);
+                    return true;
+                }
+            };
+            GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
+            clicker.closeInventory();
+        }else if(strippedName.equals(long.class.getName())) {
+            nextAction = new ChatInputAction() {
+                @Override
+                boolean parseInput(Player p, String input) {
+                    long newms = Utils.convertTimeStringToMS(input);
+                    Array.set(arrayInstance, index, newms);
+                    return true;
+                }
+            };
+            GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
+            clicker.closeInventory();
+        }
+
+    }
+
     private GUIManager.GUI createAndOpenArrayGUI(final Field f) {
+        System.out.println("Called 'create&open gui'!");
         GUIManager.GUI g = GUIManager.getInstance().createGUI("Array "+f.getName(), 27)
                 .cancelAll(true)
                 .canClose(false);
@@ -219,15 +256,14 @@ public class RewardEdit extends RewardOptions {
             m = Material.BEDROCK;
         }
         Object[] content;
+        Object arrayInst = null;
         try {
             f.setAccessible(true);
-            Object arr = f.get(inst);
-            System.out.println(f.getName()+", "+f.getType()+", "+f.getType().isArray());
-            System.out.println(inst + ", " + arr);
-            int len = Array.getLength(arr);
+            arrayInst = f.get(inst);
+            int len = Array.getLength(arrayInst);
             content = new Object[len];
             for(int i=0;i<len;i++) {
-                content[i] = Array.get(arr, i);
+                content[i] = Array.get(arrayInst, i);
             }
         } catch (IllegalAccessException e) {
             content = new Object[0];
@@ -235,11 +271,15 @@ public class RewardEdit extends RewardOptions {
         }
         int idx = 2;
         for(Object e:content) {
-            g.setItemstack(idx, new CustomItem(m).setDisplayName(String.valueOf(idx)).getItemStack());
+            String name = "Debug  idx "+ (idx-2);
+            String lore = ChatColor.AQUA+e.toString()+ChatColor.RESET+"\nClick to edit!";
+            g.setItemstack(idx, new CustomItem(m).setDisplayName(name).setLoreFromString(lore).getItemStack());
+            final int fidx = idx - 2;
+            Object finalArrayInst = arrayInst;
             g.setSlotAction(idx, new GUIManager.GUIClickAction() {
                 @Override
                 protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
-                    clickedItem(e.getWhoClicked(), f);
+                    clickedItemInArray(e.getWhoClicked(), finalArrayInst, fidx);
                     guiAfterChat = g;
                 }
             });
@@ -251,7 +291,7 @@ public class RewardEdit extends RewardOptions {
             @Override
             protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
                 GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
-                guiAfterChat = guis.get("main");
+                guis.get("main").openInventory(e.getWhoClicked());
                 g.deleteGUI();
             }
         });
