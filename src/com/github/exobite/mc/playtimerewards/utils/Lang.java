@@ -3,7 +3,6 @@ package com.github.exobite.mc.playtimerewards.utils;
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -150,8 +149,8 @@ public class Lang {
     private MessageData createMessageData(String msg) {
         if(msg==null) return new MessageData("ERR_NO_MESSAGE_FOUND_", 0, false);
         String replaced = msg.replaceAll("%\\[[0-9]]", "%[#]");
-        int amount = StringUtils.countMatches(replaced, "%[#]");
-        //boolean usepapi = replaced.matches("%[\\w\\d]*_[\\w\\d]*%"); PAPI has a bilt in function, let's use that
+        //int amount = StringUtils.countMatches(replaced, "%[#]");
+        int amount = Utils.countMatches(replaced, "%[#]");
         boolean containsPlaceholder = false;
         if(this.usePAPI) {
             containsPlaceholder = PlaceholderAPI.containsPlaceholders(msg);

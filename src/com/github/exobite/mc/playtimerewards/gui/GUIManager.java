@@ -1,10 +1,7 @@
 package com.github.exobite.mc.playtimerewards.gui;
 
-import com.github.exobite.mc.playtimerewards.main.PlayerData;
-import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;

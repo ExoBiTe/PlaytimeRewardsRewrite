@@ -54,13 +54,12 @@ public class PAPIManager extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player p, String params) {
         switch(params.toLowerCase(Locale.ROOT)) {
             case "playtime" -> {
-                String[] param = getTimeValues(Utils.getPlaytimeInMS(p));
+                String[] param = getTimeValues(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
                 return Lang.getInstance().getMessageWithArgs("EXT_PAPI_TIME_FORMAT", param);
             }
 
             case "sessiontime" -> {
-                PlayerData pd = PlayerManager.getInstance().getPlayerData(p.getUniqueId());
-                String[] param = getTimeValues(pd.getSessionTime());
+                String[] param = getTimeValues(PlayerManager.getInstance().getPlayerData(p).getSessionTime());
                 return Lang.getInstance().getMessageWithArgs("EXT_PAPI_TIME_FORMAT", param);
             }
 

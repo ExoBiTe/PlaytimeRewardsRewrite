@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
+import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.utils.APIReturnAction;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
@@ -115,8 +116,9 @@ public class PlaytimeCommand implements CommandExecutor {
 
     private String getPlaytimeStringForPlayerOwn(Player p){
         //Not really nice written tbh
-        long t = Utils.getPlaytimeInMS(p);
-        long tSes = PlayerManager.getInstance().getPlayerData(p).getSessionTime();
+        PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
+        long t = pDat.getPlaytimeMS();
+        long tSes = pDat.getSessionTime();
         long[] values = new long[8];    //0-3 Playtime, 4-7 Sessiontime
         System.arraycopy(Utils.convertTimeMsToLongs(t), 0, values, 0, 4);
         System.arraycopy(Utils.convertTimeMsToLongs(tSes), 0, values, 4, 4);
@@ -131,8 +133,9 @@ public class PlaytimeCommand implements CommandExecutor {
 
     private String getPlaytimeStringForPlayerOther(Player p){
         //Not really nice written tbh
-        long t = Utils.getPlaytimeInMS(p);
-        long tSes = PlayerManager.getInstance().getPlayerData(p).getSessionTime();
+        PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
+        long t = pDat.getPlaytimeMS();
+        long tSes = pDat.getSessionTime();
         long[] values = new long[8];    //0-3 Playtime, 4-7 Sessiontime
         System.arraycopy(Utils.convertTimeMsToLongs(t), 0, values, 0, 4);
         System.arraycopy(Utils.convertTimeMsToLongs(tSes), 0, values, 4, 4);

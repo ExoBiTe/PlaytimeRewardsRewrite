@@ -86,7 +86,7 @@ public class PluginMaster extends JavaPlugin {
             }
         }
 
-        //Start Optional, Async stuff
+        //Start Optionals, Async stuff
         MotdReader.createMotdReader(this, false);
         if(Config.getInstance().checkForUpdate()) AutoUpdater.createAutoUpdater(this, false);
         startAsyncChecker();
@@ -116,6 +116,7 @@ public class PluginMaster extends JavaPlugin {
                 if(!RewardManager.reloadRewards(forceRewardReload)) {
                     sendConsoleMessage(Level.WARNING, "Couldn't reload the Rewards while they are being edited.");
                 }
+                AFKManager.getInstance().reloadConfig();
                 pauseAsyncTimer = false;
                 PluginMaster.sendConsoleMessage(Level.INFO, "Reload done (took "+(System.currentTimeMillis() - ms)+"ms)!");
             }

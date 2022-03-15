@@ -25,6 +25,10 @@ public class Reward extends RewardOptions {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Unknown RewardType '"+rwTypeStr+"' in Reward '"+name+"'");
             return null;
         }
+        if(rwType==RewardType.AFK_TIME && !Config.getInstance().enableAfkSystem()) {
+            //AFK-Time Reward has been found but the AFK-System is disabled. Warn Console.
+            PluginMaster.sendConsoleMessage(Level.WARNING, "Found an AFK-Time Reward '"+name+"', but the AFK-System is disabled from the Config!");
+        }
         String repeatStr = cs.getString("Repeating", "");
         boolean repeat;
         try {

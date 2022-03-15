@@ -3,7 +3,6 @@ package com.github.exobite.mc.playtimerewards.rewards;
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
-import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -88,7 +87,7 @@ public class RewardManager implements Listener {
         File f = new File(main.getDataFolder() + File.separator + "rewards.yml");
         if(!f.exists()) {
             //Only create File if it doesn't exist
-            Utils.fillDefaultFile("rewards.yml");
+            main.saveResource("rewards.yml", true);
         }
         int counter = 0;
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);

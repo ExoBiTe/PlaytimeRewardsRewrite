@@ -4,8 +4,8 @@ import com.github.exobite.mc.playtimerewards.rewards.Reward;
 import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.rewards.RewardType;
-import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -20,12 +20,14 @@ public class PlayerData {
     private final long loginTimestamp;
     private final UUID id;
     private boolean hasData;
+    private boolean isAfk;
+    private long wentAfkTimestamp;
 
     private Map<RewardData, Long> receivedTimestamps = new HashMap<>();
 
     PlayerData(Player p) {
         id = p.getUniqueId();
-        loginTimestamp = Utils.getPlaytimeInMS(p);
+        loginTimestamp = getPlaytimeMS();
         loadPlayerData();
     }
 
@@ -84,7 +86,7 @@ public class PlayerData {
             }
             long val = (long) valObj;
             if(val==0 && rwd.type()==RewardType.PLAYTIME && !rwd.grantFirst()) {
-                long newVal = Utils.getPlaytimeInMS(p());
+                long newVal = getPlaytimeMS();
                 //New Players with no Playtime get offset by 100ms. This is used to save the first timestamp instead of saving 0ms
                 //Saving them with 0ms would effectively prevent the Earning of the Reward until they once reach the wanted Playtime
                 //in one Session, resulting them to save a new timestamp.
@@ -168,13 +170,14 @@ public class PlayerData {
         if(!hasData()) return false;
         RewardData rwd = getRewardDataFromName(rw.getName());
         if(rwd==null) return false;
+        if(isAfk() && rwd.type()!=RewardType.AFK_TIME) return false;
         long oldTimestamp = receivedTimestamps.get(rwd);
         if(oldTimestamp==-1 && !rw.isRepeating()) return false; //Value = -1L means Reward already claimed for non Repeating Rewards
         long nowTimestamp = 0;
         RewardType type = rw.getType();
         boolean grant;
         switch (type) {
-            case PLAYTIME -> nowTimestamp = Utils.getPlaytimeInMS(p());
+            case PLAYTIME -> nowTimestamp = getPlaytimeMS();
             case SESSION_TIME -> nowTimestamp = getSessionTime();
             case GLOBAL_TIME -> nowTimestamp = System.currentTimeMillis();
         }
@@ -197,12 +200,33 @@ public class PlayerData {
         return hasData;
     }
 
+    protected void setAfk(boolean isAfk, long timestamp) {
+        this.isAfk = isAfk;
+        if(isAfk) {
+            wentAfkTimestamp = timestamp;
+        }else{
+            wentAfkTimestamp = 0L;
+        }
+    }
+
+    public boolean isAfk() {
+        return isAfk;
+    }
+
     public void onLeave(boolean saveDataSync) {
         savePlayerData(saveDataSync);
     }
 
     public long getSessionTime() {
-        return Utils.getPlaytimeInMS(p()) - loginTimestamp;
+        return getPlaytimeMS() - loginTimestamp;
+    }
+
+    public long getPlaytimeMS() {
+        long playtimeticks = p().getStatistic(Statistic.PLAY_ONE_MINUTE);
+        if(isAfk) {
+            playtimeticks = playtimeticks - ((System.currentTimeMillis() - wentAfkTimestamp) / 50);
+        }
+        return playtimeticks / 20 * 1000L;
     }
 
     public Player p() {

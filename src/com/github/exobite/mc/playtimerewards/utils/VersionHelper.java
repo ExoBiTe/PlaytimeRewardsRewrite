@@ -1,12 +1,11 @@
 package com.github.exobite.mc.playtimerewards.utils;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
 public class VersionHelper {
 
     public static Version getVersionFromString(String version) {
-        if(StringUtils.countMatches(version, ".") < 2) {
+        if(Utils.countMatches(version, ".") < 2) {
             return new Version(0, 0, 0);
         }
         String[] versionSplits = version.split("\\.");

@@ -3,7 +3,6 @@ package com.github.exobite.mc.playtimerewards.utils;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 

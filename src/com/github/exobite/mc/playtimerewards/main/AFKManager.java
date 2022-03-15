@@ -1,4 +1,4 @@
-package com.github.exobite.mc.playtimerewards.listeners;
+package com.github.exobite.mc.playtimerewards.main;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -6,10 +6,12 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +33,7 @@ public class AFKManager implements Listener {
         return instance;
     }
 
-    //Gets later replaced by Config values
-    private final boolean cancelOnInteract = true,
+    private boolean cancelOnInteract = true,
             cancelOnMove = true,
             cancelOnChat = true,
             cancelOnLook = true,
@@ -42,12 +43,47 @@ public class AFKManager implements Listener {
     private final Map<UUID, Long> isAfk = new HashMap<>();
     private final JavaPlugin main;
 
-    private final long FLAGGED_AS_AFK_SECONDS = 60 * 5;  //5 Minutes
+    private long flaggedAsAfkSeconds;
+    private boolean isActive;
+    private int taskid;
 
     private AFKManager(JavaPlugin main){
         this.main = main;
-        main.getServer().getPluginManager().registerEvents(this, main);
-        runScheduler();
+        reloadConfig();
+    }
+
+    protected void setActive(boolean active) {
+        if(isActive == active) return;
+        if(active) {
+            main.getServer().getPluginManager().registerEvents(this, main);
+            for(Player p:Bukkit.getOnlinePlayers()) {
+                if(p.hasPermission("playtimerewards.afk.ignore\"")) continue;
+                afkCounters.put(p.getUniqueId(), 0L);
+            }
+            runScheduler();
+        }else{
+            HandlerList.unregisterAll(this);
+            for(Player p:Bukkit.getOnlinePlayers()) {
+                if(isAfk.containsKey(p.getUniqueId())) {
+                    comeBack(p);
+                }
+                isAfk.clear();
+                afkCounters.clear();
+            }
+            if(taskid!=0) Bukkit.getScheduler().cancelTask(taskid);
+            taskid = 0;
+        }
+        isActive = active;
+    }
+
+    protected void reloadConfig(){
+        cancelOnInteract = Config.getInstance().isCancelAfkOnInteract();
+        cancelOnMove = Config.getInstance().isCancelAfkOnMove();
+        cancelOnChat = Config.getInstance().isCancelAfkOnChat();
+        cancelOnLook = Config.getInstance().isCancelAfkOnLook();
+        cancelOnCommand = Config.getInstance().isCancelAfkOnCommand();
+        flaggedAsAfkSeconds = Config.getInstance().getAfkTime();
+        setActive(Config.getInstance().enableAfkSystem());
     }
 
     /*
@@ -59,16 +95,15 @@ public class AFKManager implements Listener {
         -> Bukkit only allows to decrement a statistic by 2^32/2 -> ~ 30.000h -> 1.242d -> 3,4years
         -> Nah... i guess this is enough time
     BB
-
      */
 
     private void runScheduler(){
-        new BukkitRunnable() {
+        BukkitTask bt = new BukkitRunnable() {
             @Override
             public void run() {
                 for(UUID id:afkCounters.keySet()) {
                     long newval = afkCounters.get(id) + 1;
-                    if(newval>= FLAGGED_AS_AFK_SECONDS) {
+                    if(newval>= flaggedAsAfkSeconds) {
                         afkCounters.remove(id);
                         goAfk(id);
                     }else{
@@ -77,10 +112,13 @@ public class AFKManager implements Listener {
                 }
             }
         }.runTaskTimerAsynchronously(main, 20L, 20L);
+        taskid = bt.getTaskId();
     }
 
     private void goAfk(UUID id) {
-        isAfk.put(id, System.currentTimeMillis() - (FLAGGED_AS_AFK_SECONDS * 1000));
+        long now = System.currentTimeMillis();
+        isAfk.put(id, now - (flaggedAsAfkSeconds * 1000));
+        PlayerManager.getInstance().getPlayerData(id).setAfk(true, now);
         Objects.requireNonNull(Bukkit.getPlayer(id)).sendMessage("Youre now flagged as afk.");
     }
 
@@ -102,6 +140,7 @@ public class AFKManager implements Listener {
         }else{
             decreasePlaytime(p, Math.toIntExact(diffInTicks));
         }
+        PlayerManager.getInstance().getPlayerData(id).setAfk(false, 0L);
     }
 
     private void decreasePlaytime(Player p, int ticks) {
@@ -153,6 +192,7 @@ public class AFKManager implements Listener {
 
     @EventHandler
     private void onJoin(PlayerJoinEvent e) {
+        if(e.getPlayer().hasPermission("playtimerewards.afk.ignore")) return;
         afkCounters.put(e.getPlayer().getUniqueId(), 0L);
     }
 

@@ -29,6 +29,7 @@ permissions:
       playtimerewards.notifyOnUpdate: true
       playtimerewards.cmd.playtime.other: true
       playtimerewards.cmd.playtimerewards.*: true
+      playtimerewards.afk.ignore: true
 
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login
@@ -65,3 +66,5 @@ permissions:
   playtimerewards.cmd.playtimerewards.editreward:
     description: Grants access to the /playtimerewards editReward command
 
+  playtimerewards.afk.ignore:
+    description: Get never flagged as AFK with this Permission
