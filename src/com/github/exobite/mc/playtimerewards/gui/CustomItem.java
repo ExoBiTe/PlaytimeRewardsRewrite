@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 
 public class CustomItem {
@@ -28,10 +29,10 @@ public class CustomItem {
     private String Name;
     private List<String> Lore;
     private Material Mat;
-    private int Amount;
+    private final int Amount;
     private Map<Enchantment, Integer> Enchants = new HashMap<>();
 
-    public CustomItem(Material Mat) {
+    public CustomItem(@NotNull Material Mat) {
         this.Name = Mat.name();
         this.Lore = null;
         this.Mat = Mat;
@@ -45,11 +46,13 @@ public class CustomItem {
         this.Amount = Amount;
     }
 
-    public CustomItem(ItemStack is) {
+    public CustomItem(@NotNull ItemStack is) {
         Amount = is.getAmount();
         Mat = is.getType();
         Enchants = is.getEnchantments();
-        Lore = is.getItemMeta().getLore();
+        if(is.getItemMeta()!=null) {
+            Lore = is.getItemMeta().getLore();
+        }
     }
 
     public CustomItem addEnchantment(Enchantment e, int lv) {
@@ -74,7 +77,7 @@ public class CustomItem {
         return this;
     }
 
-    public CustomItem setLoreFromString(String lore) {
+    public CustomItem setLoreFromString(@NotNull String lore) {
         String[] splits = lore.split("\n");
         if(splits.length>0) {
             this.Lore = Arrays.asList(splits);
@@ -91,7 +94,7 @@ public class CustomItem {
         ItemStack is = new ItemStack(Mat, Amount/*, data*/);
         ItemMeta im = is.getItemMeta();
         if(im==null) return is;
-        if(Name!=null) im.setDisplayName(ChatColor.RESET.toString() + Name);
+        if(Name!=null) im.setDisplayName(ChatColor.RESET + Name);
         if(Lore!=null) im.setLore(Lore);
         for(Enchantment e:Enchants.keySet()) {
             im.addEnchant(e, Enchants.get(e), true);

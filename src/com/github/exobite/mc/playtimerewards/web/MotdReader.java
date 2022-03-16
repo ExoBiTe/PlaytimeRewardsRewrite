@@ -6,6 +6,7 @@ import com.github.exobite.mc.playtimerewards.utils.VersionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,6 +59,7 @@ public class MotdReader {
         }
     }
 
+    @NotNull
     private List<String> getDataFromWeb(){
         List<String> data = new ArrayList<>();
         try {
@@ -71,7 +73,7 @@ public class MotdReader {
         return data;
     }
 
-    private void evaluateData(List<String> data) {
+    private void evaluateData(@NotNull List<String> data) {
         if(data.size()==0) return;
         String addr = Bukkit.getIp();
         StringBuilder motdToSend = new StringBuilder();
@@ -111,6 +113,7 @@ public class MotdReader {
         }.runTask(main);
     }
 
+    @NotNull
     private String verifyMotd(String motd) {
         //Example String: |v>=0.1.1
         String data = motd;

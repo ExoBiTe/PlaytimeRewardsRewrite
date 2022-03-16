@@ -102,7 +102,7 @@ public class Config {
         }
         playtimetopamount = conf.getInt("PlaytimeTopAmount", 10);
 
-        //AFK System (Hidden for now)
+        //AFK System
         enableAfkSystem = conf.getBoolean("AFK.Enable", false);
         if(enableAfkSystem) {
             cancelAfkOnMove = conf.getBoolean("AFK.CancelOnMove", false);
@@ -123,7 +123,7 @@ public class Config {
         }
 
         //Hidden values
-        allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);  //Hidden in default config
+        allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);
         allowAutoDownload = conf.getBoolean("AllowAutoUpdate", false);
         allowMetrics = conf.getBoolean("AllowMetrics", true);
         String colorStr = conf.getString("ColorCode", "§");

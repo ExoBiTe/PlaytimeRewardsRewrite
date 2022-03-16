@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +34,7 @@ public class Lang {
     }
 
     public static void reloadLang(){
-        Lang newInst = new Lang(instance.main);
-        instance = newInst;
+        instance = new Lang(instance.main);
     }
 
     private record MessageData(String message,
@@ -47,7 +47,7 @@ public class Lang {
     private final File langFile;
     private final boolean usePAPI;
 
-    private Lang(JavaPlugin main){
+    private Lang(@NotNull JavaPlugin main){
         this.main = main;
         usePAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
 
@@ -101,6 +101,7 @@ public class Lang {
         }
     }
 
+    @NotNull
     private Map<String, MessageData> getDefaultMap() {
         Map<String, MessageData> data = new HashMap<>();
         data.put("CMD_SUC_PT_OWN", createMessageData("§aYour Playtime is %[0]d %[1]h %[2]m %[3]s\nYour Sessiontime is %[4]d %[5]h %[6]m %[7]s"));
@@ -110,8 +111,10 @@ public class Lang {
         data.put("CMD_SUC_PTTOP_HEADER", createMessageData("§7Listing the top §b%[0] §7Playtimes:"));
         data.put("CMD_SUC_PTTOP_ENTRY", createMessageData("§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s"));
 
-        data.put("CMD_SUC_PTR_LIST_HEADER", createMessageData(""));
-        data.put("CMD_SUC_PTR_LIST_ENTRY", createMessageData(""));
+        data.put("CMD_SUC_PTR_LIST_HEADER", createMessageData("§7Listing all §b%[0]§7 Rewards:\n§8Internal Name -- DisplayName -- CountType"));
+        data.put("CMD_SUC_PTR_LIST_ENTRY", createMessageData("§3%[0] §8-- §1%[1] §8-- §7%[2]"));
+        data.put("CMD_SUC_PTR_RELOAD_SUCCESS", createMessageData("§aSuccessfully reloaded the external Data!"));
+        data.put("CMD_WARN_PTR_RELOAD", createMessageData("§4Content from rewards.yml doesn't get reloaded, as there are Rewards being edited."));
 
         data.put("EXT_PAPI_TIME_FORMAT", createMessageData("%[0]d %[1]h %[2]m %[3]s"));
 
@@ -129,9 +132,10 @@ public class Lang {
         data.put("GUI_EDIT_REWARD_EXIT_SAVE_NAME", createMessageData("§2Exit and Save Changes"));
         data.put("GUI_EDIT_REWARD_EXIT_SAVE_LORE", createMessageData("§aThis Option saves all changes\n§ayou've made and ends the editing."));
         data.put("GUI_EDIT_REWARD_FIELD_ITEM_NAME", createMessageData("§6Change the %[0]§6."));
+
         //The following Strings translate Fields to Readable User Messages
         //They need to be exactly named like GUI_EDIT_TRANSL_<FIELDNAME IN UPPERCASE>
-        //Otherwise an error may get thrown
+        //Otherwise an error WILL get thrown
         data.put("GUI_EDIT_TRANSL_TIMEMS", createMessageData("needed §btime"));
         data.put("GUI_EDIT_TRANSL_DISPLAYNAME", createMessageData("display §bname"));
         data.put("GUI_EDIT_TRANSL_ISREPEATING", createMessageData("option is §brepeating"));
@@ -146,10 +150,10 @@ public class Lang {
         return data;
     }
 
+    @NotNull
     private MessageData createMessageData(String msg) {
         if(msg==null) return new MessageData("ERR_NO_MESSAGE_FOUND_", 0, false);
         String replaced = msg.replaceAll("%\\[[0-9]]", "%[#]");
-        //int amount = StringUtils.countMatches(replaced, "%[#]");
         int amount = Utils.countMatches(replaced, "%[#]");
         boolean containsPlaceholder = false;
         if(this.usePAPI) {

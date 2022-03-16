@@ -1,6 +1,5 @@
 package com.github.exobite.mc.playtimerewards.external;
 
-import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
@@ -8,6 +7,7 @@ import com.github.exobite.mc.playtimerewards.utils.Utils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +41,7 @@ public class PAPIManager extends PlaceholderExpansion {
     }
 
     @Override
+    @NotNull
     public List<String> getPlaceholders() {
         return Arrays.asList(PLACEHOLDERS);
     }
@@ -51,7 +52,7 @@ public class PAPIManager extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player p, String params) {
+    public String onPlaceholderRequest(Player p, @NotNull String params) {
         switch(params.toLowerCase(Locale.ROOT)) {
             case "playtime" -> {
                 String[] param = getTimeValues(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
@@ -69,7 +70,8 @@ public class PAPIManager extends PlaceholderExpansion {
         }
     }
 
-    private String[] getTimeValues(long ms) {
+    @NotNull
+    private String [] getTimeValues(long ms) {
         long[] v = Utils.convertTimeMsToLongs(ms);
         String[] val = new String[4];
         for(int i=0;i<v.length;i++) {
@@ -79,16 +81,19 @@ public class PAPIManager extends PlaceholderExpansion {
     }
 
     @Override
+    @NotNull
     public String getIdentifier() {
         return IDENTIFIER.toLowerCase(Locale.ROOT);
     }
 
     @Override
+    @NotNull
     public String getAuthor() {
         return main.getDescription().getAuthors().get(0);
     }
 
     @Override
+    @NotNull
     public String getVersion() {
         return main.getDescription().getVersion();
     }

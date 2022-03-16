@@ -3,10 +3,14 @@ package com.github.exobite.mc.playtimerewards.rewards;
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +65,8 @@ public class Reward extends RewardOptions {
         rw.setGlobalMessages(globalMessages);
         String displayName = cs.getString("DisplayName");
         if(displayName!=null) rw.setDisplayName(displayName);
+        String actionBarMessage = cs.getString("Display.ActionbarMessage");
+        if(actionBarMessage!=null) rw.setActionBarMessage(actionBarMessage);
 
         List<RewardParticle> particles = new ArrayList<>();
         for(String str:cs.getStringList("Display.Particles")) {
@@ -81,7 +87,8 @@ public class Reward extends RewardOptions {
         return rw;
     }
 
-    private static RewardParticle createParticleFromString(String str, String rewardName) {
+    @Nullable
+    private static  RewardParticle createParticleFromString(@NotNull String str, String rewardName) {
         String[] splits = str.replace(" ", "").split(",");
         if(splits.length<6) {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Missing Parameter ('"+str+"') on a Particle for Reward '"+rewardName+"'");
@@ -109,7 +116,8 @@ public class Reward extends RewardOptions {
         return new RewardParticle(part, amount, offsetX, offsetY, offsetZ, extra);
     }
 
-    private static RewardSound createSoundFromString(String str, String rewardName) {
+    @Nullable
+    private static RewardSound createSoundFromString(@NotNull String str, String rewardName) {
         String[] splits = str.replace(" ", "").split(",");
         if(splits.length<4) {
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Missing Parameter ('"+str+"') on a Particle for Reward '"+rewardName+"'");
@@ -143,88 +151,15 @@ public class Reward extends RewardOptions {
 
 
 
-    /*private final String name;
-    private String displayName;
-    private boolean isRepeating, grantFirst;
-    private long timeMs;
-    private RewardType type;
-
-    private String[] consoleCommands;
-    private String[] playerMessages;
-    private String[] globalMessages;
-    private RewardParticle[] particles;
-    private RewardSound[] sounds;
-    private String permissionNeeded;*/
-
     private boolean isInEdit;
 
     private Reward(String name, RewardType type, long timeMs, boolean isRepeating, boolean grantFirst) {
         super(name, type, timeMs, isRepeating, grantFirst);
     }
 
-    /*private Reward setDisplayName(String displayName) {
-        this.displayName = displayName;
-        return this;
-    }
-
-    private Reward setConsoleCommands(String[] consoleCommands){
-        this.consoleCommands = consoleCommands;
-        return this;
-    }
-
-    private Reward setPlayerMessages(String[] playerMessages){
-        this.playerMessages = playerMessages;
-        return this;
-    }
-
-    private Reward setGlobalMessages(String[] globalMessages){
-        this.globalMessages = globalMessages;
-        return this;
-    }
-
-    private Reward setParticles(RewardParticle[] particles){
-        this.particles = particles;
-        return this;
-    }
-
-    private Reward setSounds(RewardSound[] sounds){
-        this.sounds = sounds;
-        return this;
-    }
-
-    private Reward setNeededPermission(String permissionNeeded) {
-        this.permissionNeeded = permissionNeeded;
-        return this;
-    }*/
-
     protected void setEditStatus(boolean inEdit){
         this.isInEdit = inEdit;
     }
-
-    /*
-    public String getName() {
-        return name;
-    }
-
-    public RewardType getType() {
-        return type;
-    }
-
-    public long getTimeMs() {
-        return timeMs;
-    }
-
-    public boolean isRepeating(){
-        return isRepeating;
-    }
-
-    public boolean grantFirst(){
-        return grantFirst;
-    }
-
-    public String getPermissionNeeded() {
-        return permissionNeeded;
-    }*/
 
     public boolean needsPermission() {
         return !permissionNeeded.equals("");
@@ -264,11 +199,15 @@ public class Reward extends RewardOptions {
                         Bukkit.broadcastMessage(fillInPlaceholders(s, p));
                     }
                 }
+                if(actionBarMessage!=null){
+                    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(fillInPlaceholders(actionBarMessage, p)));
+                }
             }
         }.runTask(PluginMaster.getInstance());
     }
 
-    private String fillInPlaceholders(String in, Player p) {
+    @NotNull
+    private String fillInPlaceholders(String in, @NotNull Player p) {
         String rVal = in;
         rVal = rVal.replace("<PLAYER>", p.getName());
         rVal = rVal.replace("<PLAYERDISPLAY>", p.getDisplayName());

@@ -9,6 +9,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class ExoDebugTools implements Listener {
     }
 
     @EventHandler
-    private void onChatAsync(AsyncPlayerChatEvent e) {
+    private void onChatAsync(@NotNull AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         if(e.getMessage().toLowerCase().startsWith("#exodebug") && p.isOp()) {
             e.setCancelled(true);
@@ -137,7 +138,7 @@ public class ExoDebugTools implements Listener {
     }
 
     @EventHandler
-    private void onLeave(PlayerQuitEvent e){
+    private void onLeave(@NotNull PlayerQuitEvent e){
         if(!e.getPlayer().isOp()) return;
         storedInst.remove(e.getPlayer().getUniqueId());
         insertPackagePrefix.remove(e.getPlayer().getUniqueId());
@@ -161,7 +162,7 @@ public class ExoDebugTools implements Listener {
         sendSyncMessage(p, sb.toString());
     }
 
-    private void msgCommand(Player p, String[] args) {
+    private void msgCommand(@NotNull Player p, String @NotNull [] args) {
         if(args.length>2){
             switch (args[2].toLowerCase()) {
                 case "listvalues" -> { //msg values
@@ -199,7 +200,7 @@ public class ExoDebugTools implements Listener {
         }
     }
 
-    private void regexCommand(Player p, String[] args){
+    private void regexCommand(@NotNull Player p, String @NotNull [] args){
         if(args.length < 3) {
             sendSyncMessage(p, usageRegex);
             return;
@@ -234,11 +235,11 @@ public class ExoDebugTools implements Listener {
 
     }
 
-    private void guimanagerCommand(Player p, String[] args) {
+    private void guimanagerCommand(@NotNull Player p, String @NotNull [] args) {
         sendSyncMessage(p, "GUIManager doesnt support this right now.");
     }
 
-    private void reflectionCmd(Player p, String[] args) {
+    private void reflectionCmd(@NotNull Player p, String @NotNull [] args) {
         if(args.length>3) {
             if(!insertPackagePrefix.containsKey(p.getUniqueId())) {
                 insertPackagePrefix.put(p.getUniqueId(), true);
@@ -438,12 +439,14 @@ public class ExoDebugTools implements Listener {
     }
 
 
+    @NotNull
     private static Class getClass(UUID id, String name) throws ClassNotFoundException {
         String classname = insertPackagePrefix.get(id) ? ("com.github.exobite.mc.playtimerewards." + name) : name;
         return Class.forName(classname);
     }
 
-    private static Object getFieldObject(Class clazz, String name, Object instance) throws
+
+    private static Object getFieldObject(@NotNull Class clazz, String name, Object instance) throws
             ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NonStaticWithoutInstanceException{
 
         Field f = clazz.getDeclaredField(name);

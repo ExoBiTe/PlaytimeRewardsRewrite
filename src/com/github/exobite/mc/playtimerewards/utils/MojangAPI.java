@@ -38,7 +38,7 @@ public class MojangAPI {
 
     private final JavaPlugin main;
 
-    private Map<UUID, String> cachedUsernames = new HashMap<>();
+    private final Map<UUID, String> cachedUsernames = new HashMap<>();
     private long resetTimestamp;
     private int requestsSinceLastReset;
 
@@ -48,7 +48,7 @@ public class MojangAPI {
         requestsSinceLastReset = 0;
     }
 
-    private abstract class InternalApiAnswer{
+    private abstract static class InternalApiAnswer{
 
         InternalApiAnswer(){}
 

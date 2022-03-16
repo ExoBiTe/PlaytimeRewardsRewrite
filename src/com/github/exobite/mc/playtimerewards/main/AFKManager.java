@@ -12,6 +12,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -122,7 +123,7 @@ public class AFKManager implements Listener {
         Objects.requireNonNull(Bukkit.getPlayer(id)).sendMessage("Youre now flagged as afk.");
     }
 
-    private void comeBack(Player p) {
+    private void comeBack(@NotNull Player p) {
         UUID id = p.getUniqueId();
         long diff = System.currentTimeMillis() - isAfk.get(id);
         isAfk.remove(id);
@@ -143,7 +144,7 @@ public class AFKManager implements Listener {
         PlayerManager.getInstance().getPlayerData(id).setAfk(false, 0L);
     }
 
-    private void decreasePlaytime(Player p, int ticks) {
+    private void decreasePlaytime(@NotNull Player p, int ticks) {
         int newticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE) - ticks;
         if(newticks<0) newticks = 0;
         p.sendMessage("Setting playedoneminute to "+newticks);
@@ -152,7 +153,7 @@ public class AFKManager implements Listener {
         p.sendMessage("Now it is "+p.getStatistic(Statistic.PLAY_ONE_MINUTE));
     }
 
-    private void resetAfk(Player p){
+    private void resetAfk(@NotNull Player p){
         UUID id = p.getUniqueId();
         if(isAfk.containsKey(id)) {
             comeBack(p);
@@ -162,7 +163,7 @@ public class AFKManager implements Listener {
 
 
     @EventHandler(priority = EventPriority.HIGH)
-    private void onMove(PlayerMoveEvent e){
+    private void onMove(@NotNull PlayerMoveEvent e){
         boolean moved = moved(e.getFrom(), e.getTo());
         if(!moved && cancelOnLook || moved && cancelOnMove) {
             resetAfk(e.getPlayer());
@@ -191,13 +192,13 @@ public class AFKManager implements Listener {
     }
 
     @EventHandler
-    private void onJoin(PlayerJoinEvent e) {
+    private void onJoin(@NotNull PlayerJoinEvent e) {
         if(e.getPlayer().hasPermission("playtimerewards.afk.ignore")) return;
         afkCounters.put(e.getPlayer().getUniqueId(), 0L);
     }
 
     @EventHandler
-    private void onQuit(PlayerQuitEvent e) {
+    private void onQuit(@NotNull PlayerQuitEvent e) {
         UUID id = e.getPlayer().getUniqueId();
         if(isAfk.containsKey(id)) {
             comeBack(e.getPlayer());

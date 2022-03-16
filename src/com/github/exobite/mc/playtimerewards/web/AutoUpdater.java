@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -116,7 +117,11 @@ public class AutoUpdater {
         return jo.get("name").getAsString();
     }
 
-    private boolean latestIsNewer(String versionLatest, String versionLocal, boolean checkAtMajor, boolean checkAtMinor, boolean checkAtPatch) {
+    private boolean latestIsNewer(@NotNull String versionLatest,
+                                  @NotNull String versionLocal,
+                                  boolean checkAtMajor,
+                                  boolean checkAtMinor,
+                                  boolean checkAtPatch) {
         String[] splitLatest = versionLatest.split("\\.");
         String[] splitLocal = versionLocal.split("\\.");
         if(splitLatest.length<2 || splitLocal.length<2) {

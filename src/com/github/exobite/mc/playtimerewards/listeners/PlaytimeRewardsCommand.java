@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
 
 public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
 
@@ -27,16 +26,26 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
     private static final String CMD_USAGE_LIST =
             ChatColor.DARK_AQUA+"/Playtimerewards list"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Lists all registered Rewards";
     private static final String CMD_USAGE_REWARDEDIT =
-            ChatColor.DARK_AQUA+"/Playtimerewards editReward <rewardname>"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Lists all registered Rewards\n";
+            ChatColor.DARK_AQUA+"/Playtimerewards editReward <rewardname>"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Lists all registered Rewards";
+    private static final String CMD_USAGE_RELOAD =
+            ChatColor.DARK_AQUA+"/PlaytimeRewards reload"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Reloads all Plugin configuration data";
 
     private static final String PTR_LIST_PERM = "playtimerewards.cmd.playtimerewards.list";
     private static final String PTR_EDIT_PERM = "playtimerewards.cmd.playtimerewards.editreward";
+    private static final String PTR_RELOAD_PERM = "playtimerewards.cmd.playtimerewards.reload";
 
     private void sendHelpText(CommandSender s) {
         StringBuilder sb = new StringBuilder(CMD_USAGE);
         if(s.hasPermission(PTR_LIST_PERM)) sb.append("\n").append(CMD_USAGE_LIST);
         if(s.hasPermission(PTR_EDIT_PERM)) sb.append("\n").append(CMD_USAGE_REWARDEDIT);
-        s.sendMessage(sb.toString());
+        if(s.hasPermission(PTR_RELOAD_PERM)) sb.append("\n").append(CMD_USAGE_RELOAD);
+        String msg = sb.toString();
+        if(msg.equals(CMD_USAGE)) {
+            //No Permissions at all, send no Permission Message
+            s.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION"));
+        }else {
+            s.sendMessage(sb.toString());
+        }
     }
 
     @Override
@@ -47,26 +56,29 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             switch (args[0].toLowerCase(Locale.ROOT)) {
                 case "list" -> listCommand(sender);
                 case "editreward" -> editRewardCommand(sender, args);
+                case "reload" -> reloadCommand(sender);
                 default -> sendHelpText(sender);
             }
         }
         return true;
     }
 
-    private void listCommand(CommandSender s) {
+    private void listCommand(@NotNull CommandSender s) {
         if(!s.hasPermission(PTR_LIST_PERM)) {
             s.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION"));
             return;
         }
         List<RewardData> data = RewardManager.getInstance().getRegisteredRewardData();
-        StringBuilder sb = new StringBuilder("Listing "+data.size()+" Rewards:");
+        StringBuilder sb = new StringBuilder(Lang.getInstance().getMessageWithArgs("CMD_SUC_PTR_LIST_HEADER", String.valueOf(data.size())));
         for(RewardData rwd:data) {
-            sb.append("\n").append(rwd.rewardName()).append(" is ").append(rwd.type());
+            Reward rw = RewardManager.getInstance().getRewardFromName(rwd.rewardName());
+            sb.append("\n").append(Lang.getInstance()
+                    .getMessageWithArgs("CMD_SUC_PTR_LIST_ENTRY", rw.getName(), rw.getDisplayName(), rw.getType().toString()));
         }
         s.sendMessage(sb.toString());
     }
 
-    private void editRewardCommand(CommandSender s, String ... args) {
+    private void editRewardCommand(@NotNull CommandSender s, String ... args) {
         if(!s.hasPermission(PTR_EDIT_PERM)) {
             s.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION"));
             return;
@@ -87,6 +99,18 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         RewardManager.getInstance().startRewardEdit(rw, p);
     }
 
+    private void reloadCommand(@NotNull CommandSender s) {
+        if(!s.hasPermission(PTR_RELOAD_PERM)) {
+            s.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION"));
+            return;
+        }
+        //Check for Rewards in Editing State
+        if(RewardManager.getInstance().areRewardsInEdit()) {
+            s.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_WARN_PTR_RELOAD"));
+        }
+        PluginMaster.getInstance().reloadConfigurationData(s);
+    }
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
@@ -95,6 +119,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         if(size<2) {
             if(sender.hasPermission(PTR_LIST_PERM)) data.add("list");
             if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
+            if(sender.hasPermission(PTR_RELOAD_PERM)) data.add("reload");
         }else if(size==2) {
             if(args[0].equalsIgnoreCase("editreward")) {
                 for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {

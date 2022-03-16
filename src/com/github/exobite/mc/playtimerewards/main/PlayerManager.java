@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class PlayerManager implements Listener {
     private final JavaPlugin main;
     private final Map<UUID, PlayerData> registeredPlayers = new HashMap<>();
 
-    private PlayerManager(JavaPlugin main) {
+    private PlayerManager(@NotNull JavaPlugin main) {
         this.main = main;
         main.getServer().getPluginManager().registerEvents(this, main);
 
@@ -71,12 +72,12 @@ public class PlayerManager implements Listener {
     }
 
     @EventHandler
-    private void onJoin(PlayerJoinEvent e){
+    private void onJoin(@NotNull PlayerJoinEvent e){
         createPlayerData(e.getPlayer());
     }
 
     @EventHandler
-    private void onLeave(PlayerQuitEvent e){
+    private void onLeave(@NotNull PlayerQuitEvent e){
         getPlayerData(e.getPlayer()).onLeave(false);
         removePlayerData(e.getPlayer().getUniqueId());
     }
@@ -87,7 +88,7 @@ public class PlayerManager implements Listener {
         }
     }
 
-    public PlayerData createPlayerData(Player p){
+    public PlayerData createPlayerData(@NotNull Player p){
         UUID pID = p.getUniqueId();
         boolean exists = false;
         for(UUID id : registeredPlayers.keySet()) {
@@ -125,7 +126,7 @@ public class PlayerManager implements Listener {
         return true;
     }
 
-    public PlayerData getPlayerData(Player p){
+    public PlayerData getPlayerData(@NotNull Player p){
         return getPlayerData(p.getUniqueId());
     }
 

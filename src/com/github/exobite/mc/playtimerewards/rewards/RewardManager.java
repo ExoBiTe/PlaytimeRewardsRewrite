@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
@@ -65,7 +66,7 @@ public class RewardManager implements Listener {
     private final List<Reward> registeredRewards = new ArrayList<>();
     private final Map<UUID, RewardEdit> currentEdits = new HashMap<>();
 
-    private RewardManager(PluginMaster main){
+    private RewardManager(@NotNull PluginMaster main){
         this.main = main;
         main.getServer().getPluginManager().registerEvents(this, main);
     }
@@ -151,8 +152,12 @@ public class RewardManager implements Listener {
         currentEdits.remove(id);
     }
 
+    public boolean areRewardsInEdit() {
+        return currentEdits.size() > 0;
+    }
+
     @EventHandler
-    private void onQuit(PlayerQuitEvent e){
+    private void onQuit(@NotNull PlayerQuitEvent e){
         UUID id = e.getPlayer().getUniqueId();
         if(currentEdits.containsKey(id)) {
             currentEdits.get(id).discardChanges();
@@ -161,7 +166,7 @@ public class RewardManager implements Listener {
     }
 
     @EventHandler
-    private void onChat(AsyncPlayerChatEvent e){
+    private void onChat(@NotNull AsyncPlayerChatEvent e){
         UUID id = e.getPlayer().getUniqueId();
         if(currentEdits.containsKey(id)) {
             e.setCancelled(true);

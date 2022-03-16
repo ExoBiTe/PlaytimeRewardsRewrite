@@ -1,6 +1,7 @@
 package com.github.exobite.mc.playtimerewards.utils;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 public class VersionHelper {
 
@@ -16,6 +17,7 @@ public class VersionHelper {
         return new Version(major, minor, patch);
     }
 
+    @NotNull
     public static Version getBukkitVersion(){
         String bukkitV = Bukkit.getBukkitVersion();
         if(!bukkitV.contains("-")) {
@@ -31,7 +33,7 @@ public class VersionHelper {
      * @param v2 The second Version
      * @return true if both Versions are equal
      */
-    public static boolean isEqual(Version v1, Version v2) {
+    public static boolean isEqual(@NotNull Version v1, @NotNull Version v2) {
         return v1.major()==v2.major() && v1.minor()==v2.minor() && v1.patch()==v2.patch();
     }
 
@@ -41,7 +43,7 @@ public class VersionHelper {
      * @param isSmaller The Version to check against
      * @return true if Param 1 is Larger than Param 2
      */
-    public static boolean isLarger(Version isLarger, Version isSmaller) {
+    public static boolean isLarger(@NotNull Version isLarger, @NotNull Version isSmaller) {
         return (isLarger.major()==isSmaller.major() && isLarger.minor()==isSmaller.minor() && isLarger.patch()>isSmaller.patch()) ||
                 (isLarger.major()==isSmaller.major() && isLarger.minor()>isSmaller.minor()) ||
                 (isLarger.major()>isSmaller.major());
@@ -63,7 +65,7 @@ public class VersionHelper {
      * @param isLarger The Version to check against
      * @return true if Param 1 is Smaller than Param 2
      */
-    public static boolean isSmaller(Version isSmaller, Version isLarger) {
+    public static boolean isSmaller(@NotNull Version isSmaller, @NotNull Version isLarger) {
         return (isSmaller.major()==isLarger.major() && isSmaller.minor()==isLarger.minor() && isSmaller.patch()<isLarger.patch()) ||
                 (isSmaller.major()==isLarger.major() && isSmaller.minor()<isLarger.minor()) ||
                 (isSmaller.major()<isLarger.major());

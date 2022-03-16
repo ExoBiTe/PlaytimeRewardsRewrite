@@ -6,11 +6,13 @@ public class RewardOptions {
     protected String displayName;
     protected boolean isRepeating, grantFirst;
     protected long timeMs;
-    private RewardType type;
+    private final RewardType type;
 
     protected String[] consoleCommands;
     protected String[] playerMessages;
     protected String[] globalMessages;
+
+    protected String actionBarMessage;
     protected RewardParticle[] particles;
     protected RewardSound[] sounds;
     protected String permissionNeeded;
@@ -109,6 +111,14 @@ public class RewardOptions {
 
     public void setNeededPermission(String permissionNeeded) {
         this.permissionNeeded = permissionNeeded;
+    }
+
+    public String getActionBarMessage() {
+        return actionBarMessage;
+    }
+
+    public void setActionBarMessage(String actionBarMessage) {
+        this.actionBarMessage = actionBarMessage;
     }
 
 }

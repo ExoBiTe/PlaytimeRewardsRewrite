@@ -1,7 +1,6 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
 import com.github.exobite.mc.playtimerewards.main.Config;
-import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.Bukkit;
@@ -10,9 +9,9 @@ import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class PlaytimetopCommand implements CommandExecutor {
 
@@ -25,7 +24,7 @@ public class PlaytimetopCommand implements CommandExecutor {
     private int lastAmount = 0;
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         long ms = System.currentTimeMillis();
         long ns = System.nanoTime();
         if(!sender.hasPermission(PTTOP_USE_PERM)) {
@@ -36,6 +35,7 @@ public class PlaytimetopCommand implements CommandExecutor {
         return true;
     }
 
+    @NotNull
     private String ListTop() {
         //First check if a new calc can be done
         long msnow = System.currentTimeMillis();

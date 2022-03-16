@@ -24,7 +24,7 @@ SampleReward1: #No Duplicates allowed
       - 'Congrats <PLAYER> upon Earning <REWARD>'
     GlobalMessages: #Sends the specified Messages to all Players. is Optional.
       - '<PLAYER> earned the Achievement <REWARD>'
-    ActionBarMessage: ''##############################################################################
+    ActionbarMessage: 'See me over your Hotbar!'
     BossBarMessage: ''##############################################################################
     Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
       - 'FLAME, 10, 0.2, 0.2, 0.2, 1'

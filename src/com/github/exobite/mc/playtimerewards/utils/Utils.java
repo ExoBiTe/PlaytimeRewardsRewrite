@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -195,7 +196,7 @@ public class Utils {
     }
 
     public static String convertTimeMsToString(long ms){
-        long Days = 0, Hours = 0, Minutes = 0, Seconds = 0, Ms = 0;
+        long Days, Hours, Minutes, Seconds, Ms;
         Days = ms / 86400000;
         long calcStep = ms % 86400000;
         Hours = calcStep / 3600000;
@@ -209,7 +210,7 @@ public class Utils {
     }
 
     public static long[] convertTimeMsToLongs(long ms){
-        long Days = 0, Hours = 0, Minutes = 0, Seconds = 0;
+        long Days, Hours, Minutes, Seconds;
         Days = ms / 86400000;
         long calcStep = ms % 86400000;
         Hours = calcStep / 3600000;
@@ -220,6 +221,7 @@ public class Utils {
         return new long[]{Days, Hours, Minutes, Seconds};
     }
 
+    @NotNull
     public static String formatTimeMsToString(long ms, String format){
         /*
         caseIgnored "%ms" -> Milliseconds
@@ -228,7 +230,7 @@ public class Utils {
         caseIgnored "%h" -> Hours
         caseIgnored "%d" -> Days
         */
-        long Days = 0, Hours = 0, Minutes = 0, Seconds = 0, Ms = 0;
+        long Days, Hours, Minutes, Seconds, Ms;
         Days = ms / 86400000;
         long calcStep = ms % 86400000;
         Hours = calcStep / 3600000;
@@ -251,6 +253,7 @@ public class Utils {
         return dat;
     }
 
+    @NotNull
     private static String replaceIfGreater(String in, String placeholder, long val, long greaterThan, String unit) {
         String out;
         if(val > greaterThan){
@@ -261,7 +264,7 @@ public class Utils {
         return out;
     }
 
-    public static int countMatches(String toSearch, String match) {
+    public static int countMatches(@NotNull String toSearch, String match) {
         //Example: "abc.abc.abc.def", "def"
         // length = 15, newlength = 12, diff 3 division by lenght of match = 1
         return (toSearch.length() - toSearch.replace(match, "").length()) / match.length();

@@ -10,6 +10,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +27,7 @@ public class PlayerData {
 
     private Map<RewardData, Long> receivedTimestamps = new HashMap<>();
 
-    PlayerData(Player p) {
+    PlayerData(@NotNull Player p) {
         id = p.getUniqueId();
         loginTimestamp = getPlaytimeMS();
         loadPlayerData();
@@ -152,7 +154,7 @@ public class PlayerData {
         }
     }
 
-    private RewardData getRewardDataFromName(String rewardName) {
+    private @Nullable RewardData getRewardDataFromName(String rewardName) {
         for(RewardData rwd:receivedTimestamps.keySet()) {
             if(rwd.rewardName().equals(rewardName)) return rwd;
         }

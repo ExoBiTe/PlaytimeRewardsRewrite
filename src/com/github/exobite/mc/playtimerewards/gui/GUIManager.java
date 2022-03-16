@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class GUIManager implements Listener {
     /**
      * @param main The Plugins JavaPlugin instance
      */
-    private GUIManager(JavaPlugin main) {
+    private GUIManager(@NotNull JavaPlugin main) {
         this.main = main;
         //Register the needed Events:
         // - InventoryClickEvent
@@ -61,7 +62,7 @@ public class GUIManager implements Listener {
     }
 
     @EventHandler
-    private void onInventoryClick(InventoryClickEvent e){
+    private void onInventoryClick(@NotNull InventoryClickEvent e){
         Inventory i = e.getClickedInventory();
         if(!guis.containsKey(i)) return;
         GUI g = guis.get(i);
@@ -74,7 +75,7 @@ public class GUIManager implements Listener {
     }
 
     @EventHandler
-    private void onInventoryClose(InventoryCloseEvent e){
+    private void onInventoryClose(@NotNull InventoryCloseEvent e){
         if(guis.containsKey(e.getInventory())) {
             final GUI g = guis.get(e.getInventory());
             final HumanEntity p = e.getPlayer();
@@ -127,7 +128,7 @@ public class GUIManager implements Listener {
          * Opens the Inventory for the specified Player
          * @param p The target Player
          */
-        public void openInventory(HumanEntity p){
+        public void openInventory(@NotNull HumanEntity p){
             p.openInventory(inv);
         }
 
@@ -220,6 +221,7 @@ public class GUIManager implements Listener {
             return this;
         }
 
+        @NotNull
         GUISlot copySlotTo(int target) {
             GUISlot tSlot = new GUISlot(g, target);
             tSlot.cancelClick = cancelClick;

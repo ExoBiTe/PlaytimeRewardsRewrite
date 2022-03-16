@@ -2,7 +2,6 @@ package com.github.exobite.mc.playtimerewards.listeners;
 
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
-import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.APIReturnAction;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.MojangAPI;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class PlaytimeCommand implements CommandExecutor, TabCompleter {
 
@@ -32,7 +30,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
     private static final String PT_USE_OTHER_PERM = "playtimerewards.cmd.playtime.other";
     private static final String PT_USE_OFFLINE_PERM = "playtimerewards.cmd.playtime.other.offline";
 
-    private Map<UUID, Integer> requestsSinceLastReset = new HashMap<>();
+    private final Map<UUID, Integer> requestsSinceLastReset = new HashMap<>();
     private long lastReset = System.currentTimeMillis();
 
     private boolean allowRequest(UUID id){
@@ -52,7 +50,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String s, @NotNull String[] args) {
         String rVal;
         if(args.length==0 && sender.hasPermission(PT_USE_OWN_PERM)) {
             if(!(sender instanceof Player p)) {

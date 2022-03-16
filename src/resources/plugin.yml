@@ -58,12 +58,16 @@ permissions:
     children:
       playtimerewards.cmd.playtimerewards.list: true
       playtimerewards.cmd.playtimerewards.editreward: true
+      playtimerewards.cmd.playtimerewards.reload: true
 
   playtimerewards.cmd.playtimerewards.list:
     description: Grants access to the /playtimerewards list command
 
   playtimerewards.cmd.playtimerewards.editreward:
     description: Grants access to the /playtimerewards editReward command
+
+  playtimerewards.cmd.playtimerewards.reload:
+    description: Grants access to the /playtimerewards reload command
 
   playtimerewards.afk.ignore:
     description: Get never flagged as AFK with this Permission

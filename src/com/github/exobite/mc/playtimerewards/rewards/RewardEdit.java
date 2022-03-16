@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -34,7 +35,7 @@ public class RewardEdit extends RewardOptions {
     private ChatInputAction nextAction;
     private GUIManager.GUI guiAfterChat;
 
-    protected RewardEdit(Reward rw, Player p) {
+    protected RewardEdit(@NotNull Reward rw, @NotNull Player p) {
         super(rw.getName(), rw.getType(), rw.timeMs, rw.isRepeating, rw.grantFirst);
         inst = this;
         rw.setEditStatus(true); //Block reward for other Edits
@@ -45,7 +46,7 @@ public class RewardEdit extends RewardOptions {
         guis.get("main").openInventory(p);
     }
 
-    private void copyFields(RewardOptions src, RewardOptions dst) {
+    private void copyFields(@NotNull RewardOptions src, @NotNull RewardOptions dst) {
         for(Field f:src.getClass().getSuperclass().getDeclaredFields()) {
             //Only copy protected fields
             //System.out.println("Field "+f.getName());
@@ -118,7 +119,7 @@ public class RewardEdit extends RewardOptions {
         guis.put("main", editGui);
     }
 
-    private void setFieldDataToSlot(GUIManager.GUI gui, final int slot, final Field f) {
+    private void setFieldDataToSlot(GUIManager.@NotNull GUI gui, final int slot, final Field f) {
         if(slot>=gui.getSize()) return;
         Material m;
         if(f.getType().isArray()) {
@@ -156,7 +157,7 @@ public class RewardEdit extends RewardOptions {
         gui.setSlotAction(slot, action);
     }
 
-    private void clickedItem(HumanEntity clicker, final Field f) {
+    private void clickedItem(@NotNull HumanEntity clicker, final @NotNull Field f) {
         //Array(or Member) is printed as [java.lang String, single-String field is printed as java.lang.String
         //Check for non-array types when bool checkForArray isnt true
         if(f.getType().isArray()) {
@@ -199,7 +200,7 @@ public class RewardEdit extends RewardOptions {
         }
     }
 
-    private void clickedItemInArray(HumanEntity clicker, final Object arrayInstance, int index) {
+    private void clickedItemInArray(@NotNull HumanEntity clicker, final @NotNull Object arrayInstance, int index) {
         if(!arrayInstance.getClass().isArray()) {
             return;
         }
@@ -230,7 +231,8 @@ public class RewardEdit extends RewardOptions {
 
     }
 
-    private GUIManager.GUI createAndOpenArrayGUI(final Field f) {
+    @NotNull
+    private GUIManager.GUI createAndOpenArrayGUI(final @NotNull Field f) {
         System.out.println("Called 'create&open gui'!");
         GUIManager.GUI g = GUIManager.getInstance().createGUI("Array "+f.getName(), 27)
                 .cancelAll(true)
@@ -326,7 +328,7 @@ public class RewardEdit extends RewardOptions {
         rw.setEditStatus(false);
     }
 
-    private abstract class ChatInputAction {
+    private abstract static class ChatInputAction {
 
         abstract boolean parseInput(Player p, String input);
 

@@ -8,10 +8,14 @@ import com.github.exobite.mc.playtimerewards.utils.*;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
 import com.github.exobite.mc.playtimerewards.web.MotdReader;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bstats.bukkit.Metrics;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +29,7 @@ public class PluginMaster extends JavaPlugin {
         return instance;
     }
 
-    public static void sendConsoleMessage(Level level, String msg){
+    public static void sendConsoleMessage(Level level, @NotNull String msg){
         String prefix = "[" + instance.getDescription().getName() + "] ";
         //Split by \newLine, send all in a seperate message
         String[] parts = msg.split("\n");
@@ -100,11 +104,11 @@ public class PluginMaster extends JavaPlugin {
         if(Config.getInstance().checkForUpdate()) AutoUpdater.getInstance().moveUpdate();
     }
 
-    public void reloadConfigurationData() {
-        reloadConfigurationData(false);
+    public void reloadConfigurationData(@Nullable final CommandSender feedback) {
+        reloadConfigurationData(false, feedback);
     }
 
-    public void reloadConfigurationData(final boolean forceRewardReload){
+    public void reloadConfigurationData(final boolean forceRewardReload, @Nullable final CommandSender feedback){
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -113,12 +117,20 @@ public class PluginMaster extends JavaPlugin {
                 pauseAsyncTimer = true; //Pause the Clock while reloading data
                 Config.reloadConfig(true);
                 Lang.reloadLang();
-                if(!RewardManager.reloadRewards(forceRewardReload)) {
+                if(!RewardManager.reloadRewards(forceRewardReload) && forceRewardReload) {
                     sendConsoleMessage(Level.WARNING, "Couldn't reload the Rewards while they are being edited.");
                 }
                 AFKManager.getInstance().reloadConfig();
                 pauseAsyncTimer = false;
                 PluginMaster.sendConsoleMessage(Level.INFO, "Reload done (took "+(System.currentTimeMillis() - ms)+"ms)!");
+                if(feedback!=null) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            feedback.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_SUC_PTR_RELOAD_SUCCESS"));
+                        }
+                    }.runTask(instance);
+                }
             }
         }.runTaskAsynchronously(this);
     }
