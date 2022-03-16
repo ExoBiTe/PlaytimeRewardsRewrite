@@ -23,13 +23,12 @@ commands:
 
 permissions:
   playtimerewards.*:
-    description: Grants all Permissions
+    description: Grants all Permissions, excluding playtimerewards.afk.ignore
     default: op
     children:
       playtimerewards.notifyOnUpdate: true
       playtimerewards.cmd.playtime.other: true
       playtimerewards.cmd.playtimerewards.*: true
-      playtimerewards.afk.ignore: true
 
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login

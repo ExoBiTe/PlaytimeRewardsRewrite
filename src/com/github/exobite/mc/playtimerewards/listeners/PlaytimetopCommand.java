@@ -18,6 +18,8 @@ public class PlaytimetopCommand implements CommandExecutor {
 
     private final static long MIN_TIME_FOR_REFRESH = 1000 * 60 * 5; //5 Minutes
 
+    private final static String PTTOP_USE_PERM = "playtimerewards.cmd.playtimetop";
+
     private long lastPolled = 0;
     private Map<String, Integer> cachedTop = new HashMap<>();
     private int lastAmount = 0;
@@ -26,13 +28,11 @@ public class PlaytimetopCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
         long ms = System.currentTimeMillis();
         long ns = System.nanoTime();
-        if(!sender.hasPermission("playtimerewards.cmd.playtimetop")) {
+        if(!sender.hasPermission(PTTOP_USE_PERM)) {
             sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION"));
             return true;
         }
         sender.sendMessage(ListTop());
-        PluginMaster.sendConsoleMessage(Level.INFO, "Playtimetop parsing took "+(System.currentTimeMillis()-ms)+" ms ("
-        + (System.nanoTime() - ns) +"ns)");
         return true;
     }
 

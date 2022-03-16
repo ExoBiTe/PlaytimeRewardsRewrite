@@ -2,6 +2,7 @@ package com.github.exobite.mc.playtimerewards.listeners;
 
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
+import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.APIReturnAction;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.MojangAPI;
@@ -13,17 +14,23 @@ import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Level;
 
-public class PlaytimeCommand implements CommandExecutor {
+public class PlaytimeCommand implements CommandExecutor, TabCompleter {
 
     private static final String ERRNOCONSOLECMD = ChatColor.RED + "Sorry, this ain't a console Command.";
     private static final int MAX_REQUESTS_PER_INTERVAL = 6;
     private static final long MS_PER_INTERVAL = 60000;  //One Minute
+
+    private static final String PT_USE_OWN_PERM = "playtimerewards.cmd.playtime.own";
+    private static final String PT_USE_OTHER_PERM = "playtimerewards.cmd.playtime.other";
+    private static final String PT_USE_OFFLINE_PERM = "playtimerewards.cmd.playtime.other.offline";
 
     private Map<UUID, Integer> requestsSinceLastReset = new HashMap<>();
     private long lastReset = System.currentTimeMillis();
@@ -47,13 +54,13 @@ public class PlaytimeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
         String rVal;
-        if(args.length==0 && sender.hasPermission("playtimerewards.cmd.playtime.own")) {
+        if(args.length==0 && sender.hasPermission(PT_USE_OWN_PERM)) {
             if(!(sender instanceof Player p)) {
                 rVal = ERRNOCONSOLECMD;
             }else{
                 rVal = getPlaytimeStringForPlayerOwn(p);
             }
-        }else if(args.length>=1 && sender.hasPermission("playtimerewards.cmd.playtime.other")) {
+        }else if(args.length>=1 && sender.hasPermission(PT_USE_OTHER_PERM)) {
 
             //Validate user Input: Minecraft names consist of Letters a-z(A-Z), Numbers 0-9 and underscore
             //They need a Minimum of 3 Chars and have a Maximum of 16 Chars
@@ -66,7 +73,7 @@ public class PlaytimeCommand implements CommandExecutor {
 
             Player p = Bukkit.getPlayer(args[0]);
             if(p==null){
-                if(!sender.hasPermission("playtimerewards.cmd.playtime.other.offline")) {
+                if(!sender.hasPermission(PT_USE_OFFLINE_PERM)) {
                     sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
                     return true;
                 }
@@ -169,4 +176,18 @@ public class PlaytimeCommand implements CommandExecutor {
         return Lang.getInstance().getMessageWithArgs("CMD_SUC_PT_OTHER_OFFLINE", valuesStr);
     }
 
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
+        List<String> data = new ArrayList<>();
+        int size = args.length;
+        if(size<2) {
+            if(sender.hasPermission(PT_USE_OTHER_PERM)) {
+                for(Player p:Bukkit.getOnlinePlayers()) {
+                    data.add(p.getName());
+                }
+            }
+        }
+        return data;
+    }
 }

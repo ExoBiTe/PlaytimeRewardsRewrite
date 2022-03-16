@@ -6,8 +6,34 @@ EnableUpdateCheck: true
 #The Amount of Players that get displayed by the Playtimetop-Command
 PlaytimeTopAmount: 10
 
-#This Options downloads the latest Version of the Plugin and installs it upon a reboot.
+#This Option downloads the latest Version of the Plugin and installs it upon a reboot.
 AllowAutoUpdate: false
 
 #Set to '-1' to Disable the Automatic Save Interval
 DataSaveInterval: '1h30m'
+
+#AFK-Block
+AFK:
+  #Enables or Disables the whole AFK-System.
+  #When set to false, no other AFK-Value does anything.
+  Enable: false
+
+  #Here you can define, how much time needs to pass without an Action from the Player,
+  #to flag the Player as AFK.
+  Time: '10m'
+
+  #Defines whether a Player Movement resets his AFK-Status
+  CancelOnMove: true
+
+  #Defines if a Players AFK-Status is reset by looking around
+  CancelOnLook: true
+
+  #Defines whether a Player Interaction resets his AFK-Status
+  #(Interaction is any Sort of Right or Left Mouse Button Click)
+  CancelOnInteract: true
+
+  #Defines if Chatting resets the AFK-Status
+  CancelOnChat: true
+
+  #Defines if executing Commands resets the AFK-Status
+  CancelOnCommand: true
