@@ -46,8 +46,7 @@ public class RewardManager implements Listener {
         //Check if there were changed reward names or if some were added/removed
         List<String> oldRewards = instance.getRegisteredRewardNames();
         List<String> newRewards = rwMan.getRegisteredRewardNames();
-        boolean equal = true;
-        if(oldRewards.size() != newRewards.size()) equal = false;
+        boolean equal = oldRewards.size() == newRewards.size();
         if(equal) {
             for(int i=0;i<oldRewards.size();i++) {
                 if(oldRewards.get(i).equals(newRewards.get(i))) {

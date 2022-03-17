@@ -121,10 +121,10 @@ public class Config {
                 PluginMaster.sendConsoleMessage(Level.WARNING, "The Time to get flagged is shorter than 5 Seconds('"+afkTimeString+"') - is this correct?");
             }
         }
+        allowAutoDownload = conf.getBoolean("AllowAutoUpdate", false);
 
         //Hidden values
         allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);
-        allowAutoDownload = conf.getBoolean("AllowAutoUpdate", false);
         allowMetrics = conf.getBoolean("AllowMetrics", true);
         String colorStr = conf.getString("ColorCode", "§");
         colorCode = colorStr.charAt(0);

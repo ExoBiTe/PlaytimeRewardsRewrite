@@ -257,7 +257,7 @@ public class Utils {
     private static String replaceIfGreater(String in, String placeholder, long val, long greaterThan, String unit) {
         String out;
         if(val > greaterThan){
-            out = in.replaceAll(placeholder, String.valueOf(val) + unit);
+            out = in.replaceAll(placeholder, val + unit);
         }else{
             out = in.replaceAll(placeholder, "");
         }

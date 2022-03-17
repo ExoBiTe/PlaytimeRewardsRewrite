@@ -2,6 +2,7 @@ package com.github.exobite.mc.playtimerewards.listeners;
 
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
+import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -28,7 +29,7 @@ public class PlaytimetopCommand implements CommandExecutor {
         long ms = System.currentTimeMillis();
         long ns = System.nanoTime();
         if(!sender.hasPermission(PTTOP_USE_PERM)) {
-            sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION"));
+            sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_NO_PERMISSION));
             return true;
         }
         sender.sendMessage(ListTop());
@@ -44,7 +45,7 @@ public class PlaytimetopCommand implements CommandExecutor {
             lastPolled = msnow;
             calcPlaytimeTop(amount);
         }
-        String header = Lang.getInstance().getMessageWithArgs("CMD_SUC_PTTOP_HEADER", String.valueOf(cachedTop.size()));
+        String header = Lang.getInstance().getMessage(Msg.CMD_SUC_PTTOP_HEADER, String.valueOf(cachedTop.size()));
         StringBuilder sb = new StringBuilder(header);
         int idx = 1;
         for(String name:cachedTop.keySet()) {
@@ -62,7 +63,7 @@ public class PlaytimetopCommand implements CommandExecutor {
         for(int i=0;i<times.length;i++) {
             args[i+2] = String.valueOf(times[i]);
         }
-        return Lang.getInstance().getMessageWithArgs("CMD_SUC_PTTOP_ENTRY", args);
+        return Lang.getInstance().getMessage(Msg.CMD_SUC_PTTOP_ENTRY, args);
 
     }
 

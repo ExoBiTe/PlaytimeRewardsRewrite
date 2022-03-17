@@ -127,7 +127,7 @@ public class PluginMaster extends JavaPlugin {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            feedback.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_SUC_PTR_RELOAD_SUCCESS"));
+                            feedback.sendMessage(Lang.getInstance().getMessage(Msg.CMD_SUC_PTR_RELOAD_SUCCESS));
                         }
                     }.runTask(instance);
                 }

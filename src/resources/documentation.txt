@@ -51,6 +51,7 @@ Thanks to [URL='https://www.spigotmc.org/members/193389/']ViscousHurricane[/URL]
 
 [CENTER][I]This Plugin collects data using bStats![/I][/CENTER]
 [URL='https://bstats.org/plugin/bukkit/PlaytimeRewards_Rec/14369'][IMG]https://bstats.org/signatures/bukkit/PlaytimeRewards_Rec.svg[/IMG][/URL]
+Don't report Errors in the Review Section, instead leave them in the [URL='https://www.spigotmc.org/threads/547786/']Discussions Section[/URL]. I'll be happy to help you there.
 
 
 //==========================================\\
@@ -59,26 +60,68 @@ Thanks to [URL='https://www.spigotmc.org/members/193389/']ViscousHurricane[/URL]
 
 
 [IMG]http://i.epvpimg.com/y84Bf.png[/IMG]
-[code]/pt [Player] or /playtime [Player]
-      Permissions:
-      	playtimerewards.cmd.playtime.own - Permission to see own Playtime
-      	playtimerewards.cmd.playtime.others - Permission to see others Playtime
-      Description:
-      	Allows users to see their own or other Players Playtime.
-      Messages:
-      	'CMD_SUC_PT_OWN': Displays the own Playtime.
-      		-> Parameters:	0-3: The Total Playtime in Days to Seconds,
-      						4-7: The current Session Time in Days to Seconds.
+[code]
+/pt [Player] or /playtime [Player]
+    Permissions:
+        playtimerewards.cmd.playtime.own - Permission to see own Playtime
+        playtimerewards.cmd.playtime.others - Permission to see others Playtime
+        playtimerewards.cmd.playtime.others.offline - Permission to see Offlineplayers Playtime
+    Description:
+        Allows users to see their own or other Players Playtime.
+    Messages:
+        'CMD_SUC_PT_OWN': Displays the own Playtime.
+            -> Parameters:  0-3: The Total Playtime in Days to Seconds,
+                            4-7: The current Session Time in Days to Seconds.
+        'CMD_SUC_PT_OTHER': Displays the specified Players Playtime.
+            -> Parameters:  0 & 5: The specified Playername
+                            1-4: The Total Playtime in Days to Seconds,
+                            6-9: The current Session Time in Days to Seconds.
+        'CMD_SUC_PT_OTHER_OFFLINE': Displays the specified Offlineplayers Playtime
+            -> Parameters:    0: The specified Playername
+                            1-4: The total Playtime in Days to Seconds
+        'CMD_ERR_NO_PERMISSION': The "No Permission" Text from Commands.
+        'CMD_ERR_PLAYER_NOT_FOUND': The Error Message, when a specified Player couldn't be found.
+            -> Parameters:    0: The specified Player Name.
+        'CMD_ERR_TOO_MANY_REQUESTS': The Error Message when a user exceeds his Request Limit (1 Request / 10 s)
 
-      	'CMD_SUC_PT_OTHER': Displays the specified Players Playtime.
-      		-> Parameters:	0 & 5: The specified Playername
-      						0-3: The Total Playtime in Days to Seconds,
-      						4-7: The current Session Time in Days to Seconds.
+/pttop or /playtimetop
+    Permissions:
+        playtimerewards.cmd.playtimetop - Access to the Command
+    Description:
+        Displays the Players with the most Playtime
+    Config Values:
+        PlaytimeTopAmount: (Default 10) -> Set the Amount how many Players will get display
+    Messages:
+        'CMD_SUC_PTTOP_HEADER': The first Row(s) of the returned Text
+            -> Parameters:    0: The Amount of listed Players
+        'CMD_SUC_PTTOP_ENTRY': This Message gets printed once for Each Data-Entry
+            -> Parameters:    0: The No# on the Leaderboard
+                            1: The Players Name
+                            2-5: The Playtime in Days to Seconds
 
-      	'CMD_ERR_NO_PERMISSION': The "No Permission" Text from Commands.
+/ptr <list|reload> or /playtimerewards <list|reload>
+    list:
+        Permission:
+            playtimerewards.cmd.playtimerewards.list - Access to the Command
+        Description:
+            Lists all registered Rewards
+        Messages:
+            'CMD_SUC_PTR_LIST_HEADER': The first Row(s) of the returned Text
+                -> Parameters:    0: The Amount of listed Rewards
+            'CMD_SUC_PTR_LIST_ENTRY': This Message gets printed once for Each Data-Entry
+                -> Parameters:    0: The Internal Name of the Reward
+                                1: The DisplayName of the Reward
+                                2: The CountType of the Reward
 
-      	'CMD_ERR_PLAYER_NOT_FOUND': The Error Message, when a specified Player couldn't be found.
-      		-> Parameters:	0: The specified Player Name.
+    reload:
+        Permission:
+            playtimerewards.cmd.playtimerewards.reload - Access to the Command
+        Description:
+            Reload all Plugindata - config.yml, lang.yml & rewards.yml
+        Messages:
+            'CMD_SUC_PTR_RELOAD_SUCCESS': The returned Message from the Command
+
+
 [/code]
 
 [IMG]http://i.epvpimg.com/oHwJc.png[/IMG]
@@ -87,19 +130,58 @@ Welcome to the Configuration area. There are three Configurable Files, the confi
 
 The config.yml File contains all our 'overall'-Plugin Configuration:
 [SPOILER="config.yml"]
-[code=YAML]#Configuration File for PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBite
-EnableUpdateCheck: true #This Option only Notifies you when a New Version is online, it doesn't download anything.
-DataSaveInterval: '1h' #Set to '-1' to Disable the Automatic Save Interval[/code]
+[code=YAML]
+#Configuration File for PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBite
+
+#This Option only Notifies you when a New Version is available, it doesn't download anything.
+EnableUpdateCheck: true
+
+#This Option downloads the latest Version of the Plugin and installs it upon a reboot.
+AllowAutoUpdate: false
+
+#The Amount of Players that get displayed by the Playtimetop-Command
+PlaytimeTopAmount: 10
+
+#Set to '-1' to Disable the Automatic Save Interval
+DataSaveInterval: '1h30m'
+
+#AFK-Block
+AFK:
+  #Enables or Disables the whole AFK-System.
+  #When set to false, no other AFK-Value does anything.
+  Enable: false
+
+  #Here you can define, how much time needs to pass without an Action from the Player,
+  #to flag the Player as AFK.
+  Time: '10m'
+
+  #Defines whether a Player Movement resets his AFK-Status
+  CancelOnMove: true
+
+  #Defines if a Players AFK-Status is reset by looking around
+  CancelOnLook: true
+
+  #Defines whether a Player Interaction resets his AFK-Status
+  #(Interaction is any Sort of Right or Left Mouse Button Click)
+  CancelOnInteract: true
+
+  #Defines if Chatting resets the AFK-Status
+  CancelOnChat: true
+
+  #Defines if executing Commands resets the AFK-Status
+  CancelOnCommand: true
+[/code]
 You may add additional Options to it, that are hidden in the normal Config:
 [SPOILER="Additional Options"]
-[code=YAML]ColorCode: '§' #Specifies the Color-Code the Plugin should use[/code]
+[code=YAML]#Specifies the Color-Code the Plugin should use
+ColorCode: '§'[/code]
 [/SPOILER]
 [/SPOILER]
 
 The rewards.yml File contains all reward data, let's dive into it:
 [SPOILER="rewards.yml"]
 [code=YAML]
-#PlaytimeRewards by ExoBiTe
+#PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBiTe
 #
 #List of all Sounds can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 #List of all SoundCategories can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
@@ -115,14 +197,15 @@ SampleReward1: #No Duplicates allowed
   Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
   Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
   GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
-  PermissionNeeded: 'cool.long.time.player.rank' #The Permission needed in order to get this Reward. Is Optional.
-  ConsoleCommands: #Executes the specified Commands from the Console. Is Optional.
+  PermissionNeeded: 'cool.long.time.player.rank' #The Permission needed in order to get this Reward
+  ConsoleCommands: #Executes the specified PlaytimeCommand from the Console. Is Optional.
     - 'say <PLAYER> is a cool Person!'
   Display:
     PlayerMessages: #Sends the specified Messages to the Player which gets the Reward. Is Optional.
       - 'Congrats <PLAYER> upon Earning <REWARD>'
     GlobalMessages: #Sends the specified Messages to all Players. is Optional.
       - '<PLAYER> earned the Achievement <REWARD>'
+    ActionbarMessage: '§1Hello §4<PLAYER>§1!'
     Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
       - 'FLAME, 10, 0.2, 0.2, 0.2, 1'
     Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH' Is Optional.
@@ -135,15 +218,58 @@ Just make sure to give each reward a unique name, otherwise unwanted stuff [B]wi
 
 The lang.yml File customizes the Messages the Plugin will send to your Players. For now there isn´t really that much to see.
 [SPOILER="lang.yml"]
-[code=YAML]CMD_ERR_NO_PERMISSION: §4You don't have the Permission to do this.
-           CMD_SUC_PT_OWN: |-
-             §aYour Playtime is %[0]d %[1]h %[2]m %[3]s
-             Your Sessiontime is %[4]d %[5]h %[6]m %[7]s
-           NOTIF_UPDATE_AVAILABLE: §6Version %[0] of PlaytimeRewards is available (Running v%[1])!
-           CMD_SUC_PT_OTHER: |-
-             §6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s
-             §6%[5]§a's Sessiontime is %[6]d %[7]h %[8]m %[9]s
-           CMD_ERR_PLAYER_NOT_FOUND: §4Can't find the Player §6'%[0]'§4!
+[code=YAML]
+# The Return Message from the /playtime Command
+CMD_SUC_PT_OWN: |-
+  §aYour Playtime is %[0]d %[1]h %[2]m %[3]s
+  Your Sessiontime is %[4]d %[5]h %[6]m %[7]s
+
+# The Return Message from the /playtime <player> Command
+CMD_SUC_PT_OTHER: |-
+  §6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s
+  §6%[5]§a's Sessiontime is %[6]d %[7]h %[8]m %[9]s
+
+# The Return Message from the /playtime <offlineplayer> Command
+CMD_SUC_PT_OTHER_OFFLINE: §6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s
+
+# The First Part of the /Playtimetop Command
+CMD_SUC_PTTOP_HEADER: '§7Listing the top §b%[0] §7Playtimes:'
+
+# This Message gets printed once for each Entry from the /Playtimetop Command
+CMD_SUC_PTTOP_ENTRY: '§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s'
+
+# The first Part of the /Playtimerewards list Command
+CMD_SUC_PTR_LIST_HEADER: |-
+  §7Listing all §b%[0]§7 Rewards:
+  §8Internal Name -- DisplayName -- CountType
+
+# This Message gets printed once for each Entry from the /Playtimerewards list Command
+CMD_SUC_PTR_LIST_ENTRY: §3%[0] §8-- §1%[1] §8-- §7%[2]
+
+# The Return Message from the /Playtimerewards reload Command
+CMD_SUC_PTR_RELOAD_SUCCESS: §aSuccessfully reloaded the external Data!
+
+# A Error Message when too many Requests are sent from a Player using /pt <offlineplayer>
+CMD_ERR_TOO_MANY_REQUESTS: §4You can't do that right now. Try again later!
+
+# The No Permission Message from all Commands
+CMD_ERR_NO_PERMISSION: §4You don't have the Permission to do this.
+
+# The No-Player-Found Error Message from all Commands
+CMD_ERR_PLAYER_NOT_FOUND: §4Can't find the Player '§6%[0]§4'!
+
+# The Notification upon Login when a new Version is available
+NOTIF_UPDATE_AVAILABLE: §6Version %[0] of PlaytimeRewards is available (Running v%[1])!
+
+# The Message sent to Players who get flagged as afk
+NOTIF_AFK_USER_WENT_AFK: §7You are now flagged as AFK
+
+# The Message sent to Players when coming back
+NOTIF_AFK_USER_CAME_BACK: §7You are no longer flagged as AFK
+
+# The Format in which all Times get sent to the PlaceholderAPI
+EXT_PAPI_TIME_FORMAT: '%[0]d %[1]h %[2]m %[3]s'
+
 [/code]
 This File is rather simple, you may change it to your likings.
 Every "%[x]" represents a Parameter to be filled in later by the Plugin,

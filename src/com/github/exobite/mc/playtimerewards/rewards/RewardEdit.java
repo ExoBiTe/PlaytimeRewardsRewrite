@@ -3,6 +3,7 @@ package com.github.exobite.mc.playtimerewards.rewards;
 import com.github.exobite.mc.playtimerewards.gui.CustomItem;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
+import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -78,14 +79,14 @@ public class RewardEdit extends RewardOptions {
 
     private void createMainGui() {
         Lang langInst = Lang.getInstance();
-        String guiTitle = langInst.getMessageWithArgs("GUI_EDIT_REWARD_WINDOWNAME", rw.getName());
+        String guiTitle = langInst.getMessage(Msg.GUI_EDIT_REWARD_WINDOWNAME, rw.getName());
         GUIManager.GUI editGui = GUIManager.getInstance().createGUI(guiTitle, 27)
                 .cancelAll(true)
                 .canClose(false);
 
         CustomItem ci = new CustomItem(Material.BARRIER)
-                .setDisplayName(langInst.getMessageWithArgs("GUI_EDIT_REWARD_EXIT_NOSAVE_NAME"))
-                .setLoreFromString(langInst.getMessageWithArgs("GUI_EDIT_REWARD_EXIT_NOSAVE_LORE"));
+                .setDisplayName(langInst.getMessage(Msg.GUI_EDIT_REWARD_EXIT_NOSAVE_NAME))
+                .setLoreFromString(langInst.getMessage(Msg.GUI_EDIT_REWARD_EXIT_NOSAVE_LORE));
         editGui.setItemstack(18, ci.getItemStack());
         editGui.setSlotAction(18, new GUIManager.GUIClickAction() {
             @Override
@@ -97,8 +98,8 @@ public class RewardEdit extends RewardOptions {
         });
 
         ci = new CustomItem(Material.EMERALD)
-                .setDisplayName(langInst.getMessageWithArgs("GUI_EDIT_REWARD_EXIT_SAVE_NAME"))
-                .setLoreFromString(langInst.getMessageWithArgs("GUI_EDIT_REWARD_EXIT_SAVE_LORE"));
+                .setDisplayName(langInst.getMessage(Msg.GUI_EDIT_REWARD_EXIT_SAVE_NAME))
+                .setLoreFromString(langInst.getMessage(Msg.GUI_EDIT_REWARD_EXIT_SAVE_LORE));
         editGui.setItemstack(26, ci.getItemStack());
         editGui.setSlotAction(26, new GUIManager.GUIClickAction() {
             @Override
@@ -142,8 +143,8 @@ public class RewardEdit extends RewardOptions {
             //Unknown
             m = Material.BEDROCK;
         }
-        String fieldname = Lang.getInstance().getMessageWithArgs("GUI_EDIT_TRANSL_" + f.getName().toUpperCase(Locale.ROOT));
-        String name = Lang.getInstance().getMessageWithArgs("GUI_EDIT_REWARD_FIELD_ITEM_NAME", fieldname);
+        String fieldname = Lang.getInstance().getMessage(Msg.valueOf("GUI_EDIT_TRANSL_" + f.getName().toUpperCase(Locale.ROOT)));
+        String name = Lang.getInstance().getMessage(Msg.GUI_EDIT_REWARD_FIELD_ITEM_NAME, fieldname);
         CustomItem ci = new CustomItem(m).setDisplayName(name);
         gui.setItemstack(slot, ci.getItemStack());
 

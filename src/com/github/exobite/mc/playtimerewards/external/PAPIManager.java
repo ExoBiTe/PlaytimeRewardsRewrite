@@ -3,6 +3,7 @@ package com.github.exobite.mc.playtimerewards.external;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
+import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -56,12 +57,12 @@ public class PAPIManager extends PlaceholderExpansion {
         switch(params.toLowerCase(Locale.ROOT)) {
             case "playtime" -> {
                 String[] param = getTimeValues(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
-                return Lang.getInstance().getMessageWithArgs("EXT_PAPI_TIME_FORMAT", param);
+                return Lang.getInstance().getMessage(Msg.EXT_PAPI_TIME_FORMAT, param);
             }
 
             case "sessiontime" -> {
                 String[] param = getTimeValues(PlayerManager.getInstance().getPlayerData(p).getSessionTime());
-                return Lang.getInstance().getMessageWithArgs("EXT_PAPI_TIME_FORMAT", param);
+                return Lang.getInstance().getMessage(Msg.EXT_PAPI_TIME_FORMAT, param);
             }
 
             default -> {

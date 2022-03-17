@@ -1,13 +1,13 @@
 #Configuration File for PlaytimeRewards@https://www.spigotmc.org/resources/100231/ by ExoBite
 
-#This Option only Notifies you when a New Version is online, it doesn't download anything.
+#This Option only Notifies you when a New Version is available, it doesn't download anything.
 EnableUpdateCheck: true
-
-#The Amount of Players that get displayed by the Playtimetop-Command
-PlaytimeTopAmount: 10
 
 #This Option downloads the latest Version of the Plugin and installs it upon a reboot.
 AllowAutoUpdate: false
+
+#The Amount of Players that get displayed by the Playtimetop-Command
+PlaytimeTopAmount: 10
 
 #Set to '-1' to Disable the Automatic Save Interval
 DataSaveInterval: '1h30m'

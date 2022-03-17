@@ -2,10 +2,7 @@ package com.github.exobite.mc.playtimerewards.listeners;
 
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
-import com.github.exobite.mc.playtimerewards.utils.APIReturnAction;
-import com.github.exobite.mc.playtimerewards.utils.Lang;
-import com.github.exobite.mc.playtimerewards.utils.MojangAPI;
-import com.github.exobite.mc.playtimerewards.utils.Utils;
+import com.github.exobite.mc.playtimerewards.utils.*;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -50,7 +47,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         String rVal;
         if(args.length==0 && sender.hasPermission(PT_USE_OWN_PERM)) {
             if(!(sender instanceof Player p)) {
@@ -65,14 +62,14 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             String unallowedChars = args[0].replaceAll("^[a-zA-Z0-9_]{3,16}$", "");
             if(!unallowedChars.equals("")) {
                 //Not a valid username
-                sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
+                sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[0]));
                 return true;
             }
 
             Player p = Bukkit.getPlayer(args[0]);
             if(p==null){
                 if(!sender.hasPermission(PT_USE_OFFLINE_PERM)) {
-                    sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
+                    sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[0]));
                     return true;
                 }
                 //Check if something is cached, no request needed
@@ -80,7 +77,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
                 if(id!=null) {
                     OfflinePlayer op = Bukkit.getOfflinePlayer(id);
                     if(!op.hasPlayedBefore()) {
-                        sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
+                        sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[0]));
                     }else{
                         sender.sendMessage(getPlaytimeStringForOfflinePlayerOther(op));
                     }
@@ -88,19 +85,19 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
                 }
                 //Check if a request is allowed
                 if(!allowRequest((sender instanceof Player) ? ((Player) sender).getUniqueId() : null)) {
-                    sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_TOO_MANY_REQUESTS"));
+                    sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_TOO_MANY_REQUESTS));
                 }else{
                     //try with OfflinePlayer,
                     APIReturnAction action = new APIReturnAction() {
                         @Override
                         public void onFinish(String data) {
                             if(data==null || data.equals("")) {
-                                sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
+                                sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[0]));
                                 return;
                             }
                             OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(data));
                             if(!op.hasPlayedBefore()) {
-                                sender.sendMessage(Lang.getInstance().getMessageWithArgs("CMD_ERR_PLAYER_NOT_FOUND", args[0]));
+                                sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[0]));
                                 return;
                             }
                             sender.sendMessage(getPlaytimeStringForOfflinePlayerOther(op));
@@ -113,7 +110,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
                 rVal = getPlaytimeStringForPlayerOther(p);
             }
         }else{
-            rVal = Lang.getInstance().getMessageWithArgs("CMD_ERR_NO_PERMISSION");
+            rVal = Lang.getInstance().getMessage(Msg.CMD_ERR_NO_PERMISSION);
         }
         sender.sendMessage(rVal);
         return true;
@@ -133,7 +130,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             valuesStr[i] = String.valueOf(l);
             i++;
         }
-        return Lang.getInstance().getMessageWithArgs("CMD_SUC_PT_OWN", valuesStr);
+        return Lang.getInstance().getMessage(Msg.CMD_SUC_PT_OWN, valuesStr);
     }
 
     private String getPlaytimeStringForPlayerOther(Player p){
@@ -155,7 +152,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             }
             i++;
         }
-        return Lang.getInstance().getMessageWithArgs("CMD_SUC_PT_OTHER", valuesStr);
+        return Lang.getInstance().getMessage(Msg.CMD_SUC_PT_OTHER, valuesStr);
     }
 
     private String getPlaytimeStringForOfflinePlayerOther(OfflinePlayer p) {
@@ -171,7 +168,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             }
             i++;
         }
-        return Lang.getInstance().getMessageWithArgs("CMD_SUC_PT_OTHER_OFFLINE", valuesStr);
+        return Lang.getInstance().getMessage(Msg.CMD_SUC_PT_OTHER_OFFLINE, valuesStr);
     }
 
     @Nullable

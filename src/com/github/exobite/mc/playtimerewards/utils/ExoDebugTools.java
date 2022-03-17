@@ -166,17 +166,20 @@ public class ExoDebugTools implements Listener {
         if(args.length>2){
             switch (args[2].toLowerCase()) {
                 case "listvalues" -> { //msg values
-                    Set<String> msgs = Lang.getInstance().getRegisteredMessages();
-                    StringBuilder sb = new StringBuilder(ChatColor.GOLD.toString()).append("Listing all registered(").append(msgs.size()).append(") msg values:");
-                    for (String m: msgs) {
-                        sb.append("\n").append(ChatColor.GOLD).append(m.toString()).append(": ").append(ChatColor.AQUA).append(Lang.getInstance().getRawMessage(m))
-                                .append(ChatColor.AQUA).append(" Args: ").append(Lang.getInstance().getParamAmount(m));
+                    Msg[] msgs = Msg.values();
+                    StringBuilder sb = new StringBuilder(ChatColor.GOLD.toString()).append("Listing all registered(").append(msgs.length).append(") msg values:");
+                    for (Msg m: msgs) {
+                        sb.append("\n").append(ChatColor.GOLD).append(m).append(": ").append(ChatColor.AQUA).append(m.toString())
+                                .append(ChatColor.AQUA).append(" Args: ").append(m.getArgAmount());
                     }
                     sendSyncMessage(p, sb.toString());
                 }
                 case "getmsg" -> { //msg get
                     if (args.length > 3) {
-                        if(!Lang.getInstance().exists(args[3])) {
+                        Msg m = null;
+                        try {
+                            m = Msg.valueOf(args[3]);
+                        }catch(IllegalArgumentException e){
                             sendSyncMessage(p, "Found no Message " + args[3]);
                             return;
                         }
@@ -184,7 +187,7 @@ public class ExoDebugTools implements Listener {
                         if (args.length > 4) {
                             System.arraycopy(args, 4, argsToSend, 0, args.length - 4);
                         }
-                        sendSyncMessage(p, Lang.getInstance().getMessageWithArgs(args[3], argsToSend));
+                        sendSyncMessage(p, Lang.getInstance().getMessage(m, argsToSend));
                     } else {
                         sendSyncMessage(p, usageMsg);
                     }
@@ -332,7 +335,7 @@ public class ExoDebugTools implements Listener {
                             if(inst==null) {
                                 sendSyncMessage(p, "Couldn't find either a field nor a method.");
                             }else{
-                                sendSyncMessage(p, "Stored the Instance: \n"+inst.toString());
+                                sendSyncMessage(p, "Stored the Instance: \n"+ inst);
                                 storedInst.put(p.getUniqueId(), inst);
                             }
 
@@ -393,7 +396,7 @@ public class ExoDebugTools implements Listener {
                                         if(m.getReturnType().getName().contains("void") || o == null) {
                                             sendSyncMessage(p, "Invoked the Method succesfully!");
                                         }else{
-                                            sendSyncMessage(p, "Invoked the Method, it returned:\n" + o.toString());
+                                            sendSyncMessage(p, "Invoked the Method, it returned:\n" + o);
                                         }
                                     } catch (InvocationTargetException | IllegalAccessException e) {
                                         e.printStackTrace();

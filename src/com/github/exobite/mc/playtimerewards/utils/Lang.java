@@ -10,12 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Lang {
@@ -37,129 +36,157 @@ public class Lang {
         instance = new Lang(instance.main);
     }
 
-    private record MessageData(String message,
-                               int varAmount,
-                               boolean usesPAPI) {
-    }
-
-    private Map<String, MessageData> Messages = new HashMap<>();
     private final JavaPlugin main;
-    private final File langFile;
-    private final boolean usePAPI;
 
     private Lang(@NotNull JavaPlugin main){
         this.main = main;
-        usePAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+        File langFile = new File(main.getDataFolder()+File.separator+"lang.yml");
 
-        langFile = new File(main.getDataFolder()+File.separator+"lang.yml");
+        Msg.setPapiIsRegistered(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null);
         if(!langFile.exists()) {
-            Messages = getDefaultMap();
-            createLangFile(langFile);
+            createNewLangFile(langFile);
         }else{
-            //Only read File if it already exists
-            YamlConfiguration conf = YamlConfiguration.loadConfiguration(langFile);
-            for(String key:conf.getKeys(false)){
-                Messages.put(key, createMessageData(conf.getString(key, "ERR_NO_MESSAGE_FOUND__"+key)));
-            }
-            //Compare loaded Messages to needed Messages
-            compareAndFillMessageMap();
+            readMessagesFromFile(langFile);
         }
     }
 
-    private void createLangFile(File f){
-        //Write data to File
+    private record UpdateConfigResponse(boolean hasChanged, YamlConfiguration conf) { }
+
+    private void createNewLangFile(File f) {
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
-        for(String key:Messages.keySet()) {
-            conf.set(key, Messages.get(key).message);
+        for(Msg msg:Msg.values()) {
+            if(msg.showInFile()){
+                conf.set(msg.toString(), msg.getMessage());
+                conf.setComments(msg.toString(), stringToList(msg.getComment()));
+            }
         }
         try {
             conf.save(f);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        PluginMaster.sendConsoleMessage(Level.INFO, "A new lang.yml File has been created!");
     }
 
-    private void compareAndFillMessageMap(){
-        Map<String, MessageData> defaults = getDefaultMap();
-        boolean changed = false;
-        for(String s:defaults.keySet()) {
-            boolean contains = false;
-            for(String m:Messages.keySet()) {
-                if(s.equals(m)) {
-                    contains = true;
-                    break;
-                }
-            }
-            if(!contains) {
-                Messages.put(s, defaults.get(s));
-                changed = true;
+    private void readMessagesFromFile(File f) {
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+        for(String key:conf.getKeys(true)) {
+            try {
+                //Overwrite all found Messages
+                Msg.valueOf(key).setMessage(conf.getString(key));
+            }catch(IllegalArgumentException e) {
+                PluginMaster.sendConsoleMessage(Level.WARNING, "Unknown Message '"+key+"' found in lang.yml!");
             }
         }
-        if(changed) {
-            createLangFile(langFile);
+
+        //After getting all values, try to update the File
+        UpdateConfigResponse response = updateConfiguration(conf);
+        if(response.hasChanged) {
             PluginMaster.sendConsoleMessage(Level.INFO, "Your lang.yml File has been updated!");
+            try {
+                response.conf.save(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    @NotNull
-    private Map<String, MessageData> getDefaultMap() {
-        Map<String, MessageData> data = new HashMap<>();
-        data.put("CMD_SUC_PT_OWN", createMessageData("§aYour Playtime is %[0]d %[1]h %[2]m %[3]s\nYour Sessiontime is %[4]d %[5]h %[6]m %[7]s"));
-        data.put("CMD_SUC_PT_OTHER", createMessageData("§6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s\n§6%[5]§a's Sessiontime is %[6]d %[7]h %[8]m %[9]s"));
-        data.put("CMD_SUC_PT_OTHER_OFFLINE", createMessageData("§6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s"));
-
-        data.put("CMD_SUC_PTTOP_HEADER", createMessageData("§7Listing the top §b%[0] §7Playtimes:"));
-        data.put("CMD_SUC_PTTOP_ENTRY", createMessageData("§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s"));
-
-        data.put("CMD_SUC_PTR_LIST_HEADER", createMessageData("§7Listing all §b%[0]§7 Rewards:\n§8Internal Name -- DisplayName -- CountType"));
-        data.put("CMD_SUC_PTR_LIST_ENTRY", createMessageData("§3%[0] §8-- §1%[1] §8-- §7%[2]"));
-        data.put("CMD_SUC_PTR_RELOAD_SUCCESS", createMessageData("§aSuccessfully reloaded the external Data!"));
-        data.put("CMD_WARN_PTR_RELOAD", createMessageData("§4Content from rewards.yml doesn't get reloaded, as there are Rewards being edited."));
-
-        data.put("EXT_PAPI_TIME_FORMAT", createMessageData("%[0]d %[1]h %[2]m %[3]s"));
-
-        data.put("CMD_ERR_TOO_MANY_REQUESTS", createMessageData("§4You can't do that right now. Try again later!"));
-        data.put("CMD_ERR_NO_PERMISSION", createMessageData("§4You don't have the Permission to do this."));
-        data.put("CMD_ERR_PLAYER_NOT_FOUND", createMessageData("§4Can't find the Player '§6%[0]§4'!"));
-        data.put("CMD_ERR_REWARD_NOT_FOUND", createMessageData("§4Can't find the Reward '§6%[0]§4'!"));
-
-        data.put("NOTIF_UPDATE_AVAILABLE", createMessageData("§6Version %[0] of PlaytimeRewards is available (Running v%[1])!"));
-
-        //GUI Strings (a whole bunch)
-        data.put("GUI_EDIT_REWARD_WINDOWNAME", createMessageData("§6Editing Reward: §2%[0]"));
-        data.put("GUI_EDIT_REWARD_EXIT_NOSAVE_NAME", createMessageData("§4Exit and discard Changes"));
-        data.put("GUI_EDIT_REWARD_EXIT_NOSAVE_LORE", createMessageData("§cThis Option discards all changes\n§cyou've made and ends the editing."));
-        data.put("GUI_EDIT_REWARD_EXIT_SAVE_NAME", createMessageData("§2Exit and Save Changes"));
-        data.put("GUI_EDIT_REWARD_EXIT_SAVE_LORE", createMessageData("§aThis Option saves all changes\n§ayou've made and ends the editing."));
-        data.put("GUI_EDIT_REWARD_FIELD_ITEM_NAME", createMessageData("§6Change the %[0]§6."));
-
-        //The following Strings translate Fields to Readable User Messages
-        //They need to be exactly named like GUI_EDIT_TRANSL_<FIELDNAME IN UPPERCASE>
-        //Otherwise an error WILL get thrown
-        data.put("GUI_EDIT_TRANSL_TIMEMS", createMessageData("needed §btime"));
-        data.put("GUI_EDIT_TRANSL_DISPLAYNAME", createMessageData("display §bname"));
-        data.put("GUI_EDIT_TRANSL_ISREPEATING", createMessageData("option is §brepeating"));
-        data.put("GUI_EDIT_TRANSL_GRANTFIRST", createMessageData("option grant §bfirst"));
-        data.put("GUI_EDIT_TRANSL_CONSOLECOMMANDS", createMessageData("executed §bcommands"));
-        data.put("GUI_EDIT_TRANSL_PLAYERMESSAGES", createMessageData("sent §bplayer messages"));
-        data.put("GUI_EDIT_TRANSL_GLOBALMESSAGES", createMessageData("sent §bglobal messages"));
-        data.put("GUI_EDIT_TRANSL_PERMISSIONNEEDED", createMessageData("needed §bpermission"));
-        data.put("GUI_EDIT_TRANSL_PARTICLES", createMessageData("§bparticles"));
-        data.put("GUI_EDIT_TRANSL_SOUNDS", createMessageData("§bsounds"));
-
-        return data;
+    private UpdateConfigResponse updateConfiguration(YamlConfiguration conf) {
+        //With Comments is only 1.18+, as
+        if(VersionHelper.isEqualOrLarger(VersionHelper.getBukkitVersion(), new Version(1, 18, 0))) {
+            return updateConfigurationWithComments(conf);
+        }else{
+            return updateConfigurationWithoutComments(conf);
+        }
     }
 
-    @NotNull
-    private MessageData createMessageData(String msg) {
-        if(msg==null) return new MessageData("ERR_NO_MESSAGE_FOUND_", 0, false);
-        String replaced = msg.replaceAll("%\\[[0-9]]", "%[#]");
-        int amount = Utils.countMatches(replaced, "%[#]");
-        boolean containsPlaceholder = false;
-        if(this.usePAPI) {
-            containsPlaceholder = PlaceholderAPI.containsPlaceholders(msg);
+    private UpdateConfigResponse updateConfigurationWithoutComments(YamlConfiguration conf) {
+        boolean changed = false;
+        for(Msg m:Msg.values()) {
+            if(m.showInFile() && conf.get(m.toString())==null) {
+                changed = true;
+                conf.set(m.toString(), m.getMessage());
+            }
         }
-        return new MessageData(msg, amount, containsPlaceholder);
+        return new UpdateConfigResponse(changed, conf);
+    }
+
+    private UpdateConfigResponse updateConfigurationWithComments(YamlConfiguration conf) {
+        YamlConfiguration newConf = new YamlConfiguration();
+        List<String> copiedKeys = new ArrayList<>();
+        boolean changed = false;
+        //First copy all known and visible in file Messages into a new Config
+        for(Msg m:Msg.values()) {
+            boolean exists = conf.get(m.toString())!=null;
+            if(m.showInFile() || exists) {
+                List<String> comments = new ArrayList<>();
+                if(!exists) {
+                    changed = true;
+                }else{
+                    //Try to get old comments
+                    comments = conf.getComments(m.toString());
+                }
+                newConf.set(m.toString(), m.getMessage());
+                if(comments.size()==0) {
+                    comments = stringToList(m.getComment());
+                }
+                newConf.setComments(m.toString(), comments);
+                copiedKeys.add(m.toString());
+            }
+        }
+        boolean first = true;
+        for(String key:conf.getKeys(true)) {
+            if(copiedKeys.contains(key)) continue;
+            newConf.set(key, conf.getString(key));
+            newConf.setComments(key, conf.getComments(key));
+            if(first){
+                newConf.setComments(key, stringToList("Unknown Messages:"));
+                first = false;
+            }
+        }
+        return new UpdateConfigResponse(changed, newConf);
+    }
+
+    private List<String> stringToList(String s) {
+        List<String> l = new ArrayList<>();
+        l.add(null);
+        if(s.contains("\n")) {
+            String[] split = s.split("\n");
+            l.addAll(Arrays.asList(split));
+        }else{
+            l.add(s);
+        }
+        return l;
+    }
+
+    public String getMessage(@NotNull Msg msg, @Nullable String ... args) {
+        return getMessage(null, msg, args);
+    }
+
+    public String getMessage(Player p, @NotNull Msg msg, @Nullable String ... args) {
+        int neededAmount = msg.getArgAmount();
+        if(neededAmount > 0) {
+            int givenAmount = args==null ? 0 : args.length;
+            if(givenAmount < neededAmount) {
+                PluginMaster.sendConsoleMessage(Level.SEVERE, "Too few Parameters given for Message '"+msg+"': Given "+givenAmount+", expected "+neededAmount+"!");
+                return "ERR_TOO_FEW_ARGS__"+msg;
+            }else if(givenAmount > neededAmount) {
+                PluginMaster.sendConsoleMessage(Level.WARNING, "Too many Parameters given for Message '"+msg+"': Given "+givenAmount+", expected "+neededAmount+"!");
+            }
+        }
+        String rVal = msg.getMessage();
+        for(int i=0;i<neededAmount;i++) {
+            if(args[i]==null) {
+                PluginMaster.sendConsoleMessage(Level.SEVERE, "Message was given null as Parameter for Message '"+msg+"' as param no. "+i);
+                return "ERR_NULL_PASSED__"+msg;
+            }
+            rVal = rVal.replace("%["+i+"]", args[i]);
+        }
+        if(msg.usesPapi() && p != null) {
+            rVal = PlaceholderAPI.setPlaceholders(p, rVal);
+        }
+        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
+        return rVal;
     }
 
     protected void reloadAsync(){
@@ -172,56 +199,5 @@ public class Lang {
             }
         }.runTaskAsynchronously(main);
     }
-
-    public boolean exists(String msg) {
-        return Messages.containsKey(msg);
-    }
-
-    public Set<String> getRegisteredMessages() {
-        return Messages.keySet();
-    }
-
-    public String getRawMessage(String message){
-        return Messages.containsKey(message) ? Messages.get(message).message : "ERR_NO_MESSAGE_FOUND__"+message;
-    }
-
-    public int getParamAmount(String msg) {
-        if(!exists(msg)) return 0;
-        return Messages.get(msg).varAmount;
-    }
-
-    public String getMessageWithArgs(String msg, String ... args) {
-        return getMessageWithArgs(null, msg, args);
-    }
-
-    public String getMessageWithArgs(Player p, String msg, String ... args) {
-        if(!exists(msg)) return "ERR_NO_MESSAGE_FOUND__"+msg;
-        MessageData md = Messages.get(msg);
-        if(md.varAmount>0) {
-            int givenAmount = args==null ? 0 : args.length;
-            if(givenAmount < md.varAmount) {
-                PluginMaster.sendConsoleMessage(Level.SEVERE, "Too few Parameters given for Message '"+msg+"': Given "+givenAmount+", expected "+md.varAmount+"!");
-                return "ERR_TOO_FEW_ARGS__"+msg;
-            }else if(givenAmount > md.varAmount) {
-                PluginMaster.sendConsoleMessage(Level.WARNING, "Too many Parameters given for Message '"+msg+"': Given "+givenAmount+", expected "+md.varAmount+"!");
-            }
-        }
-        String rVal = md.message;
-        for(int i=0;i<md.varAmount;i++) {
-            if(args[i]==null) {
-                PluginMaster.sendConsoleMessage(Level.SEVERE, "Message was given null as Parameter for Message '"+msg+"' as param no. "+i);
-                return "ERR_NULL_PASSED__"+msg;
-            }
-            rVal = rVal.replace("%["+i+"]", args[i]);
-        }
-        if(md.usesPAPI && p != null) {
-            rVal = PlaceholderAPI.setPlaceholders(p, rVal);
-        }
-        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
-        return rVal;
-    }
-
-
-
 
 }

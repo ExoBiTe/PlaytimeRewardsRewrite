@@ -1,5 +1,5 @@
 Changelog Version 0.1.3:
-    - Reduced the Final jar size:
+    - Removed compiled Stuff from the final jar(s):
         - Removed internal, unneeded resources from being packed into the final Jar
         - Removed older classes, that weren't used anymore from the project
 
@@ -8,23 +8,59 @@ Changelog Version 0.1.3:
             - This Allows the Plugin to retrieve Playtime from Offline Players
             - This is currently limited to 6 Requests per Minute per Player
 
+    - Rewrote the whole Message System. It is now based on Enums instead of plain Strings
+        - Messages can now be hidden in the lang.yml file
+            ->  This means they aren't in the File by default, but they exist in the Plugin.
+                One could add them on his own to the File, and the Plugin would recognize and use them
+        - The lang.yml File gets dynamically updated upon Missing Values
+            -> In all Versions since MC1.18 Comments also get written into the File
+        - No Real Change to the End-User, this was only an internal Change.
+
     - Added a bunch of new Messages:
         - CMD_SUC_PT_OTHER_OFFLINE -> The Message returned upon requesting the Playtime of an Offline Player
         - CMD_ERR_TOO_MANY_REQUESTS -> The Message when a user tries to send too many API-Requests
         - CMD_SUC_PTTOP_HEADER -> Defines the Header of the /Playtimetop Command
         - CMD_SUC_PTTOP_ENTRY -> Defines each Data-Entry of the /Playtimetop Command
 
+        - CMD_SUC_PTR_LIST_HEADER -> Defines the Header of the /Playtimerewards list Command
+        - CMD_SUC_PTR_LIST_ENTRY -> Defines each Data-Entry of the /Playtimerewards list Command
+        - CMD_SUC_PTR_RELOAD_SUCCESS -> The /Playtimereward reload success Message
+
+        - NOTIF_AFK_USER_WENT_AFK -> The Message to inform the User that he is flagged as afk.
+        - NOTIF_AFK_USER_CAME_BACK -> The "Welcome-Back" Message
+
         - EXT_PAPI_TIME_FORMAT -> Defines the Time Format for the PlaceholderAPI's placeholders from this Plugin.
 
-        - GUI_EDIT_REWARD_WINDOWNAME -> The Windowname of the Edit-Reward GUI
-        - GUI_EDIT_REWARD_EXIT_NOSAVE_NAME -> The Name of the Exit-without-Saving-Reward-GUI Item
-        - GUI_EDIT_REWARD_EXIT_NOSAVE_LORE -> The Lore of the Exit-without-Saving-Reward-GUI Item
-        - GUI_EDIT_REWARD_EXIT_SAVE_NAME -> The Name of the Exit-with-Saving-Reward-GUI Item
-        - GUI_EDIT_REWARD_EXIT_SAVE_LORE -> The Lore of the Exit-with-Saving-Reward-GUI Item
+        - Added even more messages, which are unused and hidden in v0.1.3:
+
+            - CMD_WARN_PTR_RELOAD -> The warning Message that Rewards dont get reloaded, as some Rewards are in Edit-Mode
+
+            - GUI_EDIT_REWARD_WINDOWNAME -> The Windowname of the Edit-Reward GUI
+            - GUI_EDIT_REWARD_EXIT_NOSAVE_NAME -> The Name of the Exit-without-Saving-Reward-GUI Item
+            - GUI_EDIT_REWARD_EXIT_NOSAVE_LORE -> The Lore of the Exit-without-Saving-Reward-GUI Item
+            - GUI_EDIT_REWARD_EXIT_SAVE_NAME -> The Name of the Exit-with-Saving-Reward-GUI Item
+            - GUI_EDIT_REWARD_EXIT_SAVE_LORE -> The Lore of the Exit-with-Saving-Reward-GUI Item
+
+            - The following Messages all define the different editable fields of a reward
+            - GUI_EDIT_TRANSL_DISPLAYNAME
+            - GUI_EDIT_TRANSL_ISREPEATING
+            - GUI_EDIT_TRANSL_GRANTFIRST
+            - GUI_EDIT_TRANSL_CONSOLECOMMANDS
+            - GUI_EDIT_TRANSL_PLAYERMESSAGES
+            - GUI_EDIT_TRANSL_GLOBALMESSAGES
+            - GUI_EDIT_TRANSL_ACTIONBARMESSAGE
+            - GUI_EDIT_TRANSL_PERMISSIONNEEDED
+            - GUI_EDIT_TRANSL_PARTICLES
+            - GUI_EDIT_TRANSL_SOUNDS
+
 
     - New Permissions:
         - playtimerewards.cmd.playtime.other.offline -> Allows the Player to see Offline Players Playtime
         - playtimerewards.cmd.playtimetop -> Allows access to the /playtimetop command
+        - playtimerewards.cmd.playtimerewards.list -> Allows access to the /playtimerewards list command
+        - playtimerewards.cmd.playtimerewards.reload -> Allows access to the /playtimerewards reload command
+        - playtimerewards.cmd.playtimerewards.editreward -> Allows access to the /playtimerewards editreward command
+        - playtimerewards.cmd.playtimerewards.* -> Allows access to all /playtimerewards commands
         - playtimerewards.afk.ignore -> Bypasses the afk system
 
     - New Commands:
@@ -33,10 +69,18 @@ Changelog Version 0.1.3:
         - /playtimetop (or /pttop)
             - Lists the top x(amount specified in config.yml) players with the highest playtime
             - Needs the new Permission 'playtimerewards.cmd.playtimetop'
+        - /playtimerewards list (/ptr list)
+            - Lists all registered Rewards
+            - Needs the new Permission 'playtimerewards.cmd.playtimerewards.list'
+        - /playtimerewards reload (/ptr reload)
+            - Reloads all Plugin Congifuration data
+            - Needs the new Permission 'playtimerewards.cmd.playtimerewards.reload'
+        - Internal, disabled /playtimerewards editreward <reward>
+            - Opens the Edit-GUI for the specified Reward
+            - Needs the new Permission 'playtimerewards.cmd.playtimerewards.editreward'
 
     - Config Values:
         - Value "AllowAutoUpdate" (boolean) allows to Automatically download the newest Plugin Version and install at the next server restart
-            -> Made it hidden. Users who explicitly want to use it, may still enable it.
         - Hidden Value "AllowMetrics" (boolean) allows the user to disable bstats for this plugin. Default is true.
         - Non-Hidden Values now get copied over into the config.yml -> support for updates
         - In Versions since 1.18.* the Comments of Config Files now don't get overwritten anymore. This System can be used by all
@@ -56,7 +100,7 @@ Changelog Version 0.1.3:
             - %ptr_sessiontime% -> Returns the Sessiontime for the Player, the message format is defined as 'EXT_PAPI_TIME_FORMAT'
         - All custom Lang Messages can now use PlaceholderAPI's Placeholders.
 
-    - AFK Framework:
+    - AFK-System:
         - Players get flagged when going AFK.
             - When Players Return their Playtime gets decreased by the lenght of their afk-time
             - When a Player is flagged can be configured (AFK-Reset by Moving, Looking, Interacting, Chatting, use Command)

@@ -3,11 +3,11 @@ package com.github.exobite.mc.playtimerewards.web;
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.ReflectionHelper;
+import com.github.exobite.mc.playtimerewards.utils.VersionHelper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -109,37 +109,12 @@ public class AutoUpdater {
             latestVersion = "0.0.0";
         }
 
-        return latestIsNewer(latestVersion, currentVersion, checkAtMajor, checkAtMinor, checkAtPatch);
+        return VersionHelper.isLarger(VersionHelper.getVersionFromString(latestVersion), VersionHelper.getVersionFromString(currentVersion));
     }
 
     private String unpackVersionFromJson(JsonElement e){
         if(!(e instanceof JsonObject jo)) return null;
         return jo.get("name").getAsString();
-    }
-
-    private boolean latestIsNewer(@NotNull String versionLatest,
-                                  @NotNull String versionLocal,
-                                  boolean checkAtMajor,
-                                  boolean checkAtMinor,
-                                  boolean checkAtPatch) {
-        String[] splitLatest = versionLatest.split("\\.");
-        String[] splitLocal = versionLocal.split("\\.");
-        if(splitLatest.length<2 || splitLocal.length<2) {
-            return false;
-        }
-        int[] numbersLatest = new int[splitLatest.length];
-        int[] numbersLocal = new int[splitLocal.length];
-        for(int i=0;i<splitLatest.length;i++) {
-            numbersLatest[i] = Integer.parseInt(splitLatest[i]);
-        }
-        for(int i=0;i<splitLocal.length;i++) {
-            numbersLocal[i] = Integer.parseInt(splitLocal[i]);
-        }
-        return (checkAtMajor && numbersLatest[0] > numbersLocal[0]) ||
-                (checkAtMinor && numbersLatest[0] >= numbersLocal[0] && numbersLatest[1] > numbersLocal[1]) ||
-                (checkAtPatch && (numbersLatest.length > numbersLocal.length ||
-                        (numbersLatest.length >= 3 && numbersLatest[2] > numbersLocal[2])));
-
     }
 
     private void downloadJar(){
@@ -167,7 +142,8 @@ public class AutoUpdater {
             readByteChan.close();
 
             downloadedUpdate = true;
-            PluginMaster.sendConsoleMessage(Level.INFO, "Updated jar downloaded (took "+(System.currentTimeMillis()-ms)+" ms)!");
+            PluginMaster.sendConsoleMessage(Level.INFO, "Updated jar was downloaded (took "+(System.currentTimeMillis()-ms)+" ms)!\n" +
+                    "It will get moved upon the next Server Start.");
 
         } catch(IOException e){
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Couldn't download the Update.");
@@ -179,7 +155,7 @@ public class AutoUpdater {
         if(!downloadedUpdate) return;
         URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
         if(!updateTarget.exists()) {
-            PluginMaster.sendConsoleMessage(Level.SEVERE, "Couldn't update the Plugin, can't find the downloaded File.");
+            PluginMaster.sendConsoleMessage(Level.WARNING, "Couldn't update the Plugin, can't find the downloaded File.\nWas it moved or deleted?");
             return;
         }
         File target = new File(URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8));
@@ -193,7 +169,6 @@ public class AutoUpdater {
                 out.write(buffer, 0, read);
                 out.flush();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

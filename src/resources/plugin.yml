@@ -28,6 +28,7 @@ permissions:
     children:
       playtimerewards.notifyOnUpdate: true
       playtimerewards.cmd.playtime.other: true
+      playtimerewards.cmd.playtimetop: true
       playtimerewards.cmd.playtimerewards.*: true
 
   playtimerewards.notifyOnUpdate:

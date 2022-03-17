@@ -1,5 +1,7 @@
 package com.github.exobite.mc.playtimerewards.main;
 
+import com.github.exobite.mc.playtimerewards.utils.Lang;
+import com.github.exobite.mc.playtimerewards.utils.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Statistic;
@@ -87,17 +89,6 @@ public class AFKManager implements Listener {
         setActive(Config.getInstance().enableAfkSystem());
     }
 
-    /*
-    Notes:
-    What happens when a afk user gets targeted by /pt?
-        -> Is it gonna subtract the AFK-Time until then before delivering the result?
-        -> Or am i gonna ignore this fact and just correct the playtime when the user comes back
-    How to keep up with the afk-time?
-        -> Bukkit only allows to decrement a statistic by 2^32/2 -> ~ 30.000h -> 1.242d -> 3,4years
-        -> Nah... i guess this is enough time
-    BB
-     */
-
     private void runScheduler(){
         BukkitTask bt = new BukkitRunnable() {
             @Override
@@ -120,14 +111,13 @@ public class AFKManager implements Listener {
         long now = System.currentTimeMillis();
         isAfk.put(id, now - (flaggedAsAfkSeconds * 1000));
         PlayerManager.getInstance().getPlayerData(id).setAfk(true, now);
-        Objects.requireNonNull(Bukkit.getPlayer(id)).sendMessage("Youre now flagged as afk.");
+        Objects.requireNonNull(Bukkit.getPlayer(id)).sendMessage(Lang.getInstance().getMessage(Msg.NOTIF_AFK_USER_WENT_AFK));
     }
 
     private void comeBack(@NotNull Player p) {
         UUID id = p.getUniqueId();
         long diff = System.currentTimeMillis() - isAfk.get(id);
         isAfk.remove(id);
-        p.sendMessage("Wb, "+diff+" ms");
         long diffInTicks = diff / 50;
         if(diffInTicks>Integer.MAX_VALUE) {
             //This shouldn't happen, as it is a very loooong time
@@ -142,15 +132,13 @@ public class AFKManager implements Listener {
             decreasePlaytime(p, Math.toIntExact(diffInTicks));
         }
         PlayerManager.getInstance().getPlayerData(id).setAfk(false, 0L);
+        p.sendMessage(Lang.getInstance().getMessage(Msg.NOTIF_AFK_USER_CAME_BACK));
     }
 
     private void decreasePlaytime(@NotNull Player p, int ticks) {
         int newticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE) - ticks;
         if(newticks<0) newticks = 0;
-        p.sendMessage("Setting playedoneminute to "+newticks);
-        p.sendMessage("It is now "+p.getStatistic(Statistic.PLAY_ONE_MINUTE));
         p.setStatistic(Statistic.PLAY_ONE_MINUTE, newticks);
-        p.sendMessage("Now it is "+p.getStatistic(Statistic.PLAY_ONE_MINUTE));
     }
 
     private void resetAfk(@NotNull Player p){
