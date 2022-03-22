@@ -81,15 +81,19 @@ public class GUIManager implements Listener {
             final HumanEntity p = e.getPlayer();
             final UUID id = p.getUniqueId();
             if(!g.canClose && !allowNextGUIClose(id)) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        p.openInventory(g.inv);
-                    }
-                }.runTaskLater(main, 1L);
+                openGuiInOneTick(p, g);
             }
             setAllowNextGUIClose(false, id);
         }
+    }
+
+    private void openGuiInOneTick(HumanEntity p, GUI g) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                p.openInventory(g.inv);
+            }
+        }.runTaskLater(main, 1L);
     }
 
     public void setAllowNextGUIClose(boolean allow, UUID id) {

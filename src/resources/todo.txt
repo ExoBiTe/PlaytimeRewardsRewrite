@@ -5,6 +5,8 @@ Basic Concept:
         - REAL_TIME     : Uses the Real World Clock, is always incrementing even if the Server is offline
         - SESSION_TIME  : Calculate a Session Time using the Total Playertime and a Cached Playertime from Login
         - PLAY_TIME     : Uses the Statistic "PLAY_ONE_MINUTE"
+        - AFK_TIME      : Counts the AFK-Time
+        - OFFLINE_TIME  : Counts the Time between Login and last Logout
 
     - Saving the following:
         - All Rewards that got earnt and aren't repeating, get saved with a value of -1L
@@ -24,8 +26,6 @@ Basic Concept:
                 - #s -> Seconds
 
 Ideas:
-    - PlaceholderAPI Support:
-        - https://www.spigotmc.org/resources/placeholderapi.6245/
     - Custom Advancements:
         Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
         or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/
@@ -36,40 +36,10 @@ Ideas:
         - Maybe create Offlinetime Rewards using this?
 
     - GUI to create/modify & manage Rewards
-    - Create a Playtime Top Command:
-        - Displays the TOP Playtime from the Server
-        - Maybe with args to also display the biggest SessionTime?
 
     - Allow Players to Opt-In for more data collection:
         - Collect Data how many Rewards are registered, and which functions of the Rewards get used.
 
 
 Notes:
-    - removed bStats relocation from the pom, as there occurs an error for now
-    - copy/pasted from pom: (paste under version of shade-plugin)
-
-                    <configuration>
-                        <relocations>
-                            <relocation>
-                                <pattern>org.bstats</pattern>
-                                <shadedPattern>com.github.exobite.mc.playtimerewards.utils</shadedPattern>
-                            </relocation>
-                        </relocations>
-                    </configuration>
-    - also removed the file from the POM for now (and added it manually), will get back later to this.
-
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-    - also removed gson:
-
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.9.0</version>
-                <scope>compile</scope>
-            </dependency>
+    - Maybe add Language Detection (Using Player#getLocale) and allow multiple Language Files

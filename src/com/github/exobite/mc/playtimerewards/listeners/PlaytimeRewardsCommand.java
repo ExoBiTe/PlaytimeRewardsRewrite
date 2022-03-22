@@ -38,7 +38,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
     private void sendHelpText(CommandSender s) {
         StringBuilder sb = new StringBuilder(CMD_USAGE);
         if(s.hasPermission(PTR_LIST_PERM)) sb.append("\n").append(CMD_USAGE_LIST);
-        //if(s.hasPermission(PTR_EDIT_PERM)) sb.append("\n").append(CMD_USAGE_REWARDEDIT);
+        if(s.hasPermission(PTR_EDIT_PERM)) sb.append("\n").append(CMD_USAGE_REWARDEDIT);
         if(s.hasPermission(PTR_RELOAD_PERM)) sb.append("\n").append(CMD_USAGE_RELOAD);
         String msg = sb.toString();
         if(msg.equals(CMD_USAGE)) {
@@ -56,7 +56,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         }else {
             switch (args[0].toLowerCase(Locale.ROOT)) {
                 case "list" -> listCommand(sender);
-                //case "editreward" -> editRewardCommand(sender, args);
+                case "editreward" -> editRewardCommand(sender, args);
                 case "reload" -> reloadCommand(sender);
                 default -> sendHelpText(sender);
             }
@@ -110,6 +110,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             s.sendMessage(Lang.getInstance().getMessage(Msg.CMD_WARN_PTR_RELOAD));
         }
         PluginMaster.getInstance().reloadConfigurationData(s);
+        var test = "";
     }
 
     @Nullable
@@ -119,9 +120,9 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         int size = args.length;
         if(size<2) {
             if(sender.hasPermission(PTR_LIST_PERM)) data.add("list");
-            //if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
+            if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
             if(sender.hasPermission(PTR_RELOAD_PERM)) data.add("reload");
-        }/*else if(size==2) {
+        }else if(size==2) {
             if(args[0].equalsIgnoreCase("editreward")) {
                 for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {
                     if(rwd.rewardName().startsWith(args[1])) {
@@ -129,7 +130,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
                     }
                 }
             }
-        }*/
+        }
         return data;
     }
 

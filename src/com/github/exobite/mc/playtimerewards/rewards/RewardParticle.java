@@ -23,4 +23,8 @@ public class RewardParticle {
         loc.getWorld().spawnParticle(p, loc, amount, offsetX, offsetY, offsetZ, extra);
     }
 
+    public String toString() {
+        return p.toString() + ", " + amount + ", " + offsetX + ", " + offsetY + ", " + offsetZ + ", " + extra;
+    }
+
 }

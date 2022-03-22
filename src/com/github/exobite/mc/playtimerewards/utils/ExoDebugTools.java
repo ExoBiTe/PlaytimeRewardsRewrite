@@ -4,6 +4,7 @@ import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -49,8 +50,8 @@ public class ExoDebugTools implements Listener {
             + "\nlistFields <className>: Lists all known fields of the class"
             + "\nlistMethods <className>: Lists all known Methods of the class"
             + "\nstoreInstance <className> <fieldName>: Stores the Content of the Field as Instance"
-            + "\ngetFieldValue <className> <fieldName>: Displays info for the Field"
-            + "\nsetFieldValue <className> <fieldName> <value>: Sets the Value of the specified field"
+            + "\ngetField <className> <fieldName>: Displays info for the Field"
+            //+ "\nsetFieldValue <className> <fieldName> <value>: Sets the Value of the specified field"
             + "\ninvokemethod <className> <methodName>: Invokes the selected Method"
             + "\ntoggle <somerandom3rdArg>: Toggles whether the plugin packageprefix gets added automatically or not";
 
@@ -97,6 +98,14 @@ public class ExoDebugTools implements Listener {
 
         });
 
+    }
+
+    public static void unregister() {
+        storedInst.clear();
+        insertPackagePrefix.clear();
+        placeHolders.clear();
+        HandlerList.unregisterAll(inst);
+        inst = null;
     }
 
     private ExoDebugTools(){/* Empty Constructor */}
@@ -351,7 +360,7 @@ public class ExoDebugTools implements Listener {
                         }
                     }
                 }
-                case "getfieldvalue" -> {
+                case "getfield" -> {
                     if(args.length>4){
                         boolean hasInstStored = storedInst.containsKey(p.getUniqueId());
                         try {
@@ -378,44 +387,44 @@ public class ExoDebugTools implements Listener {
                     if(args.length>4){
                         boolean hasInstStored = storedInst.containsKey(p.getUniqueId());
                         try {
-                            Class clazz = getClass(p.getUniqueId(), args[3]);
+                            Class<?> clazz = getClass(p.getUniqueId(), args[3]);
                             Method m = clazz.getDeclaredMethod(args[4]);
                             /*
                             Compiler may Produce the following message, caused by the Line before this comment:
                             "unchecked call to getDeclaredMethod(java.lang.String,java.lang.Class<?>...)
                             as a member of the raw type java.lang.Class"
                              */
-                            if(m.getParameterCount() == 0){
-                                boolean isStatic = Modifier.toString(m.getModifiers()).contains("static");
-                                if(!isStatic && !hasInstStored){
-                                    sendSyncMessage(p, "Can´t invoke non-static Methods without a stored instance!");
-                                }else{
-                                    m.setAccessible(true);
-                                    try {
-                                        Object o = m.invoke(isStatic ? null : storedInst.get(p.getUniqueId()));
-                                        if(m.getReturnType().getName().contains("void") || o == null) {
-                                            sendSyncMessage(p, "Invoked the Method succesfully!");
-                                        }else{
-                                            sendSyncMessage(p, "Invoked the Method, it returned:\n" + o);
-                                        }
-                                    } catch (InvocationTargetException | IllegalAccessException e) {
-                                        e.printStackTrace();
-                                    } catch(Exception e){
-                                        StringWriter sw = new StringWriter();
-                                        PrintWriter pw = new PrintWriter(sw);
-                                        e.printStackTrace(pw);
-                                        String stackTrace = sw.toString();
-                                        pw.close();
-                                        try {
-                                            sw.close();
-                                        } catch (IOException ex) {
-                                            ex.printStackTrace();
-                                        }
-                                        sendSyncMessage(p, "An Exception occured while invoking the Method:\n" + stackTrace);
-                                    }
-                                }
+                            boolean isStatic = Modifier.toString(m.getModifiers()).contains("static");
+                            if(!isStatic && !hasInstStored){
+                                sendSyncMessage(p, "Can´t invoke non-static Methods without a stored instance!");
                             }else{
-                                sendSyncMessage(p, "Can only call Methods without Parameters.");
+                                if(m.getParameterCount()>0) {
+                                    sendSyncMessage(p, "Can't call Methods with Parameters");
+                                    return;
+                                }
+                                m.setAccessible(true);
+                                try {
+                                    Object r = m.invoke(isStatic ? null : storedInst.get(p.getUniqueId()));
+                                    if(m.getReturnType().getName().contains("void") || r == null) {
+                                        sendSyncMessage(p, "Invoked the Method succesfully!");
+                                    }else{
+                                        sendSyncMessage(p, "Invoked the Method, it returned:\n" + r);
+                                    }
+                                } catch (InvocationTargetException | IllegalAccessException e) {
+                                    e.printStackTrace();
+                                } catch(Exception e){
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    e.printStackTrace(pw);
+                                    String stackTrace = sw.toString();
+                                    pw.close();
+                                    try {
+                                        sw.close();
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    sendSyncMessage(p, "An Exception occured while invoking the Method:\n" + stackTrace);
+                                }
                             }
 
                         } catch (ClassNotFoundException e) {

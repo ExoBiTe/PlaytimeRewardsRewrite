@@ -1,3 +1,23 @@
+Changelog Version 0.1.4:
+    - Messages:
+        - Made the following Messages visible:
+            - CMD_WARN_PTR_RELOAD
+            - CMD_ERR_REWARD_NOT_FOUND
+        - Added the following new Messages:
+            - CMD_NOTIF_PTR_EDIT_TYPE_IN_CHAT
+            - CMD_SUC_PTR_EDIT_SAVED
+            - CMD_SUC_PTR_EDIT_ABORTED
+            - CMD_ERR_PTR_EDIT_UNKNOWN
+
+    - Rewards:
+        - Edited Rewards now get saved (when the plugin disables & upon /ptr reload)
+
+
+    - Small stuff
+        - Got rid of the old Logger, using JavaPlugin#getLogger now
+            -> No more double PluginNames in the Console on other Platforms than spigot
+
+
 Changelog Version 0.1.3:
     - Removed compiled Stuff from the final jar(s):
         - Removed internal, unneeded resources from being packed into the final Jar

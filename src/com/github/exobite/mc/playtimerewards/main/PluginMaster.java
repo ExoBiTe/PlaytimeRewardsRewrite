@@ -6,6 +6,7 @@ import com.github.exobite.mc.playtimerewards.listeners.*;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
+import com.github.exobite.mc.playtimerewards.web.GenericAPI;
 import com.github.exobite.mc.playtimerewards.web.MotdReader;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class PluginMaster extends JavaPlugin {
@@ -30,15 +30,12 @@ public class PluginMaster extends JavaPlugin {
     }
 
     public static void sendConsoleMessage(Level level, @NotNull String msg){
-        String prefix = "[" + instance.getDescription().getName() + "] ";
-        //Split by \newLine, send all in a seperate message
         String[] parts = msg.split("\n");
         for (String part : parts) {
-            instance.log.log(level, prefix + part);
+            instance.getLogger().log(level, part);
         }
     }
 
-    private Logger log;
     private Version bukkitVersion;
     private boolean pauseAsyncTimer = false;
 
@@ -49,8 +46,6 @@ public class PluginMaster extends JavaPlugin {
         //Start Time measuring & Setup singleton instance
         long t1 = System.currentTimeMillis();
         instance = this;
-        //Register Logger
-        log = Logger.getLogger(getDescription().getName());
 
         bukkitVersion = VersionHelper.getBukkitVersion();
 
@@ -59,6 +54,10 @@ public class PluginMaster extends JavaPlugin {
             sendConsoleMessage(Level.SEVERE, "This Plugin doesnt support your Server Version.");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+        if(VersionHelper.isSmaller(bukkitVersion, new Version(1, 18, 0))) {
+            //sendConsoleMessage(Level.INFO, "");
+
         }
         Utils.registerUtils(this);
         Config.registerConfig(this, true);
@@ -70,6 +69,7 @@ public class PluginMaster extends JavaPlugin {
         RewardManager.setupRewardManager(this);
         MojangAPI.register(this);
         AFKManager.register(this);
+        GenericAPI.register(this);
         //Load Metrics
         setupMetrics();
         //Load Game-Interaction Stuff
@@ -101,6 +101,7 @@ public class PluginMaster extends JavaPlugin {
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
         PlayerManager.getInstance().cleanAllPlayerData();
+        RewardManager.getInstance().saveData();
         if(Config.getInstance().checkForUpdate()) AutoUpdater.getInstance().moveUpdate();
     }
 
@@ -121,6 +122,8 @@ public class PluginMaster extends JavaPlugin {
                     sendConsoleMessage(Level.WARNING, "Couldn't reload the Rewards while they are being edited.");
                 }
                 AFKManager.getInstance().reloadConfig();
+                ExoDebugTools.unregister();
+                if(Config.getInstance().allowDebugTools()) ExoDebugTools.registerDebugTools(instance);
                 pauseAsyncTimer = false;
                 PluginMaster.sendConsoleMessage(Level.INFO, "Reload done (took "+(System.currentTimeMillis() - ms)+"ms)!");
                 if(feedback!=null) {

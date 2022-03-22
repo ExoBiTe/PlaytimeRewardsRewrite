@@ -55,7 +55,7 @@ public class AutoUpdater {
         BukkitRunnable br = new BukkitRunnable() {
             @Override
             public void run() {
-                if(checkForNewerVersion(true, true, true)) {
+                if(checkForNewerVersion()) {
                     updateAvailable = true;
                     //Send the Message on the Main thread for a nicer-looking console prefix.
                     new BukkitRunnable() {
@@ -79,7 +79,7 @@ public class AutoUpdater {
         }
     }
 
-    private boolean checkForNewerVersion(boolean checkAtMajor, boolean checkAtMinor, boolean checkAtPatch) {
+    private boolean checkForNewerVersion() {
         String currentVersion = main.getDescription().getVersion();
         try {
             URL url = new URL(GET_LATEST_VERSION);
@@ -98,8 +98,9 @@ public class AutoUpdater {
             JsonElement e = ReflectionHelper.getInstance().parseReader(isr);
 
             latestVersion = unpackVersionFromJson(e);
+
             if(latestVersion==null) {
-                PluginMaster.sendConsoleMessage(Level.WARNING, "Couldn't find the newest Latest Version in the HTTP Response.");
+                PluginMaster.sendConsoleMessage(Level.WARNING, "Couldn't find the Latest Version in the HTTP Response.");
                 return false;
             }
 

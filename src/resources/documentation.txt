@@ -21,6 +21,15 @@ What can the Players obtain?
 - Again, you can choose it. For now it supports Console Commands upon receiving the Reward. It also supporst some comsetic stuff like Particles and Sounds.
 Later - out of the Beta it´ll also support Items and maybe other stuff you guys suggest me (altough nothing you couldn´t do with Console Commands).
 
+Supports [URL='https://www.spigotmc.org/resources/6245/']PlaceholderAPI[/URL]!
+[IMG]http://i.epvpimg.com/dBt0fab.png[/IMG]
+(Shown here using [URL='https://www.spigotmc.org/resources/20848/']Animated Scoreboard[/URL])
+[SPOILER="Placeholders"]
+[code]- %ptr_playtime% -> Returns the Playtime for the Player, the message format is defined as 'EXT_PAPI_TIME_FORMAT'
+- %ptr_sessiontime% -> Returns the Sessiontime for the Player, the message format is defined as 'EXT_PAPI_TIME_FORMAT'[/code]
+[/SPOILER]
+
+
 [SPOILER="F.A.Q & Future Plans"]
 Q: I am using one of your older PlaytimeRewards. Is there way to transport Data inbetween these to Plugins?
 A: [I]No, there isn´t. This Plugin is a completely different Software, the only Thing they have in common is their Name.[/I]
@@ -36,12 +45,10 @@ Q: Does this Plugin work with /reload?
 A: [I]This is a.. topic... Theoretically it was designed with the ability to support server reloads, but i didn´t test it that much during development as it later wasn't that big of a priority anymore.[/I]
 
 Future Plans:
-[code]- Create a /playtimetop command, showing the top 10 Playtimes from the Server
-- Support Custom Advancements
+[code]- Support Custom Advancements
 - An ingame Reward-Editor using Inventory GUIs
 - Add OfflineTime - Use Time between Logout and Login
-- Add AFK-Detection & and AFK-Time
-- Add PlaceholderAPI support[/code]
+- Add AFK-Time[/code]
 If you´ve got any ideas feel free to suggest them in the Discussions or via pn!
 [/SPOILER]
 

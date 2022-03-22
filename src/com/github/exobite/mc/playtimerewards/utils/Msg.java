@@ -36,6 +36,22 @@ public enum Msg {
             true),
     CMD_WARN_PTR_RELOAD("§4Content from rewards.yml doesn't get reloaded, as there are Rewards being edited.",
             "A Warn Message that Rewards dont get reloaded from the /ptr reload Command",
+            true),
+
+    CMD_NOTIF_PTR_EDIT_TYPE_IN_CHAT("§6Type in chat! §8(Your Message will not get sent! Use '&' as Color-Char.)",
+            "The Notification sent to the Player upon expecting an Input for the Reward-Editing",
+            false),
+
+    CMD_SUC_PTR_EDIT_SAVED("§aSuccessfully saved the Reward!",
+            "",
+            false),
+
+    CMD_SUC_PTR_EDIT_ABORTED("§cAborted the Editing!",
+            "",
+            false),
+
+    CMD_ERR_PTR_EDIT_UNKNOWN("§4An unknown Error occurred! §8Try again",
+            "",
             false),
 
     CMD_ERR_TOO_MANY_REQUESTS("§4You can't do that right now. Try again later!",
@@ -49,7 +65,7 @@ public enum Msg {
             true),
     CMD_ERR_REWARD_NOT_FOUND("§4Can't find the Reward '§6%[0]§4'!",
             "The No-Reward-Found Error Message from all Commands",
-            false),
+            true),
 
     //Ingame Notifications
     NOTIF_UPDATE_AVAILABLE("§6Version %[0] of PlaytimeRewards is available (Running v%[1])!",

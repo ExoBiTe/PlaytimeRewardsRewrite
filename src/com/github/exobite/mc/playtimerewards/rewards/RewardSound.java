@@ -39,4 +39,8 @@ public class RewardSound {
         return pitch;
     }
 
+    public String toString() {
+        return s.toString() + ", " + sc.toString() + ", " + vol + ", " + pitch;
+    }
+
 }

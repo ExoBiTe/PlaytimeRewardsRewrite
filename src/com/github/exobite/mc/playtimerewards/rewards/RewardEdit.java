@@ -12,6 +12,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -50,11 +51,9 @@ public class RewardEdit extends RewardOptions {
     private void copyFields(@NotNull RewardOptions src, @NotNull RewardOptions dst) {
         for(Field f:src.getClass().getSuperclass().getDeclaredFields()) {
             //Only copy protected fields
-            //System.out.println("Field "+f.getName());
             if(!Modifier.isProtected(f.getModifiers())) continue;
             try {
                 dst.getClass().getSuperclass().getDeclaredField(f.getName()).set(dst, f.get(src));
-                //System.out.println("Copying "+f.getName()+"!");
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 //None of them should ever be called, as they are both the same class
                 //and this method only accesses protected fields
@@ -63,16 +62,30 @@ public class RewardEdit extends RewardOptions {
         }
     }
 
+    void openMainGUI() {
+        Player p = Bukkit.getPlayer(editor);
+        if(p==null) {
+            discardChanges();
+            return;
+        }
+        guis.get("main").openInventory(p);
+        nextAction = null;
+        guiAfterChat = null;
+    }
+
     protected void passStringFromChat(Player p, String message) {
         if(nextAction!=null) {
-            if(nextAction.parseInput(p, message)){
+            String dat = message.replace("&", "§");
+            dat = dat.replace("[\\\"]+", "");   //Remove strange characters
+            ChatResponse r = nextAction.parseInput(p, dat);
+            if(r.success){
                 nextAction = null;
                 if(guiAfterChat!=null) {
                     guiAfterChat.openInventory(p);
                     guiAfterChat = null;
                 }
             }else{
-                p.sendMessage("Error, try again.");
+                p.sendMessage(Lang.getInstance().getMessage(p, r.error, r.args));
             }
         }
     }
@@ -92,8 +105,10 @@ public class RewardEdit extends RewardOptions {
             @Override
             protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
                 GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
-                e.getWhoClicked().closeInventory();
+                Player p = (Player) e.getWhoClicked();
+                p.closeInventory();
                 discardChanges();
+                p.sendMessage(Lang.getInstance().getMessage(p, Msg.CMD_SUC_PTR_EDIT_ABORTED));
             }
         });
 
@@ -105,8 +120,10 @@ public class RewardEdit extends RewardOptions {
             @Override
             protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
                 GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
-                e.getWhoClicked().closeInventory();
+                Player p = (Player) e.getWhoClicked();
+                p.closeInventory();
                 saveDataToReward();
+                p.sendMessage(Lang.getInstance().getMessage(p, Msg.CMD_SUC_PTR_EDIT_SAVED));
             }
         });
 
@@ -160,7 +177,6 @@ public class RewardEdit extends RewardOptions {
 
     private void clickedItem(@NotNull HumanEntity clicker, final @NotNull Field f) {
         //Array(or Member) is printed as [java.lang String, single-String field is printed as java.lang.String
-        //Check for non-array types when bool checkForArray isnt true
         if(f.getType().isArray()) {
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
             clicker.closeInventory();
@@ -168,36 +184,38 @@ public class RewardEdit extends RewardOptions {
         }else if(f.getType()==String.class) {
             nextAction = new ChatInputAction() {
                 @Override
-                boolean parseInput(Player p, String input) {
+                ChatResponse parseInput(Player p, String input) {
                     try {
                         f.set(inst, input);
-                        return true;
+                        return new ChatResponse(true, null);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    return false;
+                    return new ChatResponse(false, Msg.CMD_ERR_PTR_EDIT_UNKNOWN);
                 }
             };
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
             clicker.closeInventory();
+            clicker.sendMessage(Lang.getInstance().getMessage((Player) clicker, Msg.CMD_NOTIF_PTR_EDIT_TYPE_IN_CHAT));
         }else if(f.getType()==long.class && f.getName().equals("timeMs")) {
             nextAction = new ChatInputAction() {
                 @Override
-                boolean parseInput(Player p, String input) {
+                ChatResponse parseInput(Player p, String input) {
                     long newms = Utils.convertTimeStringToMS(input);
                     if(newms>0) {
                         try {
                             f.set(inst, newms);
-                            return true;
+                            return new ChatResponse(true, null);
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
                     }
-                    return false;
+                    return new ChatResponse(false, Msg.CMD_ERR_PTR_EDIT_UNKNOWN);
                 }
             };
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
             clicker.closeInventory();
+            clicker.sendMessage(Lang.getInstance().getMessage((Player) clicker, Msg.CMD_NOTIF_PTR_EDIT_TYPE_IN_CHAT));
         }
     }
 
@@ -210,9 +228,9 @@ public class RewardEdit extends RewardOptions {
         if(strippedName.equals(String.class.getName())) {
             nextAction = new ChatInputAction() {
                 @Override
-                boolean parseInput(Player p, String input) {
+                ChatResponse parseInput(Player p, String input) {
                     Array.set(arrayInstance, index, input);
-                    return true;
+                    return new ChatResponse(true, null);
                 }
             };
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
@@ -220,10 +238,10 @@ public class RewardEdit extends RewardOptions {
         }else if(strippedName.equals(long.class.getName())) {
             nextAction = new ChatInputAction() {
                 @Override
-                boolean parseInput(Player p, String input) {
+                ChatResponse parseInput(Player p, String input) {
                     long newms = Utils.convertTimeStringToMS(input);
                     Array.set(arrayInstance, index, newms);
-                    return true;
+                    return new ChatResponse(true, null);
                 }
             };
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
@@ -303,6 +321,7 @@ public class RewardEdit extends RewardOptions {
     private void saveDataToReward() {
         //TODO: Copy data to Reward
         copyFields(inst, rw);
+        RewardManager.getInstance().setRewardsChanged();
         cleanUp();
     }
 
@@ -331,7 +350,21 @@ public class RewardEdit extends RewardOptions {
 
     private abstract static class ChatInputAction {
 
-        abstract boolean parseInput(Player p, String input);
+        abstract ChatResponse parseInput(Player p, String input);
+
+    }
+
+    private static class ChatResponse {
+
+        boolean success;
+        Msg error;
+        String[] args;
+
+        ChatResponse(boolean success, @Nullable Msg error, @Nullable String ... args) {
+            this.success = success;
+            this.error = error;
+            this.args = args;
+        }
 
     }
 

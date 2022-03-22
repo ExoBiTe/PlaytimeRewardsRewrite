@@ -23,7 +23,7 @@ public class MojangAPI {
     private final static String API_UUID_TO_NAMES = "https://api.mojang.com/user/profiles/<uuid>/names";
     private final static String API_NAME_TO_UUID = "https://api.mojang.com/users/profiles/minecraft/<name>";
     private final static long RESET_REQUESTS_INTERVAL = 60000 * 10;  //10 Minutes
-    private final static int MAX_REQUESTS_PER_INTERVAL = 200;   //Mojang Limits it to 600 per 10 Minutes
+    private final static int MAX_REQUESTS_PER_INTERVAL = 500;   //Mojang Limits it to 600 per 10 Minutes
 
     public static MojangAPI getInstance(){
         return instance;

@@ -242,13 +242,13 @@ public class Utils {
         Ms = calcStep;
         String dat = format;
 
-        dat = replaceIfGreater(dat, "%ms", Ms, 0, "Ms");
-        dat = replaceIfGreater(dat, "%s", Seconds, 0, "S");
-        dat = replaceIfGreater(dat, "%m", Minutes, 0," M");
-        dat = replaceIfGreater(dat, "%h", Hours, 0, "H");
-        dat = replaceIfGreater(dat, "%d", Days, 0, "D");
+        dat = replaceIfGreater(dat, "%ms", Ms, 0, "ms");
+        dat = replaceIfGreater(dat, "%s", Seconds, 0, "s");
+        dat = replaceIfGreater(dat, "%m", Minutes, 0," m");
+        dat = replaceIfGreater(dat, "%h", Hours, 0, "h");
+        dat = replaceIfGreater(dat, "%d", Days, 0, "d");
         //Remove unnecessary whitespaces
-        dat = dat.replaceAll("( +)", " ").trim();
+        dat = dat.replaceAll("( +)", "").trim();
 
         return dat;
     }
