@@ -1,17 +1,21 @@
-Changelog Version 0.1.4:
+Changelog Hotifx-Version 0.1.4:
+    -Bugfix:
+        - Offline-Mode: false's UUIDs are different ones than the Mojang One's from online-mode true.
+                        this causes the /pt <offlineplayer> to get the wrong uuid, therefore displaying
+                        incorrect data.
+                        I updated the MojangAPI-Class to return the correct name<->uuid pair.
+
     - Messages:
-        - Made the following Messages visible:
-            - CMD_WARN_PTR_RELOAD
-            - CMD_ERR_REWARD_NOT_FOUND
-        - Added the following new Messages:
+        - Added the following new Messages (hidden):
             - CMD_NOTIF_PTR_EDIT_TYPE_IN_CHAT
             - CMD_SUC_PTR_EDIT_SAVED
             - CMD_SUC_PTR_EDIT_ABORTED
             - CMD_ERR_PTR_EDIT_UNKNOWN
+        - These Messages are unused for now, it is planned to use them when the ptr editreward cmd is done
 
     - Rewards:
         - Edited Rewards now get saved (when the plugin disables & upon /ptr reload)
-
+        - Editing Rewards is still disabled in this Version
 
     - Small stuff
         - Got rid of the old Logger, using JavaPlugin#getLogger now

@@ -3,6 +3,8 @@ package com.github.exobite.mc.playtimerewards.utils;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -11,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -131,6 +134,17 @@ public class MojangAPI {
             action.onFinish(cachedUsernames.get(id));
             return;
         }
+        //Offline Mode doesn't use Mojang UUIDs
+        if(!Bukkit.getServer().getOnlineMode()) {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(id);
+            String name = null;
+            if(op.hasPlayedBefore()) {
+               name = op.getName();
+            }
+            cachedUsernames.put(id, name);
+            action.onFinish(name);
+            return;
+        }
         InternalApiAnswer toRun = new InternalApiAnswer() {
             @Override
             public void run(JsonElement data) {
@@ -167,6 +181,13 @@ public class MojangAPI {
             }else{
                 action.onFinish("");
             }
+            return;
+        }
+        //Offline Mode doesn't use Mojang UUIDs
+        if(!Bukkit.getServer().getOnlineMode()) {
+            UUID id = UUID.nameUUIDFromBytes(("OfflinePlayer:"+name).getBytes(StandardCharsets.UTF_8));
+            cachedUsernames.put(id, name);
+            action.onFinish(id.toString());
             return;
         }
 
