@@ -58,7 +58,7 @@ public class AFKManager implements Listener {
     protected void setActive(boolean active) {
         if(isActive == active) return;
         if(active) {
-            main.getServer().getPluginManager().registerEvents(this, main);
+            Bukkit.getServer().getPluginManager().registerEvents(this, main);
             for(Player p:Bukkit.getOnlinePlayers()) {
                 if(p.hasPermission("playtimerewards.afk.ignore\"")) continue;
                 afkCounters.put(p.getUniqueId(), 0L);

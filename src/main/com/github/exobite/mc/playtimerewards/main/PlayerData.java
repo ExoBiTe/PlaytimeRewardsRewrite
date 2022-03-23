@@ -87,7 +87,7 @@ public class PlayerData {
                 continue;
             }
             long val = (long) valObj;
-            if(val==0 && rwd.type()==RewardType.PLAYTIME && !rwd.grantFirst()) {
+            if(val==0 && rwd.type()== RewardType.PLAYTIME && !rwd.grantFirst()) {
                 long newVal = getPlaytimeMS();
                 //New Players with no Playtime get offset by 100ms. This is used to save the first timestamp instead of saving 0ms
                 //Saving them with 0ms would effectively prevent the Earning of the Reward until they once reach the wanted Playtime

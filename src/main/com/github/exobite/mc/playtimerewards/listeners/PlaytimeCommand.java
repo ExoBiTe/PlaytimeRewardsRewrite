@@ -1,8 +1,8 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
+import com.github.exobite.mc.playtimerewards.utils.*;
 import com.github.exobite.mc.playtimerewards.main.PlayerData;
 import com.github.exobite.mc.playtimerewards.main.PlayerManager;
-import com.github.exobite.mc.playtimerewards.utils.*;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

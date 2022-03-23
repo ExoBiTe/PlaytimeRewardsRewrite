@@ -1,22 +1,28 @@
 package com.github.exobite.mc.playtimerewards.main;
 
-import com.github.exobite.mc.playtimerewards.external.PAPIManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
-import com.github.exobite.mc.playtimerewards.listeners.*;
+import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
+import com.github.exobite.mc.playtimerewards.listeners.PlaytimeRewardsCommand;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
-import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
 import com.github.exobite.mc.playtimerewards.web.GenericAPI;
 import com.github.exobite.mc.playtimerewards.web.MotdReader;
+import com.github.exobite.mc.playtimerewards.external.PAPIManager;
+import com.github.exobite.mc.playtimerewards.listeners.Listeners;
+import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
+import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bstats.bukkit.Metrics;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -35,6 +41,28 @@ public class PluginMaster extends JavaPlugin {
             instance.getLogger().log(level, part);
         }
     }
+
+    /*
+
+    TEST
+
+     */
+
+    public PluginMaster()
+    {
+        super();
+    }
+
+    protected PluginMaster(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
+    }
+
+    /*
+
+    TEST END
+
+     */
 
     private Version bukkitVersion;
     private boolean pauseAsyncTimer = false;

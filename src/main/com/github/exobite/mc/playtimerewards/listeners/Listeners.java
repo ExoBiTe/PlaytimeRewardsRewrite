@@ -1,7 +1,7 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
-import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
+import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.utils.Utils;

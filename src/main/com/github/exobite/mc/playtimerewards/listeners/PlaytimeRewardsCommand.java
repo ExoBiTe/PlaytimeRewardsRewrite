@@ -1,11 +1,11 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
+import com.github.exobite.mc.playtimerewards.utils.Lang;
+import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.rewards.Reward;
 import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
-import com.github.exobite.mc.playtimerewards.utils.Lang;
-import com.github.exobite.mc.playtimerewards.utils.Msg;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
