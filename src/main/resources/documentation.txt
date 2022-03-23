@@ -58,7 +58,8 @@ Thanks to [URL='https://www.spigotmc.org/members/193389/']ViscousHurricane[/URL]
 
 [CENTER][I]This Plugin collects data using bStats![/I][/CENTER]
 [URL='https://bstats.org/plugin/bukkit/PlaytimeRewards_Rec/14369'][IMG]https://bstats.org/signatures/bukkit/PlaytimeRewards_Rec.svg[/IMG][/URL]
-Don't report Errors in the Review Section, instead leave them in the [URL='https://www.spigotmc.org/threads/547786/']Discussions Section[/URL]. I'll be happy to help you there.
+[CENTER][B]Don't report Errors or leave Suggestions in the Review Section, instead leave them in the [URL='https://www.spigotmc.org/threads/547786/']Discussions Section[/URL]. I'll be happy to talk to you there![/B][/CENTER]
+
 
 
 //==========================================\\

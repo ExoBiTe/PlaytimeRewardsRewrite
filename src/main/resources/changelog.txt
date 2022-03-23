@@ -1,3 +1,12 @@
+Changelog Version 0.1.5:
+    - Made the following Messages visible:
+        - CMD_WARN_PTR_RELOAD
+        - CMD_ERR_REWARD_NOT_FOUND
+
+    - Added lucko's commodore library to the project
+        - Including commodore/brigadier support for all commands instead of simple onTabComplete
+
+
 Changelog Hotifx-Version 0.1.4:
     -Bugfix:
         - Offline-Mode: false's UUIDs are different ones than the Mojang One's from online-mode true.

@@ -43,3 +43,4 @@ Ideas:
 
 Notes:
     - Maybe add Language Detection (Using Player#getLocale) and allow multiple Language Files
+    - Maybe use Luckos commodore, making commands look nicer

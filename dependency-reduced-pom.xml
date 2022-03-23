@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.exobite.mc</groupId>
   <artifactId>PlaytimeRewardsRewrite</artifactId>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <build>
     <sourceDirectory>src/main</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>
@@ -31,13 +31,25 @@
             <goals>
               <goal>shade</goal>
             </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>me.lucko:commodore</include>
+                  <include>org.bstats</include>
+                </includes>
+              </artifactSet>
+            </configuration>
           </execution>
         </executions>
         <configuration>
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
-              <shadedPattern>com.github.exobite.mc.playtimerewards.metrics</shadedPattern>
+              <shadedPattern>com.github.exobite.mc.playtimerewards.reloc.metrics</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>me.lucko.commodore</pattern>
+              <shadedPattern>com.github.exobite.mc.playtimerewards.reloc.commodore</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
@@ -52,6 +64,10 @@
     <repository>
       <id>placeholderapi</id>
       <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+    </repository>
+    <repository>
+      <id>minecraft-repo</id>
+      <url>https://libraries.minecraft.net/</url>
     </repository>
   </repositories>
   <pluginRepositories>
