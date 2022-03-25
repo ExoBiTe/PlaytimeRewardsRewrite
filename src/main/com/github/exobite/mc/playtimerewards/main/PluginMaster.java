@@ -11,11 +11,8 @@ import com.github.exobite.mc.playtimerewards.external.PAPIManager;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
-import me.lucko.commodore.Commodore;
-import me.lucko.commodore.CommodoreProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.logging.Level;
-
 
 public class PluginMaster extends JavaPlugin {
 
@@ -79,7 +75,9 @@ public class PluginMaster extends JavaPlugin {
         //Load Metrics
         setupMetrics();
         //Load Game-Interaction Stuff
-        registerCommodoreCommands();
+        getCommand("Playtime").setExecutor(new PlaytimeCommand());
+        getCommand("PlaytimeTop").setExecutor(new PlaytimetopCommand());
+        getCommand("PlaytimeRewards").setExecutor(new PlaytimeRewardsCommand());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
 
         //Load Placeholderapi, if it exists
@@ -140,22 +138,6 @@ public class PluginMaster extends JavaPlugin {
                 }
             }
         }.runTaskAsynchronously(this);
-    }
-
-    private void registerCommodoreCommands() {
-        PluginCommand ptCmd = getCommand("Playtime");
-        ptCmd.setExecutor(new PlaytimeCommand());
-        PluginCommand pttCmd = getCommand("Playtimetop");
-        pttCmd.setExecutor(new PlaytimetopCommand());
-        PluginCommand ptrCmd = getCommand("PlaytimeRewards");
-        ptrCmd.setExecutor(new PlaytimeRewardsCommand());
-
-        if(CommodoreProvider.isSupported()) {
-            Commodore com = CommodoreProvider.getCommodore(this);
-            CommodoreRegister.registerCompletionPlaytime(com, ptCmd);
-            //CommodoreRegister.registerCompletions(com, pttCmd);
-            //CommodoreRegister.registerCompletions(com, ptrCmd);
-        }
     }
 
     public Version getBukkitVersion(){
