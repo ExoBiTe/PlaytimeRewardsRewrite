@@ -58,6 +58,15 @@ public class Reward extends RewardOptions {
         Reward rw = new Reward(name, rwType, timeMs, repeat, grantFirst);
         //Optionals
         String[] consoleCommands = cs.getStringList("ConsoleCommands").toArray(new String[0]);
+        boolean foundBeginningSlash = false;
+        for(int i=0;i< consoleCommands.length;i++) {
+            if(consoleCommands[i].startsWith("/")) {
+                foundBeginningSlash = true;
+                consoleCommands[i] = consoleCommands[i].replaceAll("^/+", "");
+            }
+        }
+        if(foundBeginningSlash) PluginMaster.sendConsoleMessage(Level.WARNING, "Found a preceding '/' in your Commands for the Reward '" +
+                rw.getName() + "'.\nMake sure that this doesn't happen!");
         rw.setConsoleCommands(consoleCommands);
         String[] playerMessages = cs.getStringList("Display.PlayerMessages").toArray(new String[0]);
         rw.setPlayerMessages(playerMessages);
