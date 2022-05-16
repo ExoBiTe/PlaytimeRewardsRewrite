@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Lang {
 
@@ -127,7 +129,7 @@ public class Lang {
                     comments = conf.getComments(m.toString());
                 }
                 newConf.set(m.toString(), m.getMessage());
-                if(comments.size()==0) {
+                if(comments.isEmpty()) {
                     comments = stringToList(m.getComment());
                 }
                 newConf.setComments(m.toString(), comments);
@@ -185,7 +187,7 @@ public class Lang {
         if(msg.usesPapi() && p != null) {
             rVal = PlaceholderAPI.setPlaceholders(p, rVal);
         }
-        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
+        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), translateAdvancedColors(rVal));
         return rVal;
     }
 
@@ -199,5 +201,67 @@ public class Lang {
             }
         }.runTaskAsynchronously(main);
     }
+
+    //Copied from MinecraftMaker Message.java
+    private static final Pattern hexColorFollowing = Pattern.compile("§\\([A-Fa-f0-9]{6}\\)");
+    private static final Pattern hexColorArea = Pattern.compile("§\\([a-fA-F0-9]{6}-\\).*?&\\(-[a-fA-F0-9]{6}\\)");
+
+    //Example: §(FFFFFF) -> Colors the following Chars in the specified Hex-Color
+    //Example: §(FFFFFF-) Some cool text §(-FFAA00) -> Colors the Chars in between the two specifiers &(*-) and &(-*)
+    private String translateAdvancedColors(String in) {
+        String outString = in;
+        Matcher m1 = hexColorArea.matcher(in);
+        while(m1.find()) {
+            String group = m1.group();
+            String hx1 = group.substring(2, 8);
+            String hx2 = group.substring(group.length()-7, group.length()-1);
+            String stripped = group.substring(10, group.length()-10);
+            int strlen = group.length() - 20;
+            int lenWithoutWhitespaces = stripped.replace(" ", "").length();
+            int r = Integer.parseInt(hx1.substring(0, 2), 16);
+            int rIncr = (Integer.parseInt(hx2.substring(0, 2), 16) - r) / lenWithoutWhitespaces;
+            int g = Integer.parseInt(hx1.substring(2, 4), 16);
+            int gIncr = (Integer.parseInt(hx2.substring(2, 4), 16) - g) / lenWithoutWhitespaces;
+            int b = Integer.parseInt(hx1.substring(4), 16);
+            int bIncr = (Integer.parseInt(hx2.substring(4), 16) - b) / lenWithoutWhitespaces;
+            StringBuilder sb = new StringBuilder();
+            String[] splits = outString.split(Pattern.quote(group));
+            if(splits.length>0) sb.append(splits[0]);
+            int counter = 0;
+            for(int i=0;i<strlen;i++) {
+                if(counter>=strlen) break;
+                if(stripped.charAt(i)==' '){
+                    sb.append(' ');
+                    continue; //Skip whitespaces
+                }
+                String hxr = Integer.toHexString(r + (counter * rIncr));
+                String hxg = Integer.toHexString(g + (counter * gIncr));
+                String hxb = Integer.toHexString(b + (counter * bIncr));
+                if(hxr.length()<2) hxr = "0"+hxr;
+                if(hxg.length()<2) hxg = "0"+hxg;
+                if(hxb.length()<2) hxb = "0"+hxb;
+                sb.append(net.md_5.bungee.api.ChatColor.of("#"+hxr+hxg+hxb)).append(stripped.charAt(i));
+                counter++;
+            }
+            //Append the stuff behind the Color-specifier back to the String
+            if(splits.length>1) {
+                //First Reset Chatcolor
+                sb.append(net.md_5.bungee.api.ChatColor.RESET);
+                for(int j=1;j<splits.length;j++) {
+                    sb.append(splits[j]);
+                }
+            }
+            outString = sb.toString();
+        }
+        Matcher m2 = hexColorFollowing.matcher(in);
+        while(m2.find()) {
+            //Get the Hex-Chars, strip the parenthesis
+            String group = m2.group();
+            String colors = "#" + group.substring(2, group.length()-1);
+            outString = outString.replaceFirst(hexColorFollowing.toString(), net.md_5.bungee.api.ChatColor.of(colors).toString());
+        }
+        return outString;
+    }
+
 
 }

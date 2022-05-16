@@ -3,8 +3,9 @@ Changelog Version 0.1.5:
         - CMD_WARN_PTR_RELOAD
         - CMD_ERR_REWARD_NOT_FOUND
 
-    - Added lucko's commodore library to the project
-        - Including commodore/brigadier support for all commands instead of simple onTabComplete
+    - Added the Hex Colors & Hex Color Ranges to "Lang.java" Messages
+        - It is possible to specify Hex-Colors by doing "§(fe37aa)I'm a colored Text!" (hex R, G, B Colors)
+        - It is also possible to specify a Range by doing "§(ffeeff-)I'm a example Text!§(-00ff00)"
 
 
 Changelog Hotifx-Version 0.1.4:
