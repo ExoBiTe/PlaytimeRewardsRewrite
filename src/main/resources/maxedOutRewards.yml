@@ -1,3 +1,6 @@
+# This File is not in use in the final Plugin.
+# It just shows some options i have in mind for future Versions for the Plugin.
+
 SampleReward1: #No Duplicates allowed
   DisplayName: '§3I´m a cool §4Reward§3!' #The Visible Name Ingame
   CountType: 'PLAYTIME' #Specifies which type the Plugin counts
