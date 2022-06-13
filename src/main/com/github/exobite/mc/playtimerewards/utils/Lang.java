@@ -204,7 +204,7 @@ public class Lang {
 
     //Copied from MinecraftMaker Message.java
     private static final Pattern hexColorFollowing = Pattern.compile("§\\([A-Fa-f0-9]{6}\\)");
-    private static final Pattern hexColorArea = Pattern.compile("§\\([a-fA-F0-9]{6}-\\).*?&\\(-[a-fA-F0-9]{6}\\)");
+    private static final Pattern hexColorArea = Pattern.compile("§\\([a-fA-F0-9]{6}-\\)[\\s\\S]*?§\\(-[a-fA-F0-9]{6}\\)");
 
     //Example: §(FFFFFF) -> Colors the following Chars in the specified Hex-Color
     //Example: §(FFFFFF-) Some cool text §(-FFAA00) -> Colors the Chars in between the two specifiers &(*-) and &(-*)

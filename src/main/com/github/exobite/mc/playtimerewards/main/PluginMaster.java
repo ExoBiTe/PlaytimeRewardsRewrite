@@ -43,24 +43,26 @@ public class PluginMaster extends JavaPlugin {
 
     //Constants
     private final int BSTATS_ID = 14369;
+    private final Version MIN_VERSION = new Version(1, 17, 0).hidePatch(true);
+    private final Version MAX_VERSION = new Version(1, 19, 0).hidePatch(true);
 
+    @Override
     public void onEnable(){
         //Start Time measuring & Setup singleton instance
         long t1 = System.currentTimeMillis();
         instance = this;
 
-        bukkitVersion = VersionHelper.getBukkitVersion();
-
-        if(VersionHelper.isSmaller(bukkitVersion, new Version(1, 17, 0))) {
+        bukkitVersion = VersionHelper.getBukkitVersionNoPatch();
+        if(VersionHelper.isSmaller(bukkitVersion, MIN_VERSION)) {
             //Server too old, stop Plugin.
-            sendConsoleMessage(Level.SEVERE, "This Plugin doesnt support your Server Version.");
+            sendConsoleMessage(Level.SEVERE, "This Plugin doesnt support your Server Version.\nPlease run at least Version "+MIN_VERSION+"!");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        if(VersionHelper.isSmaller(bukkitVersion, new Version(1, 18, 0))) {
-            //sendConsoleMessage(Level.INFO, "");
-
+        if(VersionHelper.isLarger(bukkitVersion, MAX_VERSION)) {
+            sendConsoleMessage(Level.WARNING, "Detected a newer Version than "+MAX_VERSION+"\nPlease be aware that this Version has not been tested by the Developer!");
         }
+
         Utils.registerUtils(this);
         Config.registerConfig(this, true);
         ReflectionHelper.getInstance();
@@ -86,7 +88,7 @@ public class PluginMaster extends JavaPlugin {
         }
 
         //reload support, check for online Players in onEnable & create playerData for them.
-        if(Bukkit.getOnlinePlayers().size() > 0){
+        if(!Bukkit.getOnlinePlayers().isEmpty()){
             for(Player p:Bukkit.getOnlinePlayers()){
                 PlayerManager.getInstance().createPlayerData(p);
             }
@@ -100,11 +102,13 @@ public class PluginMaster extends JavaPlugin {
         sendConsoleMessage(Level.INFO, "Plugin is running (took " + (System.currentTimeMillis() - t1) +"ms)!");
     }
 
+    @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
-        PlayerManager.getInstance().cleanAllPlayerData();
-        RewardManager.getInstance().saveData();
-        if(Config.getInstance().checkForUpdate()) AutoUpdater.getInstance().moveUpdate();
+        if(PlayerManager.getInstance()!=null) PlayerManager.getInstance().cleanAllPlayerData();
+        if(RewardManager.getInstance()!=null) RewardManager.getInstance().saveData();
+        if(Config.getInstance()!=null && Config.getInstance().checkForUpdate() && AutoUpdater.getInstance()!=null)
+            AutoUpdater.getInstance().moveUpdate();
     }
 
     public void reloadConfigurationData(@Nullable final CommandSender feedback) {

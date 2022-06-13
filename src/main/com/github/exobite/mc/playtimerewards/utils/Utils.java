@@ -21,6 +21,8 @@ public class Utils {
         main = mainInstance;
     }
 
+    private Utils() {}
+
     public static boolean updateFileVersionDependent(String filename) {
         if(VersionHelper.isEqualOrLarger(main.getBukkitVersion(), new Version(1, 18, 0))) {
             return updateConfigFileWithComments(filename);
@@ -87,7 +89,7 @@ public class Utils {
         }
         InputStream is = getResource(filePath);
         if(is==null) {
-            System.err.println("Couldn´t find "+filePath+" in project files.");
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Couldn´t find "+filePath+" in project files.");
             return false;
         }
         InputStreamReader rd = new InputStreamReader(is);
@@ -135,90 +137,95 @@ public class Utils {
 
         File outFile = new File(main.getDataFolder(), resourcePath);
         int lastIndex = resourcePath.lastIndexOf('/');
-        File outDir = new File(main.getDataFolder(), resourcePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
+        File outDir = new File(main.getDataFolder(), resourcePath.substring(0, Math.max(lastIndex, 0)));
         if (!outDir.exists()) {
             outDir.mkdirs();
         }
 
         //File writing
-        try {
+        try(OutputStream out = new FileOutputStream(outFile)) {
             if (!outFile.exists() || replace) {
-                OutputStream out = new FileOutputStream(outFile);
                 byte[] buf = new byte[1024];
                 int len;
                 while ((len = in.read(buf)) > 0) {
                     out.write(buf, 0, len);
                 }
-                out.close();
                 in.close();
             } else {
-                System.out.println("Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+                PluginMaster.sendConsoleMessage(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
             }
         } catch (IOException ex) {
-            System.out.println("Could not save " + outFile.getName() + " to " + outFile);
+            PluginMaster.sendConsoleMessage(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile);
             ex.printStackTrace();
         }
     }
 
+    private static final Pattern dayPattern = Pattern.compile("[0-9]+D");
+    private static final Pattern hourPattern = Pattern.compile("[0-9]+h");
+    private static final Pattern minutePattern = Pattern.compile("[0-9]+m");
+    private static final Pattern secondPattern = Pattern.compile("[0-9]+s");
+
     public static long convertTimeStringToMS(String s) {
-        long Days = 0, Hours = 0, Minutes = 0, Seconds = 0;
+        long days = 0;
+        long hours = 0;
+        long minutes = 0;
+        long seconds = 0;
 
-        Pattern p = Pattern.compile("[0-9]+D");
-        Matcher m = p.matcher(s);
+        Matcher m = dayPattern.matcher(s);
         if(m.find()){
-            Days = Integer.parseInt(m.group().replace("D", ""));
+            days = Integer.parseInt(m.group().replace("D", ""));
             s = s.replace(m.group(), "");
         }
-
-        p = Pattern.compile("[0-9]+h");
-        m = p.matcher(s);
+        m = hourPattern.matcher(s);
         if(m.find()){
-            Hours = Integer.parseInt(m.group().replace("h", ""));
+            hours = Integer.parseInt(m.group().replace("h", ""));
             s = s.replace(m.group(), "");
         }
-
-        p = Pattern.compile("[0-9]+m");
-        m = p.matcher(s);
+        m = minutePattern.matcher(s);
         if(m.find()){
-            Minutes = Integer.parseInt(m.group().replace("m", ""));
+            minutes = Integer.parseInt(m.group().replace("m", ""));
             s = s.replace(m.group(), "");
         }
-
-        p = Pattern.compile("[0-9]+s");
-        m = p.matcher(s);
+        m = secondPattern.matcher(s);
         if(m.find()){
-            Seconds = Integer.parseInt(m.group().replace("s", ""));
-            s = s.replace(m.group(), "");
+            seconds = Integer.parseInt(m.group().replace("s", ""));
         }
 
         //String rVal = "Months: "+Months+"\nDays"+Days+"\n"+"Hours:"+Hours+"\n"+"Minutes:"+Minutes+"\nSeconds:"+
-        return Days * 86400000 + Hours * 3600000 + Minutes * 60000 + Seconds * 1000;
+        return days * 86400000 + hours * 3600000 + minutes * 60000 + seconds * 1000;
     }
 
     public static String convertTimeMsToString(long ms){
-        long Days, Hours, Minutes, Seconds, Ms;
-        Days = ms / 86400000;
+        long days;
+        long hours;
+        long minutes;
+        long seconds;
+        long millis;
+        days = ms / 86400000;
         long calcStep = ms % 86400000;
-        Hours = calcStep / 3600000;
+        hours = calcStep / 3600000;
         calcStep = calcStep % 3600000;
-        Minutes = calcStep / 60000;
+        minutes = calcStep / 60000;
         calcStep = calcStep % 60000;
-        Seconds = calcStep / 1000;
+        seconds = calcStep / 1000;
         calcStep = calcStep % 1000;
-        Ms = calcStep;
-        return "Days: "+Days+"\nHours: "+Hours+"\nMinutes: "+Minutes+"\nSeconds: "+Seconds+"\nMillis: "+Ms;
+        millis = calcStep;
+        return "Days: "+days+"\nHours: "+hours+"\nMinutes: "+minutes+"\nSeconds: "+seconds+"\nMillis: "+millis;
     }
 
     public static long[] convertTimeMsToLongs(long ms){
-        long Days, Hours, Minutes, Seconds;
-        Days = ms / 86400000;
+        long days;
+        long hours;
+        long minutes;
+        long seconds;
+        days = ms / 86400000;
         long calcStep = ms % 86400000;
-        Hours = calcStep / 3600000;
+        hours = calcStep / 3600000;
         calcStep = calcStep % 3600000;
-        Minutes = calcStep / 60000;
+        minutes = calcStep / 60000;
         calcStep = calcStep % 60000;
-        Seconds = calcStep / 1000;
-        return new long[]{Days, Hours, Minutes, Seconds};
+        seconds = calcStep / 1000;
+        return new long[]{days, hours, minutes, seconds};
     }
 
     @NotNull
@@ -230,23 +237,27 @@ public class Utils {
         caseIgnored "%h" -> Hours
         caseIgnored "%d" -> Days
         */
-        long Days, Hours, Minutes, Seconds, Ms;
-        Days = ms / 86400000;
+        long days;
+        long hours;
+        long minutes;
+        long seconds;
+        long millis;
+        days = ms / 86400000;
         long calcStep = ms % 86400000;
-        Hours = calcStep / 3600000;
+        hours = calcStep / 3600000;
         calcStep = calcStep % 3600000;
-        Minutes = calcStep / 60000;
+        minutes = calcStep / 60000;
         calcStep = calcStep % 60000;
-        Seconds = calcStep / 1000;
+        seconds = calcStep / 1000;
         calcStep = calcStep % 1000;
-        Ms = calcStep;
+        millis = calcStep;
         String dat = format;
 
-        dat = replaceIfGreater(dat, "%ms", Ms, 0, "ms");
-        dat = replaceIfGreater(dat, "%s", Seconds, 0, "s");
-        dat = replaceIfGreater(dat, "%m", Minutes, 0," m");
-        dat = replaceIfGreater(dat, "%h", Hours, 0, "h");
-        dat = replaceIfGreater(dat, "%d", Days, 0, "d");
+        dat = replaceIfGreater(dat, "%ms", millis, 0, "ms");
+        dat = replaceIfGreater(dat, "%s", seconds, 0, "s");
+        dat = replaceIfGreater(dat, "%m", minutes, 0," m");
+        dat = replaceIfGreater(dat, "%h", hours, 0, "h");
+        dat = replaceIfGreater(dat, "%d", days, 0, "d");
         //Remove unnecessary whitespaces
         dat = dat.replaceAll("( +)", "").trim();
 

@@ -8,8 +8,8 @@ Everything is stored as BBCode.
 Hello there... again. Welcome (back... again) to [I]PlaytimeRewards[/I]!
 This Plugin is a re-write of my "older" [URL='https://www.spigotmc.org/resources/32900/']PlaytimeRewards[/URL].
 
-I coded this Plugin completely new from scratch, removing unnessecary Features from the old Plugin and made it overall easier to read & maintain (at least in my opinion).
-And to be honest - i lost the sourcecode of the previous Version, as i didn´t upload that one to github... oops.
+I coded this Plugin completely new from scratch, removing unnecessary Features from the old Plugin and made it overall easier to read & maintain (at least in my opinion).
+And to be honest - i lost the sourcecode of the previous Version, as I didn't upload that one to github... oops.
 
 What does this Plugin?
 - This Plugin counts the Playtime for every of your Players and Rewards them when and how you configure it.
@@ -227,9 +227,10 @@ Just make sure to give each reward a unique name, otherwise unwanted stuff [B]wi
 The lang.yml File customizes the Messages the Plugin will send to your Players. For now there isn´t really that much to see.
 [SPOILER="lang.yml"]
 [code=YAML]
+
 # The Return Message from the /playtime Command
 CMD_SUC_PT_OWN: |-
-  §aYour Playtime is %[0]d %[1]h %[2]m %[3]s
+  Your Playtime is %[0]d %[1]h %[2]m %[3]s
   Your Sessiontime is %[4]d %[5]h %[6]m %[7]s
 
 # The Return Message from the /playtime <player> Command
@@ -278,10 +279,35 @@ NOTIF_AFK_USER_CAME_BACK: §7You are no longer flagged as AFK
 # The Format in which all Times get sent to the PlaceholderAPI
 EXT_PAPI_TIME_FORMAT: '%[0]d %[1]h %[2]m %[3]s'
 
+
 [/code]
 This File is rather simple, you may change it to your likings.
 Every "%[x]" represents a Parameter to be filled in later by the Plugin,
 so make sure to use all Parameters for a Message in the correct order.
+
+[U][B]HexColors![/B][/U]
+This Plugin supports Hex-Colors in your lang.yml File (since Plugin v0.1.5).
+Just edit your lang.yml File using the Following Syntax:
+
+For Simple Hex Colors: [icode]§([HexColor]) [/icode]
+[code=YAML]# The Return Message from the /playtime Command
+CMD_SUC_PT_OWN: |-
+  §(fc03ad)Your Playtime is %[0]d %[1]h %[2]m %[3]s
+  Your Sessiontime is %[4]d %[5]h %[6]m %[7]s[/code]
+This Code produces this Output:
+[IMG]https://i.imgur.com/08PUAQ9.png[/IMG]
+
+
+
+For Hex Color Ranges: [icode]§([HexRangeBeginning]-) [Some random Text] §(-[HexRangeEnding])[/icode]
+[code=YAML]# The Return Message from the /playtime Command
+CMD_SUC_PT_OWN: |-
+  §(031cfc-)Your Playtime is %[0]d %[1]h %[2]m %[3]s
+  Your Sessiontime is %[4]d %[5]h %[6]m %[7]s §(-fc03ad)[/code]
+And this Code produces this Output:
+[IMG]https://i.imgur.com/HbDeH0A.png[/IMG]
+
+
 [/SPOILER]
 
 All files will get automatically generated upon the first Plugin start & updated if there is new Stuff.

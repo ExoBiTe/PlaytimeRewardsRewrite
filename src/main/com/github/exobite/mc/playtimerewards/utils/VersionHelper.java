@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public class VersionHelper {
 
     public static Version getVersionFromString(String version) {
-        if(Utils.countMatches(version, ".") < 2) {
+        if(Utils.countMatches(version, ".") < 1) {
             return new Version(0, 0, 0);
         }
         String[] versionSplits = version.split("\\.");
@@ -24,6 +24,12 @@ public class VersionHelper {
             throw new NullPointerException("Can't analyse Bukkit Version: "+bukkitV);
         }
         return getVersionFromString(bukkitV.split("-")[0]);
+    }
+
+    @NotNull
+    public static Version getBukkitVersionNoPatch(){
+        Version bukkitVer = getBukkitVersion();
+        return new Version(bukkitVer.major(), bukkitVer.minor(), 0);
     }
 
 

@@ -4,6 +4,7 @@ import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.utils.VersionHelper;
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.utils.ReflectionHelper;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +40,7 @@ public class AutoUpdater {
     private final int RESOURCE_ID = 100231;
     private final String GET_LATEST_VERSION = "https://api.spiget.org/v2/resources/"+RESOURCE_ID+"/versions/latest";
     private final String GET_LATEST_DOWNLOAD = "https://api.spiget.org/v2/resources/"+RESOURCE_ID+"/download";
+    private final String GET_LATEST_UPDATE = "https://api.spiget.org/v2/resources/"+RESOURCE_ID+"/updates?size=1&sort=-date";
     private final File updateTarget = new File(PluginMaster.getInstance().getDataFolder() + File.separator + "PTR_Updated.jar");
 
     private final JavaPlugin main;
@@ -58,10 +60,18 @@ public class AutoUpdater {
                 if(checkForNewerVersion()) {
                     updateAvailable = true;
                     //Send the Message on the Main thread for a nicer-looking console prefix.
+                    final String updateTitle = getLatestUpdateTitle();
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            PluginMaster.sendConsoleMessage(Level.INFO, "A new Version (v"+latestVersion+") is available!");
+                            StringBuilder sb = new StringBuilder("A new Version (v").append(latestVersion).append(") is available!");
+                            if(updateTitle!=null) {
+                                final String lines = "---------------------------------";
+                                sb.append("\n").append(lines);
+                                sb.append("\nUpdate Content:\n  \"").append(updateTitle).append("\"");
+                                sb.append("\n").append(lines);
+                            }
+                            PluginMaster.sendConsoleMessage(Level.INFO, sb.toString());
                         }
                     }.runTask(main);
 
@@ -176,6 +186,39 @@ public class AutoUpdater {
         //Delete the src File from the dataFolder
         updateTarget.delete();
 
+    }
+
+    private String getLatestUpdateTitle() {
+        String rVal = null;
+        try {
+            URL url = new URL(GET_LATEST_UPDATE);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.addRequestProperty("User-Agent", MY_USER_AGENT);
+
+            int responseCode = con.getResponseCode();
+            if(responseCode >= 300) {
+                PluginMaster.sendConsoleMessage(Level.WARNING, "Couldn't check for a newer Update, HTTP Error code: "+responseCode);
+                return null;
+            }
+
+            InputStream is = con.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+
+            JsonElement e = ReflectionHelper.getInstance().parseReader(isr);
+
+            if(e instanceof JsonArray ja) {
+                JsonObject jo = (JsonObject) ja.get(0);
+                rVal = jo.get("title").getAsString();
+            }else{
+                rVal = "Some Error happened by parsing the Update Title. Sorry.";
+            }
+
+            isr.close();
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return rVal;
     }
 
 
