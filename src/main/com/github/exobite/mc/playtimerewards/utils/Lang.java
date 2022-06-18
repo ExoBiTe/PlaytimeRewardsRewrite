@@ -208,7 +208,7 @@ public class Lang {
 
     //Example: §(FFFFFF) -> Colors the following Chars in the specified Hex-Color
     //Example: §(FFFFFF-) Some cool text §(-FFAA00) -> Colors the Chars in between the two specifiers &(*-) and &(-*)
-    private String translateAdvancedColors(String in) {
+    public static String translateAdvancedColors(String in) {
         String outString = in;
         Matcher m1 = hexColorArea.matcher(in);
         while(m1.find()) {

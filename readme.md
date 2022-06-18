@@ -6,7 +6,6 @@
 
 [![Tested Versions](https://img.shields.io/spiget/tested-versions/100231?color=ffee33&label=Tested%20Versions)](https://www.spigotmc.org/resources/100231/) 
 [![bStats Servers](https://img.shields.io/bstats/servers/14369?label=Current%20Servers)](https://bstats.org/plugin/bukkit/PlaytimeRewards_Rec/14369#servers)
-[![bStats Players](https://img.shields.io/bstats/players/14369?label=Current%20Players)](https://bstats.org/plugin/bukkit/PlaytimeRewards_Rec/14369#players)
 
 A small Spigot Plugin that keeps track of each User's Playtime and Rewards them.
 Contains Support for PlaceholderAPI 

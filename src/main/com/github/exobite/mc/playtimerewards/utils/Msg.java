@@ -43,15 +43,19 @@ public enum Msg {
             false),
 
     CMD_SUC_PTR_EDIT_SAVED("§aSuccessfully saved the Reward!",
-            "",
+            "The Notification sent to the editor of a Reward upon saving the Changes.",
             false),
 
     CMD_SUC_PTR_EDIT_ABORTED("§cAborted the Editing!",
-            "",
+            "The Notification sent to the editor of a Reward upon saving the Changes.",
+            false),
+
+    CMD_SUC_PTR_EDIT_TYPE_IN_CHAT("§aSuccessfully set §6%[0] §ato §6%[1]&a!",
+            "The Notification sent to the Player upon typing a correct Value for a Reward-Field in the Chat",
             false),
 
     CMD_ERR_PTR_EDIT_UNKNOWN("§4An unknown Error occurred! §8Try again",
-            "",
+            "An unknown Error happened during editing a reward. See the console logs for the errorlog when this gets sent.",
             false),
 
     CMD_ERR_TOO_MANY_REQUESTS("§4You can't do that right now. Try again later!",

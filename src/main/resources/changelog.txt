@@ -1,3 +1,22 @@
+Changelog Version 0.1.6:
+    - Bugfixes:
+        - The Permission 'playtimerewards.*' now also contains the Permission 'playtimerewards.cmd.playtime.other.offline'
+        - /Playtimetop now displays the Players in the correct and not in the reversed order
+
+    - HexColors in Rewards:
+        - Hex-Colors may also now get used in the Rewards.yml file, not just in the Lang.yml File.
+
+    - Messages:
+        - Added the following new Messages:
+            - CMD_SUC_PTR_EDIT_TYPE_IN_CHAT
+
+    - Further Progress done on editing Rewards in-game:
+        - Everything (should) accept HexColors
+        - Working on: Refresh all GUIs after making a change
+        - Is not released in this Update due to the need of a Hotfix
+
+
+
 Changelog Version 0.1.5:
     - Added 1.19 Support
 

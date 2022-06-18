@@ -2,6 +2,7 @@ package com.github.exobite.mc.playtimerewards.rewards;
 
 import com.github.exobite.mc.playtimerewards.gui.CustomItem;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
+import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
@@ -75,8 +76,8 @@ public class RewardEdit extends RewardOptions {
 
     protected void passStringFromChat(Player p, String message) {
         if(nextAction!=null) {
-            String dat = message.replace("&", "§");
-            dat = dat.replace("[\\\"]+", "");   //Remove strange characters
+            String dat = message.replace("&", Config.getInstance().getColorCode() + "");
+            dat = dat.replaceAll("[\\\\\"]+", "");   //Remove backslashes & quotation marks
             ChatResponse r = nextAction.parseInput(p, dat);
             if(r.success){
                 nextAction = null;
@@ -84,10 +85,17 @@ public class RewardEdit extends RewardOptions {
                     guiAfterChat.openInventory(p);
                     guiAfterChat = null;
                 }
-            }else{
-                p.sendMessage(Lang.getInstance().getMessage(p, r.error, r.args));
             }
+            p.sendMessage(Lang.getInstance().getMessage(p, r.message, r.args));
         }
+    }
+
+    private void renewAllGuis() {
+        for(GUIManager.GUI g: guis.values()) {
+            g.deleteGUI();
+        }
+        guis.clear();
+        createMainGui();
     }
 
     private void createMainGui() {
@@ -187,7 +195,7 @@ public class RewardEdit extends RewardOptions {
                 ChatResponse parseInput(Player p, String input) {
                     try {
                         f.set(inst, input);
-                        return new ChatResponse(true, null);
+                        return new ChatResponse(true, Msg.CMD_SUC_PTR_EDIT_TYPE_IN_CHAT, "DisplayName", input);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -205,7 +213,7 @@ public class RewardEdit extends RewardOptions {
                     if(newms>0) {
                         try {
                             f.set(inst, newms);
-                            return new ChatResponse(true, null);
+                            return new ChatResponse(true, Msg.CMD_SUC_PTR_EDIT_TYPE_IN_CHAT, "Time", String.valueOf(newms));
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
@@ -357,12 +365,12 @@ public class RewardEdit extends RewardOptions {
     private static class ChatResponse {
 
         boolean success;
-        Msg error;
+        Msg message;
         String[] args;
 
         ChatResponse(boolean success, @Nullable Msg error, @Nullable String ... args) {
             this.success = success;
-            this.error = error;
+            this.message = error;
             this.args = args;
         }
 

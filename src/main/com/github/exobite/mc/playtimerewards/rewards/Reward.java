@@ -2,6 +2,7 @@ package com.github.exobite.mc.playtimerewards.rewards;
 
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
+import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -221,7 +222,7 @@ public class Reward extends RewardOptions {
         rVal = rVal.replace("<PLAYER>", p.getName());
         rVal = rVal.replace("<PLAYERDISPLAY>", p.getDisplayName());
         rVal = rVal.replace("<REWARD>", displayName);
-        rVal = ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal);
+        rVal = Lang.translateAdvancedColors(ChatColor.translateAlternateColorCodes(Config.getInstance().getColorCode(), rVal));
         return rVal;
     }
 

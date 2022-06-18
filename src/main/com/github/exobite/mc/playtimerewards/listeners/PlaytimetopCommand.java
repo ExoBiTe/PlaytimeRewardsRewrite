@@ -26,24 +26,23 @@ public class PlaytimetopCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
-        long ms = System.currentTimeMillis();
-        long ns = System.nanoTime();
         if(!sender.hasPermission(PTTOP_USE_PERM)) {
             sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_NO_PERMISSION));
             return true;
         }
-        sender.sendMessage(ListTop());
+        sender.sendMessage(listTop());
         return true;
     }
 
     @NotNull
-    private String ListTop() {
+    private String listTop() {
         //First check if a new calc can be done
         long msnow = System.currentTimeMillis();
         int amount = Config.getInstance().getPlaytimetopamount();
         if(msnow > (lastPolled + MIN_TIME_FOR_REFRESH) || amount != lastAmount) {
             lastPolled = msnow;
             calcPlaytimeTop(amount);
+            //debugPtTop(amount);
         }
         String header = Lang.getInstance().getMessage(Msg.CMD_SUC_PTTOP_HEADER, String.valueOf(cachedTop.size()));
         StringBuilder sb = new StringBuilder(header);
@@ -67,7 +66,7 @@ public class PlaytimetopCommand implements CommandExecutor {
 
     }
 
-    public void calcPlaytimeTop(int amount){
+    public void calcPlaytimeTop(int amount) {
         lastAmount = amount;
         //Get all Playtimes
         Map<String, Integer> playtimes = new HashMap<>();
@@ -76,8 +75,28 @@ public class PlaytimetopCommand implements CommandExecutor {
         }
         //Sort them into a List
         List<Map.Entry<String, Integer>> entries = new ArrayList<>(playtimes.entrySet());
-        entries.sort(Map.Entry.comparingByValue());
+        entries.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
         //Put them back into the Map
+        Map<String, Integer> result = new LinkedHashMap<>();
+        int i = 0;
+        for(Map.Entry<String, Integer> e:entries) {
+            i++;
+            result.put(e.getKey(), e.getValue());
+            if(i>amount) break;
+        }
+        cachedTop = result;
+    }
+
+    private final int[] dummyData = {300, 4800, 6500, 20, 300, 4172, 88, 888, 3984, 4387, 48372, 33394, 4923};
+
+    public void debugPtTop(int amount) {
+        lastAmount = amount;
+        Map<String, Integer> playtimes = new HashMap<>();
+        for(int i=0;i< dummyData.length;i++) {
+            playtimes.put(i+"", dummyData[i]);
+        }
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(playtimes.entrySet());
+        entries.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
         Map<String, Integer> result = new LinkedHashMap<>();
         int i = 0;
         for(Map.Entry<String, Integer> e:entries) {

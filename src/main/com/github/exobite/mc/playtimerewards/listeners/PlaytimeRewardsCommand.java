@@ -110,7 +110,6 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             s.sendMessage(Lang.getInstance().getMessage(Msg.CMD_WARN_PTR_RELOAD));
         }
         PluginMaster.getInstance().reloadConfigurationData(s);
-        var test = "";
     }
 
     @Nullable
@@ -122,12 +121,10 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             if(sender.hasPermission(PTR_LIST_PERM)) data.add("list");
             //if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
             if(sender.hasPermission(PTR_RELOAD_PERM)) data.add("reload");
-        }/*else if(size==2) {
-            if(args[0].equalsIgnoreCase("editreward")) {
-                for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {
-                    if(rwd.rewardName().startsWith(args[1])) {
-                        data.add(rwd.rewardName());
-                    }
+        }/*else if(size==2 && args[0].equalsIgnoreCase("editreward")) {
+            for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {
+                if(rwd.rewardName().startsWith(args[1])) {
+                    data.add(rwd.rewardName());
                 }
             }
         }*/
