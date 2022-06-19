@@ -47,9 +47,9 @@ public class RewardManager implements Listener {
         HandlerList.unregisterAll(instance);
         instance.saveData();
         RewardManager rwMan = new RewardManager(instance.main);
-        instance.setup(true);
+        rwMan.setup(true);
         //Check if there were changed reward names or if some were added/removed
-        List<String> oldRewards = instance.getRegisteredRewardNames();
+        /*List<String> oldRewards = instance.getRegisteredRewardNames();
         List<String> newRewards = rwMan.getRegisteredRewardNames();
         boolean equal = oldRewards.size() == newRewards.size();
         if(equal) {
@@ -62,7 +62,10 @@ public class RewardManager implements Listener {
         }
         instance = rwMan;
         //If the Rewards changed, update every registered PlayerData
-        if(!equal) PlayerManager.getInstance().refreshRewardData();
+        if(!equal) PlayerManager.getInstance().refreshRewardData();*/
+        instance = rwMan;
+        //Removed the Check if Rewards have changed, refresh all Rewards everytime
+        PlayerManager.getInstance().refreshRewardData();
         return true;
     }
 

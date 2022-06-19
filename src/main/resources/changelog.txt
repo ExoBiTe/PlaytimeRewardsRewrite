@@ -1,3 +1,21 @@
+Changelog Version 0.1.7:
+    - Bugfixes:
+        - /ptr reload now doesn't removes all Rewards anymore
+
+    - PlaceholderAPI:
+        - Created a "simpler" PAPI-Framework, it is easier to implement new Placeholders
+        - Added the following new Placeholders:
+            - PLAYTIME_DAYS
+            - PLAYTIME_HOURS
+            - PLAYTIME_MINUTES
+            - PLAYTIME_SECONDS
+            - SESSIONTIME_DAYS
+            - SESSIONTIME_HOURS
+            - SESSIONTIME_MINUTES
+            - SESSIONTIME_SECONDS
+
+    - Removed the Reflection when playing Sounds
+
 Changelog Version 0.1.6:
     - Bugfixes:
         - The Permission 'playtimerewards.*' now also contains the Permission 'playtimerewards.cmd.playtime.other.offline'

@@ -35,9 +35,13 @@ public class ReflectionHelper {
         use1_18Methods = VersionHelper.isEqualOrLarger(PluginMaster.getInstance().getBukkitVersion(), new Version(1, 18, 0));
 
         //Cache the Methods for later use
-        setPlaySoundMethod();
+        //setPlaySoundMethod();
         setParseReaderMethod();
     }
+
+    /*
+    Don't use Reflection for Playing Sounds anymore
+    - tbh i can't really remember why i did this in the first place?
 
     private void setPlaySoundMethod(){
         Class<Player> bukkitPlayer = Player.class;
@@ -69,6 +73,7 @@ public class ReflectionHelper {
             e.printStackTrace();
         }
     }
+    */
 
     private void setParseReaderMethod() {
         Class<JsonParser> clazz = JsonParser.class;

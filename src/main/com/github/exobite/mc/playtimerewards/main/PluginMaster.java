@@ -7,7 +7,7 @@ import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.*;
 import com.github.exobite.mc.playtimerewards.web.GenericAPI;
 import com.github.exobite.mc.playtimerewards.web.MotdReader;
-import com.github.exobite.mc.playtimerewards.external.PAPIManager;
+import com.github.exobite.mc.playtimerewards.external.placeholderapi.PAPIManager;
 import com.github.exobite.mc.playtimerewards.listeners.Listeners;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
@@ -124,9 +124,11 @@ public class PluginMaster extends JavaPlugin {
                 pauseAsyncTimer = true; //Pause the Clock while reloading data
                 Config.reloadConfig(true);
                 Lang.reloadLang();
+                System.out.println(RewardManager.getInstance().getRegisteredRewardData().size());
                 if(!RewardManager.reloadRewards(forceRewardReload) && forceRewardReload) {
                     sendConsoleMessage(Level.WARNING, "Couldn't reload the Rewards while they are being edited.");
                 }
+                System.out.println(RewardManager.getInstance().getRegisteredRewardData().size());
                 AFKManager.getInstance().reloadConfig();
                 ExoDebugTools.unregister();
                 if(Config.getInstance().allowDebugTools()) ExoDebugTools.registerDebugTools(instance);
