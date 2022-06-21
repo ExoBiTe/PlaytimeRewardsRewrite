@@ -1,6 +1,6 @@
 Changelog Version 0.1.7:
     - Bugfixes:
-        - /ptr reload now doesn't removes all Rewards anymore
+        - /ptr reload now doesn't remove all Rewards anymore
 
     - PlaceholderAPI:
         - Created a "simpler" PAPI-Framework, it is easier to implement new Placeholders
