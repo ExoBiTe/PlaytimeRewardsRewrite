@@ -1,3 +1,7 @@
+Changelog Version 0.1.8:
+    - Adding Advancements to Rewards:
+        - Shading https://github.com/Trigary/AdvancementCreator into the final Jar
+
 Changelog Version 0.1.7:
     - Bugfixes:
         - /ptr reload now doesn't remove all Rewards anymore

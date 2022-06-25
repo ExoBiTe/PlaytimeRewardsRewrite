@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.main;
 
+import com.github.exobite.mc.playtimerewards.utils.AdvancementManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeRewardsCommand;
@@ -87,6 +88,8 @@ public class PluginMaster extends JavaPlugin {
             PAPIManager.register(this);
         }
 
+        AdvancementManager.register();
+
         //reload support, check for online Players in onEnable & create playerData for them.
         if(!Bukkit.getOnlinePlayers().isEmpty()){
             for(Player p:Bukkit.getOnlinePlayers()){
@@ -109,6 +112,7 @@ public class PluginMaster extends JavaPlugin {
         if(RewardManager.getInstance()!=null) RewardManager.getInstance().saveData();
         if(Config.getInstance()!=null && Config.getInstance().checkForUpdate() && AutoUpdater.getInstance()!=null)
             AutoUpdater.getInstance().moveUpdate();
+        if(AdvancementManager.getInstance()!=null) AdvancementManager.getInstance().deleteAdvancementFiles();
     }
 
     public void reloadConfigurationData(@Nullable final CommandSender feedback) {

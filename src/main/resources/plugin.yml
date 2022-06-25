@@ -1,6 +1,6 @@
 name: PlaytimeRewards
 main: com.github.exobite.mc.playtimerewards.main.PluginMaster
-version: 0.1.7
+version: 0.1.8
 author: ExoBiTe
 website: https://www.spigotmc.org/resources/100231/
 description: This Plugin rewards players for their Playtime
