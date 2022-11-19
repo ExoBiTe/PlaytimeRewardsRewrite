@@ -53,7 +53,7 @@ public class PAPIManager extends PlaceholderExpansion {
             return ph.getMessage(p);
         }catch (IllegalArgumentException e){
             //Unknown Placeholder
-            System.out.println("Unknown placeholder: "+param);
+            PluginMaster.sendConsoleMessage(Level.WARNING, "Unknown Placeholder '"+param+"' has been passed to this Plugin!");
             return null;
         }
     }

@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.main;
 
+import com.github.exobite.mc.playtimerewards.external.authme.AuthMeManager;
 import com.github.exobite.mc.playtimerewards.utils.AdvancementManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
@@ -83,10 +84,7 @@ public class PluginMaster extends JavaPlugin {
         getCommand("PlaytimeRewards").setExecutor(new PlaytimeRewardsCommand());
         getServer().getPluginManager().registerEvents(new Listeners(), this);
 
-        //Load Placeholderapi, if it exists
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            PAPIManager.register(this);
-        }
+        loadExternals();
 
         AdvancementManager.register();
 
@@ -163,6 +161,7 @@ public class PluginMaster extends JavaPlugin {
     }
 
     private void startAsyncChecker() {
+        final AuthMeManager authMe = Bukkit.getPluginManager().getPlugin("AuthMe") != null ? AuthMeManager.getInstance() : null;
         BukkitRunnable br = new BukkitRunnable() {
 
             private final int PLAYERS_PER_CYCLE = 50;
@@ -182,6 +181,7 @@ public class PluginMaster extends JavaPlugin {
                         createNewQueue = true;
                         break;
                     }
+                    if(authMe!=null && !authMe.isAuthenticated(p)) return;  //Only grant Permissions to logged in Players
                     PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
                     if(pDat!=null) {
                         RewardManager.getInstance().checkAndGrantRewards(pDat);
@@ -191,6 +191,18 @@ public class PluginMaster extends JavaPlugin {
         };
         //Run the Task every 20Ticks -> 1 Second
         br.runTaskTimerAsynchronously(this, 20L, 20L).getTaskId();
+    }
+
+    private void loadExternals() {
+        //Load Placeholderapi, if it exists
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            PAPIManager.register(this);
+        }
+
+        //Load AuthMe, if it exists
+        if(Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
+            AuthMeManager.register(this);
+        }
     }
 
 }

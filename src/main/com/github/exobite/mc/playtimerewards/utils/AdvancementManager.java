@@ -92,7 +92,7 @@ public class AdvancementManager {
             if(!deleteAllFilesInFolder(folder)) {
                 PluginMaster.sendConsoleMessage(Level.SEVERE, "Failed to delete temporary Advancements from your worlds.\n" +
                         "Please delete them yourself from all world folders, they're in the following path:\n"+
-                        "[world-folder]"+File.separator+path);
+                        w.getWorldFolder()+File.separator+path);
             }
         }
     }

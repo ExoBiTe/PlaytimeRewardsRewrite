@@ -2,6 +2,10 @@ Changelog Version 0.1.8:
     - Adding Advancements to Rewards:
         - Shading https://github.com/Trigary/AdvancementCreator into the final Jar
 
+    - Adding AuthMe Support
+        - Only logged in Players will be able to earn Rewards
+        - Planning on not counting Play&Sessiontime when not logged in
+
 Changelog Version 0.1.7:
     - Bugfixes:
         - /ptr reload now doesn't remove all Rewards anymore
