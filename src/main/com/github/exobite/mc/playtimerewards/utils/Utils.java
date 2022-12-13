@@ -160,10 +160,10 @@ public class Utils {
         }
     }
 
-    private static final Pattern dayPattern = Pattern.compile("[0-9]+D");
-    private static final Pattern hourPattern = Pattern.compile("[0-9]+h");
-    private static final Pattern minutePattern = Pattern.compile("[0-9]+m");
-    private static final Pattern secondPattern = Pattern.compile("[0-9]+s");
+    private static final Pattern dayPattern = Pattern.compile("\\d+[Dd]");
+    private static final Pattern hourPattern = Pattern.compile("\\d+[Hh]");
+    private static final Pattern minutePattern = Pattern.compile("\\d+[Mm]");
+    private static final Pattern secondPattern = Pattern.compile("\\d+[Ss]");
 
     public static long convertTimeStringToMS(String s) {
         long days = 0;
@@ -173,22 +173,22 @@ public class Utils {
 
         Matcher m = dayPattern.matcher(s);
         if(m.find()){
-            days = Integer.parseInt(m.group().replace("D", ""));
+            days = Integer.parseInt(m.group().replaceAll("[Dd]", ""));
             s = s.replace(m.group(), "");
         }
         m = hourPattern.matcher(s);
         if(m.find()){
-            hours = Integer.parseInt(m.group().replace("h", ""));
+            hours = Integer.parseInt(m.group().replaceAll("[Hh]", ""));
             s = s.replace(m.group(), "");
         }
         m = minutePattern.matcher(s);
         if(m.find()){
-            minutes = Integer.parseInt(m.group().replace("m", ""));
+            minutes = Integer.parseInt(m.group().replaceAll("[Mm]", ""));
             s = s.replace(m.group(), "");
         }
         m = secondPattern.matcher(s);
         if(m.find()){
-            seconds = Integer.parseInt(m.group().replace("s", ""));
+            seconds = Integer.parseInt(m.group().replaceAll("[Ss]", ""));
         }
 
         //String rVal = "Months: "+Months+"\nDays"+Days+"\n"+"Hours:"+Hours+"\n"+"Minutes:"+Minutes+"\nSeconds:"+

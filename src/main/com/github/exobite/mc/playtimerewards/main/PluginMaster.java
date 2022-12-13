@@ -86,7 +86,8 @@ public class PluginMaster extends JavaPlugin {
 
         loadExternals();
 
-        AdvancementManager.register();
+        //Removed for testing on Server by end-user
+        //AdvancementManager.register();
 
         //reload support, check for online Players in onEnable & create playerData for them.
         if(!Bukkit.getOnlinePlayers().isEmpty()){

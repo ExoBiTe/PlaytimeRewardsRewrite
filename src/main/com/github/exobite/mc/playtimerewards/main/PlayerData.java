@@ -87,16 +87,16 @@ public class PlayerData {
                 continue;
             }
             long val = (long) valObj;
-            if(val==0 && rwd.type()== RewardType.PLAYTIME && !rwd.grantFirst()) {
+            if(val==0 && rwd.type()== RewardType.PLAYTIME && !rwd.grantFirst() && rwd.isRepeating()) {
                 long newVal = getPlaytimeMS();
                 //New Players with no Playtime get offset by 100ms. This is used to save the first timestamp instead of saving 0ms
                 //Saving them with 0ms would effectively prevent the Earning of the Reward until they once reach the wanted Playtime
                 //in one Session, resulting them to save a new timestamp.
                 if(newVal==0) newVal = 100;
                 receivedTimestamps.put(rwd, newVal);
-            }else if(val==0 && rwd.type()==RewardType.GLOBAL_TIME && !rwd.grantFirst()) {
+            }else if(val==0 && rwd.type()==RewardType.GLOBAL_TIME && !rwd.grantFirst() && rwd.isRepeating()) {
                 receivedTimestamps.put(rwd, loginTimestamp);
-            }else if(val==0 && rwd.type()==RewardType.SESSION_TIME && rwd.grantFirst()) {
+            }else if(val==0 && rwd.type()==RewardType.SESSION_TIME && rwd.grantFirst() && rwd.isRepeating()) {
                 //Should start SessionRewards with a negative Value, granting it the Player instantly once upon login
                 long timeVal = RewardManager.getInstance().getRewardFromName(rwd.rewardName()).getTimeMs();
                 receivedTimestamps.put(rwd, -1*timeVal);
