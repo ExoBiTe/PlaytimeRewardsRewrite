@@ -1,6 +1,7 @@
 package com.github.exobite.mc.playtimerewards.main;
 
 import com.github.exobite.mc.playtimerewards.external.authme.AuthMeManager;
+import com.github.exobite.mc.playtimerewards.external.vault.VaultPermManager;
 import com.github.exobite.mc.playtimerewards.utils.AdvancementManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
@@ -86,7 +87,7 @@ public class PluginMaster extends JavaPlugin {
 
         loadExternals();
 
-        //Removed for testing on Server by end-user
+        //Removed for release Versions
         //AdvancementManager.register();
 
         //reload support, check for online Players in onEnable & create playerData for them.
@@ -111,7 +112,8 @@ public class PluginMaster extends JavaPlugin {
         if(RewardManager.getInstance()!=null) RewardManager.getInstance().saveData();
         if(Config.getInstance()!=null && Config.getInstance().checkForUpdate() && AutoUpdater.getInstance()!=null)
             AutoUpdater.getInstance().moveUpdate();
-        if(AdvancementManager.getInstance()!=null) AdvancementManager.getInstance().deleteAdvancementFiles();
+        //Removed for release Version
+        //if(AdvancementManager.getInstance()!=null) AdvancementManager.getInstance().deleteAdvancementFiles();
     }
 
     public void reloadConfigurationData(@Nullable final CommandSender feedback) {
@@ -203,6 +205,11 @@ public class PluginMaster extends JavaPlugin {
         //Load AuthMe, if it exists
         if(Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
             AuthMeManager.register(this);
+        }
+
+        //Load Vault, if it exists
+        if(Bukkit.getPluginManager().getPlugin("Vault") != null) {
+            VaultPermManager.register(this);
         }
     }
 

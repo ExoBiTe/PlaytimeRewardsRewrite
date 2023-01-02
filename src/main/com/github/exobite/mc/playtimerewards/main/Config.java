@@ -70,12 +70,13 @@ public class Config {
         }
     }
 
-    private void loadConfig(){
+    private void loadConfig() {
+        if(!main.getDataFolder().exists()) sendInitialStartupMessage();
         File f = new File(main.getDataFolder() + File.separator + CONF_FILENAME);
         boolean filechanged = Utils.updateFileVersionDependent(CONF_FILENAME);
         if(filechanged) PluginMaster.sendConsoleMessage(Level.INFO, "Your "+CONF_FILENAME+" got updated!");
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
-        if(conf.getKeys(true).size() <= 0) {
+        if(conf.getKeys(true).isEmpty()) {
             //No Config or empty Config?
             PluginMaster.sendConsoleMessage(Level.SEVERE, "Couldn't load the config.yml, loaded Defaults.\nIs the File existing and not empty?");
             return;
@@ -91,7 +92,7 @@ public class Config {
             if(autoSaveTimerMS<60000) { //Auto Save Interval is less than a Minute? Strange...
                 if(autoSaveTimerMS<=0) {
                     //Error at parsing the String, set the Default.
-                    autoSaveTimerMS = 30 * 60000;   //30 Minutes
+                    autoSaveTimerMS = 30 * 60000L;   //30 Minutes
                     PluginMaster.sendConsoleMessage(Level.WARNING, "Couldn't parse the Config Value of 'DataSaveInterval': "+saveTimerIntervalStr
                     + "\nThe Value was set to 30 Minutes.");
                 }else{
@@ -128,6 +129,19 @@ public class Config {
         allowMetrics = conf.getBoolean("AllowMetrics", true);
         String colorStr = conf.getString("ColorCode", "§");
         colorCode = colorStr.charAt(0);
+    }
+
+    private void sendInitialStartupMessage() {
+        final String lines = "---------------------------------";
+        String sb = lines + "\nWelcome to " + main.getDescription().getName() + " v" + main.getDescription().getVersion() + "!\n" +
+                        """
+                        The Plugin generated some Configuration Files for you.
+                        It is Highly advised to change these settings to your liking
+                        and reboot your server. If you need help setting
+                        these up, take a look at the Plugin Documentation:
+                        (https://www.spigotmc.org/resources/100231/field?field=documentation)
+                        """ + lines;
+        PluginMaster.sendConsoleMessage(Level.INFO, sb);
     }
 
     public boolean checkForUpdate(){

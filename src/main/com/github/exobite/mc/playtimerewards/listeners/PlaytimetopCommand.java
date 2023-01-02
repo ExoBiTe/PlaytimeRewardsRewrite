@@ -16,9 +16,10 @@ import java.util.*;
 
 public class PlaytimetopCommand implements CommandExecutor {
 
-    private final static long MIN_TIME_FOR_REFRESH = 1000 * 60 * 5; //5 Minutes
+    private final static long MIN_TIME_FOR_REFRESH = 1000L * 60 * 5; //5 Minutes
 
     private final static String PTTOP_USE_PERM = "playtimerewards.cmd.playtimetop";
+    private final static String PTTOP_HIDE_PERM = "playtimerewards.playtimetop.hide";
 
     private long lastPolled = 0;
     private Map<String, Integer> cachedTop = new HashMap<>();

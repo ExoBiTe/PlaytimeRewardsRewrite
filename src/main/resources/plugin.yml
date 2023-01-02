@@ -5,7 +5,7 @@ author: ExoBiTe
 website: https://www.spigotmc.org/resources/100231/
 description: This Plugin rewards players for their Playtime
 api-version: 1.17
-softdepend: [PlaceholderAPI, AuthMe]
+softdepend: [PlaceholderAPI, AuthMe, Vault]
 
 commands:
   Playtime:
@@ -18,12 +18,12 @@ commands:
     aliases: pttop
   PlaytimeRewards:
     description: PlaytimeRewards Management Main Command
-    usage: /Playtimerewatds
+    usage: /Playtimerewards
     aliases: ptr
 
 permissions:
   playtimerewards.*:
-    description: Grants all Permissions, excluding playtimerewards.afk.ignore
+    description: Grants all Permissions, excluding playtimerewards.afk.ignore and playtimerewards.playtimetop.hide
     default: op
     children:
       playtimerewards.notifyOnUpdate: true
@@ -33,20 +33,17 @@ permissions:
 
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login
-    default: op
 
   playtimerewards.cmd.playtime.own:
     description: Grants access to the /playtime command (can only see own playtime)
 
   playtimerewards.cmd.playtime.other:
     description: Grants access to the /playtime command (including seeing others playtime)
-    default: op
     children:
       playtimerewards.cmd.playtime.own: true
 
   playtimerewards.cmd.playtime.other.offline:
     description: Grants access to the /playtime command (including seeing others playtime, even from offline players)
-    default: op
     children:
       playtimerewards.cmd.playtime.other: true
 
@@ -55,7 +52,6 @@ permissions:
 
   playtimerewards.cmd.playtimerewards.*:
     description: Grants full access to the /playtimerewards command
-    default: op
     children:
       playtimerewards.cmd.playtimerewards.list: true
       playtimerewards.cmd.playtimerewards.editreward: true
@@ -72,3 +68,6 @@ permissions:
 
   playtimerewards.afk.ignore:
     description: Get never flagged as AFK with this Permission
+
+  playtimerewards.playtimetop.hide:
+    description: Hides the Player from the Playtimetop Command

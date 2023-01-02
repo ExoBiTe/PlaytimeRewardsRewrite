@@ -72,14 +72,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <!--<configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.bstats</include>
-                                    <include>com.github.Trigary</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration> -->
                     </execution>
                 </executions>
             </plugin>
@@ -124,12 +116,22 @@
             <groupId>com.github.Trigary</groupId>
             <artifactId>AdvancementCreator</artifactId>
             <version>v2.0</version>
+            <!--
+            Temporarily don't include (compile) this library, as it isn't used in the current release.
             <scope>compile</scope>
+            -->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>fr.xephi</groupId>
             <artifactId>authme</artifactId>
             <version>5.6.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
