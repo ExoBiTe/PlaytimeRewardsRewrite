@@ -56,10 +56,11 @@ public class Lang {
 
     private void createNewLangFile(File f) {
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+        boolean setComments = VersionHelper.isEqualOrLarger(VersionHelper.getBukkitVersion(), new Version(1, 18, 0));
         for(Msg msg:Msg.values()) {
             if(msg.showInFile()){
                 conf.set(msg.toString(), msg.getMessage());
-                conf.setComments(msg.toString(), stringToList(msg.getComment()));
+                if(setComments) conf.setComments(msg.toString(), stringToList(msg.getComment()));
             }
         }
         try {
@@ -94,7 +95,7 @@ public class Lang {
     }
 
     private UpdateConfigResponse updateConfiguration(YamlConfiguration conf) {
-        //With Comments is only 1.18+, as
+        //With Comments is only 1.18+
         if(VersionHelper.isEqualOrLarger(VersionHelper.getBukkitVersion(), new Version(1, 18, 0))) {
             return updateConfigurationWithComments(conf);
         }else{

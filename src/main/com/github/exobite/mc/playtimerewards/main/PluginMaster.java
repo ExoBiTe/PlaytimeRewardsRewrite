@@ -16,6 +16,7 @@ import com.github.exobite.mc.playtimerewards.listeners.PlaytimetopCommand;
 import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class PluginMaster extends JavaPlugin {
 
@@ -43,6 +45,9 @@ public class PluginMaster extends JavaPlugin {
 
     private Version bukkitVersion;
     private boolean pauseAsyncTimer = false;
+    private boolean hookedIntoPapi;
+    private boolean hookedIntoAuthMe;
+    private boolean hookedIntoVault;
 
     //Constants
     private final int BSTATS_ID = 14369;
@@ -168,21 +173,28 @@ public class PluginMaster extends JavaPlugin {
         BukkitRunnable br = new BukkitRunnable() {
 
             private final int PLAYERS_PER_CYCLE = 50;
-            private Queue<Player> playerQueue;
+            private Queue<UUID> playerQueue;
             private boolean createNewQueue = true;
 
             @Override
             public void run() {
                 if(pauseAsyncTimer) return;
                 if(createNewQueue) {
-                    playerQueue = new ArrayDeque<>(Bukkit.getOnlinePlayers());
+                    Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+                    if(players.isEmpty()) return;   //Don't do anything when there are no Players online
+                    playerQueue = new ArrayDeque<>(players.stream().map(Entity::getUniqueId).toList());
                     createNewQueue = false;
                 }
                 for(int i = 0; i< PLAYERS_PER_CYCLE; i++){
-                    Player p = playerQueue.poll();
-                    if(p==null){
+                    UUID id = playerQueue.poll();
+                    if(id==null) {
+                        //If Queue contains/returns null, create new queue
                         createNewQueue = true;
                         break;
+                    }
+                    Player p = Bukkit.getPlayer(id);
+                    if(p==null){
+                        continue;
                     }
                     if(authMe!=null && !authMe.isAuthenticated(p)) return;  //Only grant Permissions to logged in Players
                     PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
@@ -200,17 +212,31 @@ public class PluginMaster extends JavaPlugin {
         //Load Placeholderapi, if it exists
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PAPIManager.register(this);
+            hookedIntoPapi = true;
         }
 
         //Load AuthMe, if it exists
         if(Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
             AuthMeManager.register(this);
+            hookedIntoAuthMe = true;
         }
 
         //Load Vault, if it exists
         if(Bukkit.getPluginManager().getPlugin("Vault") != null) {
             VaultPermManager.register(this);
+            hookedIntoVault = true;
         }
     }
 
+    public boolean isHookedIntoPapi() {
+        return hookedIntoPapi;
+    }
+
+    public boolean isHookedIntoAuthMe() {
+        return hookedIntoAuthMe;
+    }
+
+    public boolean isHookedIntoVault() {
+        return hookedIntoVault;
+    }
 }

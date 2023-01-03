@@ -7,6 +7,7 @@ import com.github.exobite.mc.playtimerewards.rewards.Reward;
 import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import net.md_5.bungee.api.ChatColor;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,16 +31,20 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             ChatColor.DARK_AQUA+"/Playtimerewards editReward <rewardname>"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Lists all registered Rewards";
     private static final String CMD_USAGE_RELOAD =
             ChatColor.DARK_AQUA+"/PlaytimeRewards reload"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Reloads all Plugin configuration data";
+    private static final String CMD_USAGE_INFO =
+            ChatColor.DARK_AQUA+"/Playtimerewards info"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Shows Information about the Plugin";
 
     private static final String PTR_LIST_PERM = "playtimerewards.cmd.playtimerewards.list";
     private static final String PTR_EDIT_PERM = "playtimerewards.cmd.playtimerewards.editreward";
     private static final String PTR_RELOAD_PERM = "playtimerewards.cmd.playtimerewards.reload";
+    private static final String PTR_INFO_PERM = "playtimerewards.cmd.playtimerewards.info";
 
     private void sendHelpText(CommandSender s) {
         StringBuilder sb = new StringBuilder(CMD_USAGE);
         if(s.hasPermission(PTR_LIST_PERM)) sb.append("\n").append(CMD_USAGE_LIST);
         //if(s.hasPermission(PTR_EDIT_PERM)) sb.append("\n").append(CMD_USAGE_REWARDEDIT);
         if(s.hasPermission(PTR_RELOAD_PERM)) sb.append("\n").append(CMD_USAGE_RELOAD);
+        if(s.hasPermission(PTR_INFO_PERM)) sb.append("\n").append(CMD_USAGE_INFO);
         String msg = sb.toString();
         if(msg.equals(CMD_USAGE)) {
             //No Permissions at all, send no Permission Message
@@ -58,6 +63,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
                 case "list" -> listCommand(sender);
                 //case "editreward" -> editRewardCommand(sender, args);
                 case "reload" -> reloadCommand(sender);
+                case "info" -> infoCommand(sender);
                 default -> sendHelpText(sender);
             }
         }
@@ -112,6 +118,35 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         PluginMaster.getInstance().reloadConfigurationData(s);
     }
 
+    private void infoCommand(@NotNull CommandSender s) {
+        if(!s.hasPermission(PTR_INFO_PERM)) {
+            s.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_NO_PERMISSION));
+            return;
+        }
+        PluginMaster inst = PluginMaster.getInstance();
+        StringBuilder msg = new StringBuilder().append(ChatColor.DARK_AQUA);
+
+        msg.append("Running ").append(ChatColor.AQUA).append(inst.getDescription().getName());
+        msg.append(ChatColor.GRAY).append("v").append(ChatColor.AQUA).append(inst.getDescription().getVersion());
+        msg.append(ChatColor.DARK_AQUA).append(" by ").append(ChatColor.GOLD).append("ExoBiTe");
+        msg.append(ChatColor.GRAY);
+        //PAPI
+        msg.append("\n").append(inst.isHookedIntoPapi() ? ChatColor.GREEN : ChatColor.DARK_GRAY);
+        msg.append(inst.isHookedIntoPapi() ? "Is " : "Isn't ").append("hooked into PlaceholderAPI.");
+        /*
+        //AuthMe
+        msg.append("\n").append(inst.isHookedIntoAuthMe() ? ChatColor.GREEN : ChatColor.DARK_GRAY);
+        msg.append(inst.isHookedIntoAuthMe() ? "Is " : "Isn't ").append("hooked into AuthMe.");
+        //Vault
+        msg.append("\n").append(inst.isHookedIntoVault() ? ChatColor.GREEN : ChatColor.DARK_GRAY);
+        msg.append(inst.isHookedIntoVault() ? "Is " : "Isn't ").append("hooked into Vault.");
+        */
+
+        msg.append(ChatColor.GRAY).append("\nWebsite: ").append(ChatColor.DARK_AQUA).append(inst.getDescription().getWebsite());
+
+        s.sendMessage(msg.toString());
+    }
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
@@ -121,6 +156,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             if(sender.hasPermission(PTR_LIST_PERM)) data.add("list");
             //if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
             if(sender.hasPermission(PTR_RELOAD_PERM)) data.add("reload");
+            if(sender.hasPermission(PTR_INFO_PERM)) data.add("info");
         }/*else if(size==2 && args[0].equalsIgnoreCase("editreward")) {
             for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {
                 if(rwd.rewardName().startsWith(args[1])) {

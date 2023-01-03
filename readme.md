@@ -155,8 +155,8 @@ Messages used:
 'CMD_ERR_NO_PERMISSION': The "No Permission" Text from Commands.
 ```
 
-### /PlaytimeRewards <list|reload> 
-(alias /ptr <list|reload>)
+### /PlaytimeRewards <list|reload|info> 
+(alias /ptr <list|reload|info>)
 
 #### /PlaytimeRewards list 
 (alias /ptr list)
@@ -199,36 +199,48 @@ Messages used:
 'CMD_ERR_NO_PERMISSION': The "No Permission" Text from Commands.
 ```
 
+#### /PlaytimeRewards info
+(alias /ptr info)
+
+This Command shows some relevant plugin information.
+
+Permissions needed:
+```
+playtimerewards.cmd.playtimerewards.info - Access to the Command
+```
+
+Messages used:
+```					
+'CMD_ERR_NO_PERMISSION': The "No Permission" Text from Commands.
+```
+
 ## Permissions
 
 Permissions for Commands are listed beneath the Command the Permission belongs to.
 These are all Permissions the Plugin contains (copied from [plugin.yml](src/main/resources/plugin.yml)):
 ```yml
   playtimerewards.*:
-    description: Grants all Permissions, excluding playtimerewards.afk.ignore
+    description: Grants all Permissions, excluding playtimerewards.afk.ignore and playtimerewards.playtimetop.hide
     default: op
     children:
       playtimerewards.notifyOnUpdate: true
-      playtimerewards.cmd.playtime.other: true
+      playtimerewards.cmd.playtime.other.offline: true
       playtimerewards.cmd.playtimetop: true
       playtimerewards.cmd.playtimerewards.*: true
 
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login
-    default: op
 
   playtimerewards.cmd.playtime.own:
     description: Grants access to the /playtime command (can only see own playtime)
 
   playtimerewards.cmd.playtime.other:
     description: Grants access to the /playtime command (including seeing others playtime)
-    default: op
     children:
       playtimerewards.cmd.playtime.own: true
 
   playtimerewards.cmd.playtime.other.offline:
     description: Grants access to the /playtime command (including seeing others playtime, even from offline players)
-    default: op
     children:
       playtimerewards.cmd.playtime.other: true
 
@@ -237,11 +249,11 @@ These are all Permissions the Plugin contains (copied from [plugin.yml](src/main
 
   playtimerewards.cmd.playtimerewards.*:
     description: Grants full access to the /playtimerewards command
-    default: op
     children:
       playtimerewards.cmd.playtimerewards.list: true
       playtimerewards.cmd.playtimerewards.editreward: true
       playtimerewards.cmd.playtimerewards.reload: true
+      playtimerewards.cmd.playtimerewards.info: true
 
   playtimerewards.cmd.playtimerewards.list:
     description: Grants access to the /playtimerewards list command
@@ -251,6 +263,9 @@ These are all Permissions the Plugin contains (copied from [plugin.yml](src/main
 
   playtimerewards.cmd.playtimerewards.reload:
     description: Grants access to the /playtimerewards reload command
+
+  playtimerewards.cmd.playtimerewards.info:
+    description: Grants access to the /playtimerewards info command
 
   playtimerewards.afk.ignore:
     description: Get never flagged as AFK with this Permission

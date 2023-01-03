@@ -107,7 +107,7 @@ Thanks to [URL='https://www.spigotmc.org/members/193389/']ViscousHurricane[/URL]
                             1: The Players Name
                             2-5: The Playtime in Days to Seconds
 
-/ptr <list|reload> or /playtimerewards <list|reload>
+/ptr <list|reload|info> or /playtimerewards <list|reload|info>
     list:
         Permission:
             playtimerewards.cmd.playtimerewards.list - Access to the Command
@@ -128,6 +128,14 @@ Thanks to [URL='https://www.spigotmc.org/members/193389/']ViscousHurricane[/URL]
             Reload all Plugindata - config.yml, lang.yml & rewards.yml
         Messages:
             'CMD_SUC_PTR_RELOAD_SUCCESS': The returned Message from the Command
+
+    info:
+        Permission:
+            playtimerewards.cmd.playtimerewards.info - Access to the Command
+        Description:
+            Shows Plugin relevant data
+        Messages:
+            none
 
 
 [/code]

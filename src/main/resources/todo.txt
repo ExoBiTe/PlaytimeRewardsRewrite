@@ -26,9 +26,16 @@ Basic Concept:
                 - #s -> Seconds
 
 Ideas:
-    - Custom Advancements:
-        Softdepending on CrazyAdvancementsAPI: https://www.spigotmc.org/resources/crazy-advancements-api.51741/
-        or including this: https://www.spigotmc.org/threads/advancement-creator-rapid-advancement-creation-library.293465/
+    - External stuff:
+        - Include https://github.com/Trigary/AdvancementCreator (exists in pom.xml, but only as "included" not as "compile", created between v0.1.7 -> v0.1.8)
+            - Used to create custom Advancements for the Rewards (using the utils/AdvancementManager class)
+        - Softdepending on Vault (created between v0.1.7 -> v0.1.8)
+            - Maybe use it for offlineplayer permission checks in order to hide players (with perm) from pttop
+            - Vault related stuff in external/vault/VaultPermManager class
+        - Softdepending on AuthMe (created between v0.1.7 -> v0.1.8)
+            - Use it to ignore playtime for players not logged in
+            - not-logged-in Players don't get any rewards (already done!)
+            - AuthMe related stuff in external/authme/AuthMeManager class
 
     - PlayerData File Storage, add a last saved timestamp to user
         - Run an async, scheduled routine to clean up older PlayerData to free up diskspace & preventing giant files

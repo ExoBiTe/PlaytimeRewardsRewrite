@@ -1,10 +1,12 @@
 Changelog Version 0.1.8:
-    - Adding Advancements to Rewards:
-        - Shading https://github.com/Trigary/AdvancementCreator into the final Jar
-
-    - Adding AuthMe Support
-        - Only logged in Players will be able to earn Rewards
-        - Planning on not counting Play&Sessiontime when not logged in
+    - Bugfixes:
+        - Fixed a Bug with non-repeating Rewards not being earned correctly
+        - Made all Time-Specifiers case-insensitive
+        - Fixed a Bug where the Plugin doesn't run on Versions smaller than 1.18
+    - Added Manager-Classes and pom-entries for AuthMe and Vault, but they aren't used for now.
+    - Added an AdvancementManager class, using an external AdvancementAPI, but don't shading it into the final 0.1.8 version
+    - Added the /ptr info Command, displaying Plugin Information
+        - Needs the "playtimerewards.cmd.playtimerewards.info" permission
 
 Changelog Version 0.1.7:
     - Bugfixes:
