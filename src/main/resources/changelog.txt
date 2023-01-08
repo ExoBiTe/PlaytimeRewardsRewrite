@@ -1,3 +1,19 @@
+Changelog Version 0.1.9:
+    - Added Placeholders:
+        - PLAYTIME_DAYS_TRIMMED
+        - PLAYTIME_HOURS_TRIMMED
+        - PLAYTIME_MINUTES_TRIMMED
+        - PLAYTIME_SECONDS_TRIMMED
+        - SESSIONTIME_DAYS_TRIMMED
+        - SESSIONTIME_HOURS_TRIMMED
+        - SESSIONTIME_MINUTES_TRIMMED
+        - SESSIONTIME_SECONDS_TRIMMED
+    - These "Trimmed" Placeholders return only the specified Part of the Total Playtime.
+    - Example:
+        - PLAYTIME would return 12d3h50m23s for Player x (or something similiar, format defined in lang.yml)
+        - PLAYTIME_HOURS would return 12*24h + 3h = 291h for Player x
+        - but PLAYTIME_HOURS_TRIMMED would just return 3h for Player x, as its only the "Hours-Part" of the Total Playtime
+
 Changelog Version 0.1.8:
     - Bugfixes:
         - Fixed a Bug with non-repeating Rewards not being earned correctly

@@ -90,8 +90,75 @@ public enum Placeholder {
             long val = PlayerManager.getInstance().getPlayerData(p).getSessionTime() / 1000;
             return String.valueOf(val);
         }
-    });
+    }),
 
+    PLAYTIME_DAYS_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
+            return String.valueOf(values[0]);
+        }
+    }),
+
+    PLAYTIME_HOURS_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
+            return String.valueOf(values[1]);
+        }
+    }),
+
+    PLAYTIME_MINUTES_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
+            return String.valueOf(values[2]);
+        }
+    }),
+
+    PLAYTIME_SECONDS_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getPlaytimeMS());
+            return String.valueOf(values[3]);
+        }
+    }),
+
+    SESSIONTIME_DAYS_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getSessionTime());
+            return String.valueOf(values[0]);
+        }
+    }),
+
+    SESSIONTIME_HOURS_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getSessionTime());
+            return String.valueOf(values[1]);
+        }
+    }),
+
+    SESSIONTIME_MINUTES_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getSessionTime());
+            return String.valueOf(values[0]);
+        }
+    }),
+
+    SESSIONTIME_SECONDS_TRIMMED(new PlaceholderAction() {
+        @Override
+        String getMessage(Player p) {
+            long[] values = Utils.convertTimeMsToLongs(PlayerManager.getInstance().getPlayerData(p).getSessionTime());
+            return String.valueOf(values[0]);
+        }
+    })
+
+
+
+    ;
 
 
 
