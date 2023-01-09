@@ -26,7 +26,31 @@ Supports [URL='https://www.spigotmc.org/resources/6245/']PlaceholderAPI[/URL]!
 (Shown here using [URL='https://www.spigotmc.org/resources/20848/']Animated Scoreboard[/URL])
 [SPOILER="Placeholders"]
 [code]- %ptr_playtime% -> Returns the Playtime for the Player, the message format is defined as 'EXT_PAPI_TIME_FORMAT'
-- %ptr_sessiontime% -> Returns the Sessiontime for the Player, the message format is defined as 'EXT_PAPI_TIME_FORMAT'[/code]
+- %ptr_sessiontime% -> Returns the Sessiontime for the Player, the message format is defined as 'EXT_PAPI_TIME_FORMAT'
+- %ptr_playtime_days%: Returns the Total Playtime in Days
+- %ptr_playtime_hours%: Returns the Total Playtime in Hours
+- %ptr_playtime_minutes%: Returns the Total Playtime in Minutes
+- %ptr_playtime_seconds%: Returns the Total Playtime in Seconds
+- %ptr_sessiontime_days%: Returns the Total Sessiontime in Days
+- %ptr_sessiontime_hours%: Returns the Total Sessiontime in Days
+- %ptr_sessiontime_minutes%: Returns the Total Sessiontime in Days
+- %ptr_sessiontime_seconds%: Returns the Total Sessiontime in Days
+- %ptr_playtime_days_trimmed%: Returns the Days-Amount from the Total Playtime
+- %ptr_playtime_hours_trimmed%: Returns the Hours-Amount from the Total Playtime
+- %ptr_playtime_minutes_trimmed%: Returns the Minutes-Amount from the Total Playtime
+- %ptr_playtime_seconds_trimmed%: Returns the Seconds-Amount from the Total Playtime
+- %ptr_sessiontime_days_trimmed%: Returns the Days-Amount from the Total Sessiontime
+- %ptr_sessiontime_hours_trimmed%: Returns the Hours-Amount from the Total Sessiontime
+- %ptr_sessiontime_minutes_trimmed%: Returns the Minutes-Amount from the Total Sessiontime
+- %ptr_sessiontime_seconds_trimmed%: Returns the Seconds-Amount from the Total Sessiontime[/code]
+
+[SPOILER="Trimmed Explanation:"]
+If [icode]%PTR_PLAYTIME%[/icode] would return [icode]12d3h50m23s[/icode] for Player x (or something similiar, format defined in lang.yml),
+
+[icode]%PTR_PLAYTIME_HOURS%[/icode] would return [icode]291h[/icode] for Player x.
+
+But [icode]%PTR_PLAYTIME_HOURS_TRIMMED%[/icode] would just return [icode]3h[/icode] for Player x, as its only the "Hours-Part" of the Total Playtime
+[/SPOILER]
 [/SPOILER]
 
 
