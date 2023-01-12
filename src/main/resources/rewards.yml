@@ -8,23 +8,35 @@
 #Time accepts Days(d), Hours(h), Minutes(m) and Seconds(s) and can be combined in any Variation, examples: '3d15m' or '1d25h35m12s'
 #Pay Attention that the RewardName doesn't allow Duplicates!
 
-SampleReward1: #No Duplicates allowed
-  DisplayName: '§3I´m a cool §4Reward§3!' #The Visible Name Ingame
-  CountType: 'PLAYTIME' #Specifies which type the Plugin counts
-  Time: '1m30s' #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
-  Repeating: true #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
-  GrantFirst: false #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
-  PermissionNeeded: 'cool.long.time.player.rank' #The Permission needed in order to get this Reward
-  ConsoleCommands: #Executes the specified PlaytimeCommand from the Console. Is Optional.
+#No Duplicates allowed
+SampleReward1:
+  #The Visible Name Ingame
+  DisplayName: '§3I´m a cool §4Reward§3!'
+  #Specifies which type the Plugin counts
+  CountType: 'PLAYTIME'
+  #accepts Days(d), Hours(h), Minutes(m) and Seconds(s)
+  Time: '1m30s'
+  #Specifies if the Reward is obtainable once or if it gets granted multiple times (example: if time is 5s and Repeating is true, the Reward gets granted every 5s)
+  Repeating: true
+  #Specifies if the Reward is obtained instantly for the first Time, makes no sense with non-repeating Rewards
+  GrantFirst: false
+  #The Permission needed in order to get this Reward
+  PermissionNeeded: 'cool.long.time.player.rank'
+  #Executes the specified PlaytimeCommand from the Console. Is Optional.
+  ConsoleCommands:
     - 'say <PLAYER> is a cool Person!'
   Display:
-    PlayerMessages: #Sends the specified Messages to the Player which gets the Reward. Is Optional.
+    #Sends the specified Messages to the Player which gets the Reward. Is Optional.
+    PlayerMessages:
       - 'Congrats <PLAYER> upon Earning <REWARD>'
-    GlobalMessages: #Sends the specified Messages to all Players. is Optional.
+    #Sends the specified Messages to all Players. is Optional.
+    GlobalMessages:
       - '<PLAYER> earned the Achievement <REWARD>'
     ActionbarMessage: '§1Hello §4<PLAYER>§1!'
-    Particles: #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
+    #Particles Parameters are defined in this Order: 'PARTICLE_NAME, Amount, offsetX, offsetY, offsetZ, extra' - extra refers often to the speed. Is Optional.
+    Particles:
       - 'FLAME, 10, 0.2, 0.2, 0.2, 1'
-    Sounds: #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH'. Is Optional.
+    #Sound Parameters are defines in this Order: 'SOUND_NAME, SOUND_CATEGORY, VOLUME, PITCH'. Is Optional.
+    Sounds:
       - 'BLOCK_BELL_USE, PLAYERS, 1.0, 1.0'
 

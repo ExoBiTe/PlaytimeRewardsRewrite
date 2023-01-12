@@ -28,7 +28,7 @@ public class RewardEdit extends RewardOptions {
     private static final Material INPUT_TIME_ITEM = Material.CLOCK;
     private static final Material INPUT_ARRAY_ITEM = Material.SHULKER_BOX;
     private static final Material INPUT_PARTICLE_ITEM = Material.FIREWORK_ROCKET;
-    private static final Material INPUT_SOUND_ITEM = Material.MUSIC_DISC_CHIRP;
+    private static final Material INPUT_SOUND_ITEM = Material.NOTE_BLOCK;
 
     private final UUID editor;
     private final Reward rw;
@@ -170,7 +170,22 @@ public class RewardEdit extends RewardOptions {
         }
         String fieldname = Lang.getInstance().getMessage(Msg.valueOf("GUI_EDIT_TRANSL_" + f.getName().toUpperCase(Locale.ROOT)));
         String name = Lang.getInstance().getMessage(Msg.GUI_EDIT_REWARD_FIELD_ITEM_NAME, fieldname);
-        CustomItem ci = new CustomItem(m).setDisplayName(name);
+        String lore = "";
+        try {
+            if(f.get(inst) == null){
+                lore = "";
+            }else if(m == INPUT_ARRAY_ITEM) {
+                //Item is Array; Show ArraySize instead of Value
+                lore = getArrayFromField(f).length + " Entries";
+            }else if(m == INPUT_TIME_ITEM) {
+                //Item is the Time, Parse it to a readable Format
+                lore = Utils.formatTimeMsToString((long) f.get(inst), "%d%h%m%s");
+            }else{
+                lore = f.get(inst).toString();
+            }
+        }catch (IllegalAccessException ignored){
+        }
+        CustomItem ci = new CustomItem(m).setDisplayName(name).setLoreFromString(lore);
         gui.setItemstack(slot, ci.getItemStack());
 
         GUIManager.GUIClickAction action = new GUIManager.GUIClickAction() {
@@ -227,11 +242,11 @@ public class RewardEdit extends RewardOptions {
         }
     }
 
-    private void clickedItemInArray(@NotNull HumanEntity clicker, final @NotNull Object arrayInstance, int index) {
+    private void clickedItemInArray(@NotNull HumanEntity clicker, final @NotNull Field f, final @NotNull Object arrayInstance, int index) {
         if(!arrayInstance.getClass().isArray()) {
             return;
         }
-        System.out.println(arrayInstance.getClass().getName() + ", " + String.class.getName());
+        System.out.println(arrayInstance.getClass().getName() + ", " + RewardParticle.class.getName());
         String strippedName = arrayInstance.getClass().getName().substring(2).substring(0, arrayInstance.getClass().getName().length()-3);
         if(strippedName.equals(String.class.getName())) {
             nextAction = new ChatInputAction() {
@@ -254,6 +269,12 @@ public class RewardEdit extends RewardOptions {
             };
             GUIManager.getInstance().setAllowNextGUIClose(true, clicker.getUniqueId());
             clicker.closeInventory();
+        }else if(strippedName.equals(RewardParticle.class.getName())) {
+            //TODO: Add RewardParticle Handling
+            createRewardParticleGUI(f, arrayInstance, index, clicker);
+        }else if(strippedName.equals(RewardSound.class.getName())) {
+            //TODO: Add RewardSound Handling
+
         }
 
     }
@@ -264,58 +285,56 @@ public class RewardEdit extends RewardOptions {
         GUIManager.GUI g = GUIManager.getInstance().createGUI("Array "+f.getName(), 27)
                 .cancelAll(true)
                 .canClose(false);
-        Material m;
-        if(f.getType()==String.class) {
-            m = INPUT_STRING_ITEM;
-        }else if(f.getType()==boolean.class) {
-            try {
-                m = (boolean) f.get(inst) ? INPUT_BOOL_TRUE_ITEM : INPUT_BOOL_FALSE_ITEM;
-            } catch (IllegalAccessException e) {
-                m = INPUT_BOOL_FALSE_ITEM;
-            }
-        }else if(f.getType()==long.class) {
-            m = INPUT_TIME_ITEM;
-        }else if(f.getType()==RewardParticle.class) {
-            m = INPUT_PARTICLE_ITEM;
-        }else if(f.getType()==RewardSound.class) {
-            m = INPUT_SOUND_ITEM;
-        }else{
-            //Unknown
-            m = Material.BEDROCK;
-        }
-        Object[] content;
+        Object[] content = getArrayFromField(f);
         Object arrayInst = null;
+        Material m;
         try {
-            f.setAccessible(true);
             arrayInst = f.get(inst);
-            int len = Array.getLength(arrayInst);
-            content = new Object[len];
-            for(int i=0;i<len;i++) {
-                content[i] = Array.get(arrayInst, i);
+            if(content.length>0) {
+                //Get Array Type
+                if(content[0].getClass()==String.class) {
+                    m = INPUT_STRING_ITEM;
+                }else if(content[0].getClass()==Boolean.class) {
+                    m = (boolean) content[0] ? INPUT_BOOL_TRUE_ITEM : INPUT_BOOL_FALSE_ITEM;
+                }else if(content[0].getClass()==Long.class) {
+                    m = INPUT_TIME_ITEM;
+                }else if(content[0].getClass()==RewardParticle.class) {
+                    m = INPUT_PARTICLE_ITEM;
+                }else if(content[0].getClass()==RewardSound.class) {
+                    m = INPUT_SOUND_ITEM;
+                }else{
+                    //Unknown
+                    m = Material.BEDROCK;
+                }
+            }else{
+                //Array is empty, no Items added to the GUI.
+                m = Material.BEDROCK;
             }
         } catch (IllegalAccessException e) {
             content = new Object[0];
             e.printStackTrace();
+            m = Material.BEDROCK;
         }
-        int idx = 2;
+        int idx = 0;
         for(Object e:content) {
-            String name = "Debug  idx "+ (idx-2);
+            String name = "Debug  idx "+ (idx);
             String lore = ChatColor.AQUA+e.toString()+ChatColor.RESET+"\nClick to edit!";
             g.setItemstack(idx, new CustomItem(m).setDisplayName(name).setLoreFromString(lore).getItemStack());
-            final int fidx = idx - 2;
+            final int fidx = idx;
             Object finalArrayInst = arrayInst;
             g.setSlotAction(idx, new GUIManager.GUIClickAction() {
                 @Override
                 protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
-                    clickedItemInArray(e.getWhoClicked(), finalArrayInst, fidx);
+                    clickedItemInArray(e.getWhoClicked(), f, finalArrayInst, fidx);
                     guiAfterChat = g;
                 }
             });
             idx++;
-            if(idx>=g.getSize()) break;
+            //Only support 18 Entries, last row is needed for GUI Control
+            if(idx>=g.getSize() || idx>17) break;
         }
-        g.setItemstack(0, new CustomItem(Material.BARRIER).setDisplayName("Go back").getItemStack());
-        g.setSlotAction(0, new GUIManager.GUIClickAction() {
+        g.setItemstack(18, new CustomItem(Material.BARRIER).setDisplayName("Go back").getItemStack());
+        g.setSlotAction(18, new GUIManager.GUIClickAction() {
             @Override
             protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
                 GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
@@ -323,7 +342,69 @@ public class RewardEdit extends RewardOptions {
                 g.deleteGUI();
             }
         });
+        if(content.length<18) {
+            g.setItemstack(26, new CustomItem(Material.BEACON).setDisplayName("Add Entry").getItemStack());
+            g.setSlotAction(26, new GUIManager.GUIClickAction() {
+                @Override
+                protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
+                    GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
+
+                    guis.get("main").openInventory(e.getWhoClicked());
+                    g.deleteGUI();
+                }
+            });
+        }
+
+
         return g;
+    }
+
+    private Object[] getArrayFromField(Field f) {
+        Object[] content;
+        try {
+            Object arrayInst = null;
+            arrayInst = f.get(inst);
+            int len = Array.getLength(arrayInst);
+            content = new Object[len];
+            for(int i=0;i<len;i++) {
+                content[i] = Array.get(arrayInst, i);
+            }
+        }catch(IllegalAccessException e){
+            return new Object[]{};
+        }
+        return content;
+    }
+
+    private void createRewardParticleGUI(final @NotNull Field f, final @NotNull Object arrayInstance, int index, HumanEntity he) {
+        RewardParticle rp = (RewardParticle) Array.get(arrayInstance, index);
+        GUIManager.GUI g = GUIManager.getInstance().createGUI("Edit Particle", 27)
+                .cancelAll(true)
+                .canClose(false);
+        //Go Back
+        g.setItemstack(18, new CustomItem(Material.BARRIER).setDisplayName("Go Back").getItemStack());
+        g.setSlotAction(18, new GUIManager.GUIClickAction() {
+            @Override
+            protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
+                GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
+                guiAfterChat.openInventory(e.getWhoClicked());
+                guiAfterChat = null;
+                g.deleteGUI();
+            }
+        });
+
+        g.setItemstack(22, new CustomItem(Material.LAVA_BUCKET).setDisplayName("Delete Entry").getItemStack());
+        g.setSlotAction(22, new GUIManager.GUIClickAction() {
+            @Override
+            protected void click(InventoryClickEvent e, GUIManager.GUI gui) {
+                //TODO: Remove Object in srcArray at correct Index, write new Array to Field.
+                GUIManager.getInstance().setAllowNextGUIClose(true, e.getWhoClicked().getUniqueId());
+                guiAfterChat.openInventory(e.getWhoClicked());
+                guiAfterChat = null;
+                g.deleteGUI();
+            }
+        });
+        GUIManager.getInstance().setAllowNextGUIClose(true, he.getUniqueId());
+        g.openInventory(he);
     }
 
     private void saveDataToReward() {
