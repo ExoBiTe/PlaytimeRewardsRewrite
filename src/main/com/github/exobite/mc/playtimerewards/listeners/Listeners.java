@@ -1,5 +1,7 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
+import com.github.exobite.mc.playtimerewards.main.AFKManager;
+import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.main.Config;
 import com.github.exobite.mc.playtimerewards.utils.*;
@@ -7,6 +9,7 @@ import com.github.exobite.mc.playtimerewards.web.AutoUpdater;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class Listeners implements Listener {
@@ -18,6 +21,13 @@ public class Listeners implements Listener {
             String currentVersion = PluginMaster.getInstance().getDescription().getVersion();
             e.getPlayer().sendMessage(Lang.getInstance().getMessage(Msg.NOTIF_UPDATE_AVAILABLE, newVersion, currentVersion));
         }
+        PlayerManager.getInstance().onJoin(e);
+    }
+
+    @EventHandler
+    public void onQuit(@NotNull PlayerQuitEvent e) {
+        if(Config.getInstance().enableAfkSystem()) AFKManager.getInstance().onQuit(e);
+        PlayerManager.getInstance().onLeave(e);
     }
 
 }

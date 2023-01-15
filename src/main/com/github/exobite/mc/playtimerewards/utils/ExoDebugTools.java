@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("ALL")
 public class ExoDebugTools implements Listener {
 
     private static final String usage = ChatColor.RED+"#exodebug <arg>"
@@ -476,7 +477,7 @@ public class ExoDebugTools implements Listener {
 
     }
 
-    private static abstract class PlaceholderRunnable {
+    private abstract static class PlaceholderRunnable {
         private final String desc;
 
         public PlaceholderRunnable(final String desc) {

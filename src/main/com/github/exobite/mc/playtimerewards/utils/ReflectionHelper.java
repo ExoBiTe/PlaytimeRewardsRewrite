@@ -26,7 +26,6 @@ public class ReflectionHelper {
         return instance;
     }
 
-    private Method playSoundMethod;
     private Method gsonParserMethod;
     private final boolean use1_18Methods;
 
@@ -35,46 +34,11 @@ public class ReflectionHelper {
         use1_18Methods = VersionHelper.isEqualOrLarger(PluginMaster.getInstance().getBukkitVersion(), new Version(1, 18, 0));
 
         //Cache the Methods for later use
-        //setPlaySoundMethod();
         setParseReaderMethod();
     }
 
-    /*
-    Don't use Reflection for Playing Sounds anymore
-    - tbh i can't really remember why i did this in the first place?
-
-    private void setPlaySoundMethod(){
-        Class<Player> bukkitPlayer = Player.class;
-        try {
-            if(use1_18Methods){
-                //Version 1.18+
-                playSoundMethod = bukkitPlayer.getMethod("playSound", Entity.class, Sound.class, SoundCategory.class, float.class, float.class);
-            }else{
-                //Until Version 1.17.1
-                playSoundMethod = bukkitPlayer.getMethod("playSound", Location.class, Sound.class, SoundCategory.class, float.class, float.class);
-            }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void callPlaySound(RewardSound rw, Player p) {
-        if(playSoundMethod==null) return;
-        try {
-            playSoundMethod.setAccessible(true);
-            if(use1_18Methods){
-                //Version 1.18+
-                playSoundMethod.invoke(p, p, rw.getSound(), rw.getSoundCategory(), rw.getVolume(), rw.getPitch());
-            }else{
-                //Until Version 1.17.1
-                playSoundMethod.invoke(p, p.getLocation(), rw.getSound(), rw.getSoundCategory(), rw.getVolume(), rw.getPitch());
-            }
-        }catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-    */
-
+    @SuppressWarnings("deprecation")
+    //Surpressing deprecated "new JsonParser()" as it already is only called when using a Version, where it isn't deprecated.
     private void setParseReaderMethod() {
         Class<JsonParser> clazz = JsonParser.class;
         try {

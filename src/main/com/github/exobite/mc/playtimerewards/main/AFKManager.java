@@ -185,8 +185,9 @@ public class AFKManager implements Listener {
         afkCounters.put(e.getPlayer().getUniqueId(), 0L);
     }
 
-    @EventHandler
-    private void onQuit(@NotNull PlayerQuitEvent e) {
+    //Moved to listeners.Listeners, due to an Error
+    //where the PlayerData gets deleted before this Listener was called.
+    public void onQuit(@NotNull PlayerQuitEvent e) {
         UUID id = e.getPlayer().getUniqueId();
         if(isAfk.containsKey(id)) {
             comeBack(e.getPlayer());
