@@ -1,3 +1,6 @@
+Changelog Version 0.2.0:
+    - Fixed a Bug where AFK Players Quitting the Game caused an NPE.
+
 Changelog Version 0.1.9:
     - Added Placeholders:
         - PLAYTIME_DAYS_TRIMMED
