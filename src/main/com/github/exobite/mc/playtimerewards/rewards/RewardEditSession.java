@@ -49,6 +49,18 @@ public class RewardEditSession extends RewardOptions {
 
     }
 
+    private void createMainGui() {
+        if(guis.containsKey("main")) {
+            GUIManager.GUI main = guis.get("main");
+            main.canClose(true);
+            main.deleteGUI();
+            guis.remove("main");
+        }
+        GUIManager.GUI main = GUIManager.getInstance().createGUI("Main", 27);
+
+    }
+
+
 
 
 }

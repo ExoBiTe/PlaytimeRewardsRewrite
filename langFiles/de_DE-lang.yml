@@ -1,0 +1,52 @@
+# Made vor PlaytimeRewards Version 0.2.0
+
+# The Return Message from the /playtime Command
+CMD_SUC_PT_OWN: |-
+  §aDeine Spielzeit liegt bei %[0] Tagen, %[1] Stunden %[2] Minuten und %[3] Sekunden.
+  Deine Aktuelle Zeit in der Sitzung liegt bei %[4] Tagen, %[5] Stunden, %[6] Minuten und %[7] Sekunden.
+
+# The Return Message from the /playtime <player> Command
+CMD_SUC_PT_OTHER: |-
+  §6%[0]§a's Spielzeit liegt bei %[1] Tagen, %[2] Stunden %[3] Minuten und %[4] Sekunden.
+  §6%[5]§a's Zeit in der Sitzung liegt bei %[6] Tagen, %[7] Stunden, %[8] Minuten und %[9] Sekunden.
+
+# The Return Message from the /playtime <offlineplayer> Command
+CMD_SUC_PT_OTHER_OFFLINE: §6%[0]§a's Spielzeit liegt bei %[1] Tagen, %[2] Stunden %[3] Minuten und %[4] Sekunden.
+
+# The First Part of the /Playtimetop Command
+CMD_SUC_PTTOP_HEADER: '§7Die §b%[0] §7Spielzeiten:'
+
+# This Message gets printed once for each Entry from the /Playtimetop Command
+CMD_SUC_PTTOP_ENTRY: '§6%[0]§7: §b%[1]§7 - %[2] Tage, %[3] Stunden, %[4] Minuten und %[5] Sekunden'
+
+# The first Part of the /Playtimerewards list Command
+CMD_SUC_PTR_LIST_HEADER: |-
+  §7Folgende §b%[0]§7 Belohnungen wurden gefunden:
+  §8Interner Name -- Anzeigename -- Typ
+
+# This Message gets printed once for each Entry from the /Playtimerewards list Command
+CMD_SUC_PTR_LIST_ENTRY: §3%[0] §8-- §1%[1] §8-- §7%[2]
+
+# The Return Message from the /Playtimerewards reload Command
+CMD_SUC_PTR_RELOAD_SUCCESS: §aDie externen Daten wurden erfolgreich neu geladen!
+
+# A Error Message when too many Requests are sent from a Player using /pt <offlineplayer>
+CMD_ERR_TOO_MANY_REQUESTS: §4Das darfst du aktuell nicht benutzen. Versuch es gleich noch einmal!
+
+# The No Permission Message from all Commands
+CMD_ERR_NO_PERMISSION: §4Du hast keine Berechtigung dies auszuführen.
+
+# The No-Player-Found Error Message from all Commands
+CMD_ERR_PLAYER_NOT_FOUND: §4Kann den Spieler '§6%[0]§4' nicht finden!
+
+# The Notification upon Login when a new Version is available
+NOTIF_UPDATE_AVAILABLE: §6PlaytimeRewards Version %[0] ist online! (Du hast Version %[1])!
+
+# The Message sent to Players who get flagged as afk
+NOTIF_AFK_USER_WENT_AFK: §7Du wirst nun als AFK angezeigt
+
+# The Message sent to Players when coming back
+NOTIF_AFK_USER_CAME_BACK: §7Willkommen zurück!
+
+# The Format in which all Times get sent to the PlaceholderAPI
+EXT_PAPI_TIME_FORMAT: '%[0] Tage %[1] Stunden %[2] Minuten %[3] Sekunden'

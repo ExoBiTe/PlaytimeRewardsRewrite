@@ -317,6 +317,8 @@ This File is rather simple, you may change it to your likings.
 Every "%[x]" represents a Parameter to be filled in later by the Plugin,
 so make sure to use all Parameters for a Message in the correct order.
 
+You can find public language Files on [URL='https://github.com/ExoBiTe/PlaytimeRewardsRewrite/tree/master/langFiles']GitHub[/URL]!
+
 [U][B]HexColors![/B][/U]
 This Plugin supports Hex-Colors in your lang.yml File (since Plugin v0.1.5).
 Just edit your lang.yml File using the Following Syntax:
