@@ -52,6 +52,40 @@ public class Config {
     private boolean cancelAfkOnChat;
     private boolean cancelAfkOnCommand;
 
+    private boolean useSQL;
+
+    private sqlConfig sqlConfig;
+
+    private static class sqlConfig {
+
+        String host;
+        String user;
+        String database;
+        String password;
+        int port;
+
+        public String getHost() {
+            return host;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public String getDatabase() {
+            return database;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+    }
+
 
     private Config(JavaPlugin main) {
         this.main = main;
@@ -123,6 +157,17 @@ public class Config {
             }
         }
         allowAutoDownload = conf.getBoolean("AllowAutoUpdate", false);
+
+        //SQL
+        useSQL = conf.getBoolean("SQL.Enable", false);
+        if(useSQL) {
+            sqlConfig = new sqlConfig();
+            sqlConfig.host = conf.getString("SQL.Host", "localhost");
+            sqlConfig.user = conf.getString("SQL.User", "ptruser");
+            sqlConfig.database = conf.getString("SQL.Database", "mcserver");
+            sqlConfig.password = conf.getString("SQL.Password", "samplePassword123!");
+            sqlConfig.port = conf.getInt("SQL.Port", 3306);
+        }
 
         //Hidden values
         allowDebugTools = conf.getBoolean("debug_allowDebugTools", false);
@@ -200,6 +245,13 @@ public class Config {
         return afkTime;
     }
 
+    public boolean useSQL() {
+        return useSQL;
+    }
+
+    public sqlConfig getSQLConfig() {
+        return sqlConfig;
+    }
 
 
 }

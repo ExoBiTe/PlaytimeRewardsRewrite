@@ -37,6 +37,8 @@ Ideas:
             - not-logged-in Players don't get any rewards (already done!)
             - AuthMe related stuff in external/authme/AuthMeManager class
 
+    - Add SQL (MySQL/SQLite) support (com.github.exobite.mc.playtimerewards.sql Package)
+
     - PlayerData File Storage, add a last saved timestamp to user
         - Run an async, scheduled routine to clean up older PlayerData to free up diskspace & preventing giant files
             - Is this useful?
@@ -46,6 +48,13 @@ Ideas:
 
     - Allow Players to Opt-In for more data collection:
         - Collect Data how many Rewards are registered, and which functions of the Rewards get used.
+
+    - Additional /playtimeRewards setTime <long> Command
+        - Needs further testing with Big Numbers
+
+    - GrantItem for Rewards
+        - If the Players Inventory is full, add them to a temp-cache and make them redeemable later
+        - Maybe a Softdependence on NBT-API, makes it possible to support NBT-Data
 
 
 Notes:

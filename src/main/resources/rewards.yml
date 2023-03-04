@@ -5,6 +5,18 @@
 #List of all Particles can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
 #
 #Available CountTypes are PLAYTIME, SESSION_TIME and GLOBAL_TIME
+#CountType PLAYTIME:
+#This is basically the Players Playtime in total.
+#Every Second the Player is online on your Server, it gets added to the Total Playtime.
+#
+#CountType SESSION_TIME:
+#SESSION_TIME is the Time, the Player is currently online in this Session.
+#If a Player logs disconnects from the Server, this gets reset to zero.
+#
+#CountType GLOBAL_TIME:
+#GLOBAL_TIME is basically the Real World Time. This can be used for Daily Login Rewards,
+#and it doesn't check the Players Playtime at all.
+#
 #Time accepts Days(d), Hours(h), Minutes(m) and Seconds(s) and can be combined in any Variation, examples: '3d15m' or '1d25h35m12s'
 #Pay Attention that the RewardName doesn't allow Duplicates!
 
