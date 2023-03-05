@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -285,27 +286,17 @@ public class Utils {
         return (toSearch.length() - toSearch.replace(match, "").length()) / match.length();
     }
 
-    public static void setPlaytimeToTimeMs(@NotNull Player p, long newPlaytime) {
-        long diffInTicks = newPlaytime / 50;
-        if(diffInTicks>Integer.MAX_VALUE) {
-            //In case big differences are found
-            int multiplied = Math.toIntExact(diffInTicks / Integer.MAX_VALUE);
-            int rest = Math.toIntExact(diffInTicks % Integer.MAX_VALUE);
-            for(int i=0;i<multiplied;i++) {
-                decreasePlaytime(p, Integer.MAX_VALUE);
-            }
-            decreasePlaytime(p, rest);
-        }else{
-            decreasePlaytime(p, Math.toIntExact(diffInTicks));
-        }
+    public static byte[] uuidToByte(UUID uuid) {
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
+        return buffer.array();
     }
 
-    private static void decreasePlaytime(@NotNull Player p, int ticks) {
-        int newticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE) - ticks;
-        if(newticks<0) newticks = 0;
-        p.setStatistic(Statistic.PLAY_ONE_MINUTE, newticks);
+    public static UUID byteToUUID(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return new UUID(buffer.getLong(), buffer.getLong());
     }
-
 
 
 }

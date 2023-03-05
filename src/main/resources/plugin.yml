@@ -57,6 +57,7 @@ permissions:
       playtimerewards.cmd.playtimerewards.editreward: true
       playtimerewards.cmd.playtimerewards.reload: true
       playtimerewards.cmd.playtimerewards.info: true
+      playtimerewards.cmd.playtimerewards.settime: true
 
   playtimerewards.cmd.playtimerewards.list:
     description: Grants access to the /playtimerewards list command
@@ -69,6 +70,9 @@ permissions:
 
   playtimerewards.cmd.playtimerewards.info:
     description: Grants access to the /playtimerewards info command
+
+  playtimerewards.cmd.playtimerewards.settime:
+    description: Grants access to the /playtimerewards setPlaytime command
 
   playtimerewards.afk.ignore:
     description: Get never flagged as AFK with this Permission

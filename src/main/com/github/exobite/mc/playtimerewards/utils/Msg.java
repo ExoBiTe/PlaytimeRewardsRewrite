@@ -17,14 +17,12 @@ public enum Msg {
     CMD_SUC_PT_OTHER_OFFLINE("§6%[0]§a's Playtime is %[1]d %[2]h %[3]m %[4]s",
             "The Return Message from the /playtime <offlineplayer> Command",
             true),
-
     CMD_SUC_PTTOP_HEADER("§7Listing the top §b%[0] §7Playtimes:",
             "The First Part of the /Playtimetop Command",
             true),
     CMD_SUC_PTTOP_ENTRY("§6%[0]§7: §b%[1]§7 - has played %[2]d %[3]h %[4]m and %[5]s",
             "This Message gets printed once for each Entry from the /Playtimetop Command",
             true),
-
     CMD_SUC_PTR_LIST_HEADER("§7Listing all §b%[0]§7 Rewards:\n§8Internal Name -- DisplayName -- CountType",
             "The first Part of the /Playtimerewards list Command",
             true),
@@ -37,27 +35,24 @@ public enum Msg {
     CMD_WARN_PTR_RELOAD("§4Content from rewards.yml doesn't get reloaded, as there are Rewards being edited.",
             "A Warn Message that Rewards dont get reloaded from the /ptr reload Command",
             false),
-
     CMD_NOTIF_PTR_EDIT_TYPE_IN_CHAT("§6Type in chat! §8(Your Message will not get sent! Use '&' as Color-Char.)",
             "The Notification sent to the Player upon expecting an Input for the Reward-Editing",
             false),
-
     CMD_SUC_PTR_EDIT_SAVED("§aSuccessfully saved the Reward!",
             "The Notification sent to the editor of a Reward upon saving the Changes.",
             false),
-
     CMD_SUC_PTR_EDIT_ABORTED("§cAborted the Editing!",
             "The Notification sent to the editor of a Reward upon saving the Changes.",
             false),
-
     CMD_SUC_PTR_EDIT_TYPE_IN_CHAT("§aSuccessfully set §6%[0] §ato §6%[1]&a!",
             "The Notification sent to the Player upon typing a correct Value for a Reward-Field in the Chat",
             false),
-
+    CMD_SUC_PTR_SETTIME("§aSet the Playtime of §b%[0] §ato §b%[1] §a(§b%[2] §aticks)!",
+            "",
+            true),
     CMD_ERR_PTR_EDIT_UNKNOWN("§4An unknown Error occurred! §8Try again",
             "An unknown Error happened during editing a reward. See the console logs for the errorlog when this gets sent.",
             false),
-
     CMD_ERR_TOO_MANY_REQUESTS("§4You can't do that right now. Try again later!",
             "A Error Message when too many Requests are sent from a Player using /pt <offlineplayer>",
             true),
@@ -79,7 +74,6 @@ public enum Msg {
     NOTIF_AFK_USER_WENT_AFK("§7You are now flagged as AFK",
             "The Message sent to Players who get flagged as afk",
             true),
-
     NOTIF_AFK_USER_CAME_BACK("§7You are no longer flagged as AFK",
             "The Message sent to Players when coming back",
             true),

@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
+import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
@@ -8,8 +9,8 @@ import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
 import com.github.exobite.mc.playtimerewards.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,11 +36,14 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             ChatColor.DARK_AQUA+"/PlaytimeRewards reload"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Reloads all Plugin configuration data";
     private static final String CMD_USAGE_INFO =
             ChatColor.DARK_AQUA+"/Playtimerewards info"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Shows Information about the Plugin";
+    private static final String CMD_SETTIME_INFO =
+            ChatColor.DARK_AQUA+"/Playtimerewards setPlaytime <newTime> [player]"+ChatColor.GRAY+" -- "+ChatColor.AQUA+"Modifies the specified Players playtime";
 
     private static final String PTR_LIST_PERM = "playtimerewards.cmd.playtimerewards.list";
     private static final String PTR_EDIT_PERM = "playtimerewards.cmd.playtimerewards.editreward";
     private static final String PTR_RELOAD_PERM = "playtimerewards.cmd.playtimerewards.reload";
     private static final String PTR_INFO_PERM = "playtimerewards.cmd.playtimerewards.info";
+    private static final String PTR_SETTIME_PERM = "playtimerewards.cmd.playtimerewards.settime";
 
     private void sendHelpText(CommandSender s) {
         StringBuilder sb = new StringBuilder(CMD_USAGE);
@@ -58,7 +62,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
-        if(args.length<=0) {
+        if(args.length == 0) {
             sendHelpText(sender);
         }else {
             switch (args[0].toLowerCase(Locale.ROOT)) {
@@ -151,13 +155,15 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
     }
 
     private void setPlaytimeCommand(@NotNull CommandSender sender, String ... args) {
-        // /ptr setPlaytime <timeString> [player]
-        //TODO: Add Permission - and check that Perm, too!
-        if((args.length<=3 && !(sender instanceof Player)) || args.length <= 2) {
-            sender.sendMessage("Not enough args!");
+        if(!sender.hasPermission(PTR_SETTIME_PERM)) {
+            sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_NO_PERMISSION));
             return;
         }
-        long timeMs = Utils.convertTimeStringToMS(args[1]);
+        if((args.length<3 && !(sender instanceof Player)) || args.length < 2) {
+            sender.sendMessage(CMD_SETTIME_INFO);
+            return;
+        }
+        int newPlaytime = Math.toIntExact(Utils.convertTimeStringToMS(args[1]) / 50);
         Player target;
         if(sender instanceof Player) target = (Player) sender;
         else target = Bukkit.getPlayer(args[2]);
@@ -165,9 +171,8 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[2]));
             return;
         }
-        Utils.setPlaytimeToTimeMs(target, timeMs);
-        //TODO: Create Msg!
-        sender.sendMessage("Set the Playtime of "+target.getName()+" to "+args[1]+"("+timeMs+"ms)!");
+        target.setStatistic(Statistic.PLAY_ONE_MINUTE, newPlaytime);
+        sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_SUC_PTR_SETTIME, target.getName(), args[1], String.valueOf(newPlaytime)));
     }
 
     @Nullable
@@ -175,17 +180,19 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         List<String> data = new ArrayList<>();
         int size = args.length;
-        //TODO: Add TabCompleter for setPlaytime
         if(size<2) {
             if(sender.hasPermission(PTR_LIST_PERM)) data.add("list");
             if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
+            if(sender.hasPermission(PTR_SETTIME_PERM)) data.add("setPlaytime");
             if(sender.hasPermission(PTR_RELOAD_PERM)) data.add("reload");
             if(sender.hasPermission(PTR_INFO_PERM)) data.add("info");
-        }else if(size==2 && args[0].equalsIgnoreCase("editreward")) {
-            for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {
-                if(rwd.rewardName().startsWith(args[1])) {
-                    data.add(rwd.rewardName());
+        }else if(size==2) {
+            if(args[0].equalsIgnoreCase("editReward") && sender.hasPermission(PTR_EDIT_PERM)) {
+                for(RewardData rwd:RewardManager.getInstance().getRegisteredRewardData()) {
+                    if(rwd.rewardName().startsWith(args[1])) data.add(rwd.rewardName());
                 }
+            }else if(args[0].equalsIgnoreCase("setPlaytime") && sender.hasPermission(PTR_SETTIME_PERM)) {
+                data.add("0d0h0m0s");
             }
         }
         return data;

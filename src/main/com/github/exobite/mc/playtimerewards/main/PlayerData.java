@@ -29,7 +29,7 @@ public class PlayerData {
 
     PlayerData(@NotNull Player p) {
         id = p.getUniqueId();
-        loginTimestamp = getPlaytimeMS();
+        loginTimestamp = System.currentTimeMillis();
         loadPlayerData();
     }
 
@@ -83,7 +83,7 @@ public class PlayerData {
             //That's why we get it as Object first, check it against null and then cast it to a long
             //Getting a Long value directly from the Map causes an NPE.
             Object valObj = receivedTimestamps.get(rwd);
-            if(valObj==null){
+            if(valObj==null) {
                 continue;
             }
             long val = (long) valObj;
@@ -168,7 +168,6 @@ public class PlayerData {
     }
 
     public boolean checkReward(Reward rw){
-        //System.out.println("Checking rw "+rw.getName());
         if(!hasData()) return false;
         RewardData rwd = getRewardDataFromName(rw.getName());
         if(rwd==null) return false;
@@ -185,7 +184,6 @@ public class PlayerData {
         }
         boolean permissionIsOK = !rw.needsPermission() || (rw.needsPermission() && p().hasPermission(rw.getPermissionNeeded()));
         grant = nowTimestamp >= oldTimestamp + rw.getTimeMs() && permissionIsOK;
-        //System.out.println("ot: "+oldTimestamp+", needed: "+rw.getTimeMs()+", nt: "+nowTimestamp+", permio: "+permissionIsOK);
         if(grant) {
             //Save Repeating Rewards with their Timestamp,
             //Save non Repeating Rewards with -1L
@@ -220,7 +218,7 @@ public class PlayerData {
     }
 
     public long getSessionTime() {
-        return getPlaytimeMS() - loginTimestamp;
+        return System.currentTimeMillis() - loginTimestamp;
     }
 
     public long getPlaytimeMS() {
@@ -228,7 +226,7 @@ public class PlayerData {
         if(isAfk) {
             playtimeticks = playtimeticks - ((System.currentTimeMillis() - wentAfkTimestamp) / 50);
         }
-        return playtimeticks / 20 * 1000L;
+        return playtimeticks / 50;
     }
 
     public Player p() {
