@@ -1,13 +1,17 @@
 package com.github.exobite.mc.playtimerewards.utils;
 
+import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -279,6 +283,27 @@ public class Utils {
         //Example: "abc.abc.abc.def", "def"
         // length = 15, newlength = 12, diff 3 division by lenght of match = 1
         return (toSearch.length() - toSearch.replace(match, "").length()) / match.length();
+    }
+
+    public static void setPlaytimeToTimeMs(@NotNull Player p, long newPlaytime) {
+        long diffInTicks = newPlaytime / 50;
+        if(diffInTicks>Integer.MAX_VALUE) {
+            //In case big differences are found
+            int multiplied = Math.toIntExact(diffInTicks / Integer.MAX_VALUE);
+            int rest = Math.toIntExact(diffInTicks % Integer.MAX_VALUE);
+            for(int i=0;i<multiplied;i++) {
+                decreasePlaytime(p, Integer.MAX_VALUE);
+            }
+            decreasePlaytime(p, rest);
+        }else{
+            decreasePlaytime(p, Math.toIntExact(diffInTicks));
+        }
+    }
+
+    private static void decreasePlaytime(@NotNull Player p, int ticks) {
+        int newticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE) - ticks;
+        if(newticks<0) newticks = 0;
+        p.setStatistic(Statistic.PLAY_ONE_MINUTE, newticks);
     }
 
 

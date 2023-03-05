@@ -6,8 +6,10 @@ import com.github.exobite.mc.playtimerewards.main.PluginMaster;
 import com.github.exobite.mc.playtimerewards.rewards.Reward;
 import com.github.exobite.mc.playtimerewards.rewards.RewardData;
 import com.github.exobite.mc.playtimerewards.rewards.RewardManager;
+import com.github.exobite.mc.playtimerewards.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.chat.Chat;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -64,6 +66,7 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
                 case "editreward" -> editRewardCommand(sender, args);
                 case "reload" -> reloadCommand(sender);
                 case "info" -> infoCommand(sender);
+                case "setplaytime" -> setPlaytimeCommand(sender, args);
                 default -> sendHelpText(sender);
             }
         }
@@ -147,11 +150,32 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         s.sendMessage(msg.toString());
     }
 
+    private void setPlaytimeCommand(@NotNull CommandSender sender, String ... args) {
+        // /ptr setPlaytime <timeString> [player]
+        //TODO: Add Permission - and check that Perm, too!
+        if((args.length<=3 && !(sender instanceof Player)) || args.length <= 2) {
+            sender.sendMessage("Not enough args!");
+            return;
+        }
+        long timeMs = Utils.convertTimeStringToMS(args[1]);
+        Player target;
+        if(sender instanceof Player) target = (Player) sender;
+        else target = Bukkit.getPlayer(args[2]);
+        if(target == null) {
+            sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[2]));
+            return;
+        }
+        Utils.setPlaytimeToTimeMs(target, timeMs);
+        //TODO: Create Msg!
+        sender.sendMessage("Set the Playtime of "+target.getName()+" to "+args[1]+"("+timeMs+"ms)!");
+    }
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         List<String> data = new ArrayList<>();
         int size = args.length;
+        //TODO: Add TabCompleter for setPlaytime
         if(size<2) {
             if(sender.hasPermission(PTR_LIST_PERM)) data.add("list");
             if(sender.hasPermission(PTR_EDIT_PERM)) data.add("editReward");
