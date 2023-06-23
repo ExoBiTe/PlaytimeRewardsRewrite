@@ -1,3 +1,6 @@
+Changelog Version 0.2.1:
+    - Updated Dependencies & check MC1.20(.1) Compatibility
+
 Changelog Version 0.2.0:
     - Fixed a Bug where AFK Players Quitting the Game caused an NPE.
 

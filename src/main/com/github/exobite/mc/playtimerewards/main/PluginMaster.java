@@ -2,7 +2,6 @@ package com.github.exobite.mc.playtimerewards.main;
 
 import com.github.exobite.mc.playtimerewards.external.authme.AuthMeManager;
 import com.github.exobite.mc.playtimerewards.external.vault.VaultPermManager;
-import com.github.exobite.mc.playtimerewards.utils.AdvancementManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeCommand;
 import com.github.exobite.mc.playtimerewards.listeners.PlaytimeRewardsCommand;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class PluginMaster extends JavaPlugin {
 
@@ -52,7 +50,7 @@ public class PluginMaster extends JavaPlugin {
     //Constants
     private final int BSTATS_ID = 14369;
     private final Version MIN_VERSION = new Version(1, 17, 0).hidePatch(true);
-    private final Version MAX_VERSION = new Version(1, 19, 0).hidePatch(true);
+    private final Version MAX_VERSION = new Version(1, 20, 0).hidePatch(true);
 
     @Override
     public void onEnable(){
