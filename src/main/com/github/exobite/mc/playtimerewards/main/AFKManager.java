@@ -16,10 +16,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AFKManager implements Listener {
 
@@ -36,14 +34,15 @@ public class AFKManager implements Listener {
         return instance;
     }
 
-    private boolean cancelOnInteract = true,
-            cancelOnMove = true,
-            cancelOnChat = true,
-            cancelOnLook = true,
-            cancelOnCommand = true;
+    private boolean cancelOnInteract = true;
+    private boolean cancelOnMove = true;
+    private boolean cancelOnChat = true;
+    private boolean cancelOnLook = true;
+    private boolean cancelOnCommand = true;
 
-    private final Map<UUID, Long> afkCounters = new HashMap<>();
-    private final Map<UUID, Long> isAfk = new HashMap<>();
+    //Need Thread-Safe Maps here
+    private final Map<UUID, Long> afkCounters = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> isAfk = new ConcurrentHashMap<>();
     private final JavaPlugin main;
 
     private long flaggedAsAfkSeconds;
@@ -60,7 +59,7 @@ public class AFKManager implements Listener {
         if(active) {
             Bukkit.getServer().getPluginManager().registerEvents(this, main);
             for(Player p:Bukkit.getOnlinePlayers()) {
-                if(p.hasPermission("playtimerewards.afk.ignore\"")) continue;
+                if(p.hasPermission("playtimerewards.afk.ignore")) continue;
                 afkCounters.put(p.getUniqueId(), 0L);
             }
             runScheduler();
@@ -93,13 +92,15 @@ public class AFKManager implements Listener {
         BukkitTask bt = new BukkitRunnable() {
             @Override
             public void run() {
-                for(UUID id:afkCounters.keySet()) {
-                    long newval = afkCounters.get(id) + 1;
-                    if(newval>= flaggedAsAfkSeconds) {
-                        afkCounters.remove(id);
-                        goAfk(id);
+                Iterator<Map.Entry<UUID, Long>> it = afkCounters.entrySet().iterator();
+                while(it.hasNext()) {
+                    Map.Entry<UUID, Long> entry = it.next();
+                    long nVal = entry.getValue()+1;
+                    if(nVal >= flaggedAsAfkSeconds) {
+                        it.remove();
+                        goAfk(entry.getKey());
                     }else{
-                        afkCounters.put(id, newval);
+                        entry.setValue(nVal);
                     }
                 }
             }
