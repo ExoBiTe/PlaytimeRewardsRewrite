@@ -71,12 +71,13 @@ public class PlayerManager implements Listener {
         }
     }
 
-    public void onJoin(@NotNull PlayerJoinEvent e){
-        createPlayerData(e.getPlayer());
+    public void onJoin(@NotNull Player p){
+        createPlayerData(p);
     }
 
     public void onLeave(@NotNull PlayerQuitEvent e){
-        getPlayerData(e.getPlayer()).onLeave(false);
+        PlayerData pDat;
+        if((pDat = getPlayerData(e.getPlayer())) != null) pDat.onLeave(false);
         removePlayerData(e.getPlayer().getUniqueId());
     }
 

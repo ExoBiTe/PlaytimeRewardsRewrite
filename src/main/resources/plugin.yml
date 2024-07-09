@@ -31,6 +31,7 @@ permissions:
       playtimerewards.cmd.playtimetop: true
       playtimerewards.cmd.playtimerewards.*: true
 
+
   playtimerewards.notifyOnUpdate:
     description: Sends Update Notification upon Login
 

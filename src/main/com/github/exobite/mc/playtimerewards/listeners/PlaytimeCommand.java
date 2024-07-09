@@ -67,7 +67,9 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             }
 
             Player p = Bukkit.getPlayer(args[0]);
-            if(p==null){
+            PlayerData pDat = null;
+            if(p!=null) pDat = PlayerManager.getInstance().getPlayerData(p);
+            if(p==null || pDat == null){
                 if(!sender.hasPermission(PT_USE_OFFLINE_PERM)) {
                     sender.sendMessage(Lang.getInstance().getMessage(Msg.CMD_ERR_PLAYER_NOT_FOUND, args[0]));
                     return true;
@@ -107,7 +109,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
                 }
                 return true;
             }else{
-                rVal = getPlaytimeStringForPlayerOther(p);
+                rVal = getPlaytimeStringForPlayerOther(pDat);
             }
         }else{
             rVal = Lang.getInstance().getMessage(Msg.CMD_ERR_NO_PERMISSION);
@@ -119,6 +121,9 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
     private String getPlaytimeStringForPlayerOwn(Player p){
         //Not really nice written tbh
         PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
+        if(pDat == null) {
+            return "Data not initialized yet. Try Again later or contact an Admin!";
+        }
         long t = pDat.getPlaytimeMS();
         long tSes = pDat.getSessionTime();
         long[] values = new long[8];    //0-3 Playtime, 4-7 Sessiontime
@@ -133,9 +138,8 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
         return Lang.getInstance().getMessage(Msg.CMD_SUC_PT_OWN, valuesStr);
     }
 
-    private String getPlaytimeStringForPlayerOther(Player p){
+    private String getPlaytimeStringForPlayerOther(PlayerData pDat){
         //Not really nice written tbh
-        PlayerData pDat = PlayerManager.getInstance().getPlayerData(p);
         long t = pDat.getPlaytimeMS();
         long tSes = pDat.getSessionTime();
         long[] values = new long[8];    //0-3 Playtime, 4-7 Sessiontime
@@ -143,7 +147,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
         System.arraycopy(Utils.convertTimeMsToLongs(tSes), 0, values, 4, 4);
         String[] valuesStr = new String[10]; //0 Playername, 1-4 Playtime, 5 Playername, 6-9 Sessiontime
         int i=0;
-        valuesStr[0] = valuesStr[5] = p.getDisplayName();
+        valuesStr[0] = valuesStr[5] = pDat.p().getDisplayName();
         for(long l:values){
             if(i<4) {
                 valuesStr[i+1] = String.valueOf(l);

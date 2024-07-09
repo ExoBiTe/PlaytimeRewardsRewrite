@@ -226,7 +226,7 @@ public class PlayerData {
         if(isAfk) {
             playtimeticks = playtimeticks - ((System.currentTimeMillis() - wentAfkTimestamp) / 50);
         }
-        return playtimeticks / 50;
+        return playtimeticks * 50;
     }
 
     public Player p() {

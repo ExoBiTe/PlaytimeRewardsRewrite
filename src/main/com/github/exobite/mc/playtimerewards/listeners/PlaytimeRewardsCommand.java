@@ -1,6 +1,5 @@
 package com.github.exobite.mc.playtimerewards.listeners;
 
-import com.github.exobite.mc.playtimerewards.main.PlayerManager;
 import com.github.exobite.mc.playtimerewards.utils.Lang;
 import com.github.exobite.mc.playtimerewards.utils.Msg;
 import com.github.exobite.mc.playtimerewards.main.PluginMaster;
@@ -48,7 +47,8 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
     private void sendHelpText(CommandSender s) {
         StringBuilder sb = new StringBuilder(CMD_USAGE);
         if(s.hasPermission(PTR_LIST_PERM)) sb.append("\n").append(CMD_USAGE_LIST);
-        if(s.hasPermission(PTR_EDIT_PERM)) sb.append("\n").append(CMD_USAGE_REWARDEDIT);
+        //TODO: Not implemented
+        // if(s.hasPermission(PTR_EDIT_PERM)) sb.append("\n").append(CMD_USAGE_REWARDEDIT);
         if(s.hasPermission(PTR_RELOAD_PERM)) sb.append("\n").append(CMD_USAGE_RELOAD);
         if(s.hasPermission(PTR_INFO_PERM)) sb.append("\n").append(CMD_USAGE_INFO);
         String msg = sb.toString();
@@ -67,7 +67,8 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         }else {
             switch (args[0].toLowerCase(Locale.ROOT)) {
                 case "list" -> listCommand(sender);
-                case "editreward" -> editRewardCommand(sender, args);
+                //TODO: Not implemented
+                // case "editreward" -> editRewardCommand(sender, args);
                 case "reload" -> reloadCommand(sender);
                 case "info" -> infoCommand(sender);
                 case "setplaytime" -> setPlaytimeCommand(sender, args);
@@ -140,10 +141,10 @@ public class PlaytimeRewardsCommand implements CommandExecutor, TabCompleter {
         //PAPI
         msg.append("\n").append(inst.isHookedIntoPapi() ? ChatColor.GREEN : ChatColor.DARK_GRAY);
         msg.append(inst.isHookedIntoPapi() ? "Is " : "Isn't ").append("hooked into PlaceholderAPI.");
-        /*
         //AuthMe
         msg.append("\n").append(inst.isHookedIntoAuthMe() ? ChatColor.GREEN : ChatColor.DARK_GRAY);
         msg.append(inst.isHookedIntoAuthMe() ? "Is " : "Isn't ").append("hooked into AuthMe.");
+        /*
         //Vault
         msg.append("\n").append(inst.isHookedIntoVault() ? ChatColor.GREEN : ChatColor.DARK_GRAY);
         msg.append(inst.isHookedIntoVault() ? "Is " : "Isn't ").append("hooked into Vault.");

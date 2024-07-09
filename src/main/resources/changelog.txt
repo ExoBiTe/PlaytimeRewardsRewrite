@@ -1,3 +1,15 @@
+Changelog Version 0.2.2:
+    - Cleaned up some versioning mess from before:
+        With "0.2.1" a Bug got introduced, which calculated the playtime wrong (wrong conversion from ticks to ms)
+        With the same Version a /ptr setPlaytime Command got introduced, but not listed anywhere.
+        It's Permission is "playtimerewards.cmd.playtimerewards.settime".
+    - Tested the Plugin for Minecraft 1.20 & 1.21
+    - /ptr editReward Command is still disabled.
+    - Included further AuthMe Functionality:
+        - Unauthenticated Players don't receive Rewards until they've authenticated
+        - Sessiontime doesn't count for unauthenticated players
+        -
+
 Changelog Version 0.2.1:
     - Updated Dependencies & check MC1.20(.1) Compatibility
 

@@ -1,5 +1,6 @@
 package com.github.exobite.mc.playtimerewards.main;
 
+import com.github.exobite.mc.playtimerewards.bstats.Metrics;
 import com.github.exobite.mc.playtimerewards.external.authme.AuthMeManager;
 import com.github.exobite.mc.playtimerewards.external.vault.VaultPermManager;
 import com.github.exobite.mc.playtimerewards.gui.GUIManager;
@@ -19,7 +20,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bstats.bukkit.Metrics;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public class PluginMaster extends JavaPlugin {
     //Constants
     private final int BSTATS_ID = 14369;
     private final Version MIN_VERSION = new Version(1, 17, 0).hidePatch(true);
-    private final Version MAX_VERSION = new Version(1, 20, 0).hidePatch(true);
+    private final Version MAX_VERSION = new Version(1, 21, 0).hidePatch(true);
 
     @Override
     public void onEnable(){
@@ -86,7 +86,15 @@ public class PluginMaster extends JavaPlugin {
         getCommand("Playtime").setExecutor(new PlaytimeCommand());
         getCommand("PlaytimeTop").setExecutor(new PlaytimetopCommand());
         getCommand("PlaytimeRewards").setExecutor(new PlaytimeRewardsCommand());
-        getServer().getPluginManager().registerEvents(new Listeners(), this);
+
+        //Load AuthMe, if it exists
+        //Otherwise load normal Listeners
+        if(Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
+            AuthMeManager.register(this);
+            hookedIntoAuthMe = true;
+        } else {
+            getServer().getPluginManager().registerEvents(new Listeners(), this);
+        }
 
         loadExternals();
 
@@ -95,8 +103,9 @@ public class PluginMaster extends JavaPlugin {
 
         //reload support, check for online Players in onEnable & create playerData for them.
         if(!Bukkit.getOnlinePlayers().isEmpty()){
+            PlayerManager inst = PlayerManager.getInstance();
             for(Player p:Bukkit.getOnlinePlayers()){
-                PlayerManager.getInstance().createPlayerData(p);
+                inst.createPlayerData(p);
             }
         }
 
@@ -202,8 +211,8 @@ public class PluginMaster extends JavaPlugin {
                 }
             }
         };
-        //Run the Task every 20Ticks -> 1 Second
-        br.runTaskTimerAsynchronously(this, 20L, 20L).getTaskId();
+        //Run the Task every 10Ticks -> .5 Seconds
+        br.runTaskTimerAsynchronously(this, 10L, 10L).getTaskId();
     }
 
     private void loadExternals() {
@@ -211,12 +220,6 @@ public class PluginMaster extends JavaPlugin {
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PAPIManager.register(this);
             hookedIntoPapi = true;
-        }
-
-        //Load AuthMe, if it exists
-        if(Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
-            AuthMeManager.register(this);
-            hookedIntoAuthMe = true;
         }
 
         //Load Vault, if it exists
